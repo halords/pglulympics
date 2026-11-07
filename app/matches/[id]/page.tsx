@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSnapshot } from "../../../lib/data/context";
 import { setsWon } from "../../../lib/standings";
 import { fmtDayLong, fmtTime } from "../../../lib/format";
-import { StatusPill } from "../../../components/MatchCard";
+import { StatusPill, dedupeLabel, divisionEntrantNames } from "../../../components/MatchCard";
 
 function MatchDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -24,34 +24,53 @@ function MatchDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
   const { match, division, sport, group } = data;
   const setsA = setsWon(match, 0);
   const setsB = setsWon(match, 1);
+  const isPlacement = division?.scoringKind === "placement_only";
+  const entrantChips = [...new Set([
+    ...divisionEntrantNames(snap.entries, snap.teams, match.divisionId),
+    ...match.slots.map((s) => s.teamName).filter((n): n is string => !!n),
+  ])];
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
       <div className="text-sm text-neutral-500">
         <Link href={`/sports/${sport?.slug ?? ""}`} className="underline">{sport?.name}</Link>
-        {" · "}{division?.name}{group ? ` · ${group.name}` : ""} · {match.label}
+        {dedupeLabel([division?.name, group?.name, match.label]) && (
+          <span>{" · "}{dedupeLabel([division?.name, group?.name, match.label])}</span>
+        )}
       </div>
       <section className="rounded-2xl bg-navy-950 text-white p-5 sm:p-7">
-        <div className="flex items-center justify-between">
-          <span className="text-xs uppercase tracking-widest text-navy-100">{fmtDayLong(match.startsAt)} · {fmtTime(match.startsAt)}</span>
-          <StatusPill status={match.status} needsReview={match.needsReview} />
+        <div className="flex items-center justify-between gap-2">
+          <span className="min-w-0 text-xs uppercase tracking-widest text-navy-100">{fmtDayLong(match.startsAt)} · {fmtTime(match.startsAt)}</span>
+          <span className="shrink-0"><StatusPill status={match.status} needsReview={match.needsReview} /></span>
         </div>
-        {match.slots.length > 2 && (
+        {isPlacement ? (
+          <div className="py-3">
+            <p className="text-sm uppercase tracking-widest text-navy-100 mb-2">{entrantChips.length} entrant{entrantChips.length === 1 ? "" : "s"} — results by final placement</p>
+            {entrantChips.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {entrantChips.map((n) => (
+                  <span key={n} className="rounded-full bg-navy-800 border border-navy-700 px-3 py-1 text-sm font-medium">{n}</span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-lg font-medium">Entrants to be announced.</p>
+            )}
+          </div>
+        ) : match.slots.length > 2 ? (
           <p className="py-3 text-lg font-medium">{match.slots.length} teams entered — results by final placement below.</p>
-        )}
-        {match.slots.length <= 2 && [0, 1].map((i) => {
+        ) : [0, 1].map((i) => {
           const slot = match.slots[i];
           const isWinner = match.status === "final" && match.winnerEntryId && slot?.entryId === match.winnerEntryId;
           return (
-            <div key={i} className="flex items-center justify-between py-3 border-b border-navy-800 last:border-0">
-              <span className={`text-xl sm:text-2xl ${isWinner ? "font-bold" : "font-medium"}`}>
+            <div key={i} className="flex items-center justify-between gap-3 py-3 border-b border-navy-800 last:border-0">
+              <span className={`min-w-0 break-words text-xl sm:text-2xl ${isWinner ? "font-bold" : "font-medium"}`}>
                 {slot?.teamName ?? slot?.placeholder ?? "TBD"}
                 {isWinner && <span className="ml-2 text-gold-500 text-base align-middle">WINNER</span>}
               </span>
               {division?.scoringKind === "set_based" && (match.status === "live" || match.status === "final") && (
-                <span className="font-display text-4xl font-bold">{i === 0 ? setsA : setsB}</span>
+                <span className="font-display text-4xl font-bold shrink-0">{i === 0 ? setsA : setsB}</span>
               )}
-              {match.totals && <span className="font-display text-4xl font-bold">{match.totals[i] ?? 0}</span>}
+              {match.totals && <span className="font-display text-4xl font-bold shrink-0">{match.totals[i] ?? 0}</span>}
             </div>
           );
         })}

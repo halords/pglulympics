@@ -3,7 +3,7 @@ import { Suspense, use, useMemo } from "react";
 import { useSnapshot } from "../../../lib/data/context";
 import { computeStandings, sortStandings } from "../../../lib/standings";
 import { manilaDayKey, fmtDayLong } from "../../../lib/format";
-import MatchCard from "../../../components/MatchCard";
+import MatchCard, { divisionEntrantNames } from "../../../components/MatchCard";
 import StandingsTable from "../../../components/StandingsTable";
 
 const SPORT_NOTES: Record<string, string> = {
@@ -94,7 +94,7 @@ function SportPageInner({ params }: { params: Promise<{ slug: string }> }) {
                 <div key={day}>
                   <h3 className="font-display text-lg font-bold text-navy-800 mb-2">{day === "tba" ? "To be scheduled" : fmtDayLong(ms[0].startsAt)}</h3>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {ms.map((m) => <MatchCard key={m.id} match={m} division={div} />)}
+                    {ms.map((m) => <MatchCard key={m.id} match={m} division={div} entrants={divisionEntrantNames(snap.entries, snap.teams, div.id)} />)}
                   </div>
                 </div>
               ))}

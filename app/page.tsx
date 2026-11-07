@@ -4,15 +4,15 @@ import Link from "next/link";
 import { useSnapshot } from "../lib/data/context";
 import { computeTally } from "../lib/standings";
 import { fmtDayLong } from "../lib/format";
-import MatchCard from "../components/MatchCard";
+import MatchCard, { divisionEntrantNames } from "../components/MatchCard";
 import TallyTable from "../components/TallyTable";
 
 function useNow() {
   const [now, setNow] = useState(0);
   useEffect(() => {
-    setNow(Date.now());
+    const kick = setTimeout(() => setNow(Date.now()), 0);
     const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
+    return () => { clearTimeout(kick); clearInterval(t); };
   }, []);
   return now;
 }
@@ -24,6 +24,7 @@ export default function HomePage() {
     if (!snap) return null;
     const divById = new Map(snap.divisions.map((d) => [d.id, d]));
     const sportByDiv = new Map(snap.divisions.map((d) => [d.id, snap.sports.find((s) => s.id === d.sportId)?.name]));
+    const entrantsByDiv = new Map(snap.divisions.map((d) => [d.id, divisionEntrantNames(snap.entries, snap.teams, d.id)]));
     const sorted = [...snap.matches].sort((a, b) => (a.startsAt ?? "").localeCompare(b.startsAt ?? ""));
     const live = sorted.filter((m) => m.status === "live");
     const upcoming = sorted.filter((m) => m.status === "scheduled" && m.startsAt && Date.parse(m.startsAt) >= now - 3 * 3600_000);
@@ -31,7 +32,7 @@ export default function HomePage() {
     const firstStart = sorted.find((m) => m.startsAt)?.startsAt ?? null;
     const tally = computeTally(snap.teams, snap.awards, snap.event,
       (entryId) => snap.entries.find((e) => e.id === entryId)?.teamId);
-    return { divById, sportByDiv, live, upcoming, results, firstStart, tally };
+    return { divById, sportByDiv, entrantsByDiv, live, upcoming, results, firstStart, tally };
   }, [snap, now]);
 
   if (!snap || !data) return <p className="text-neutral-500 py-10 text-center">Loading the arena…</p>;
@@ -52,7 +53,7 @@ export default function HomePage() {
         <p className="mt-2 text-navy-100 max-w-xl">The PGLU sports fest — {snap.sports.length} sport{snap.sports.length === 1 ? "" : "s"}, {snap.teams.length} teams, one champion. Live scores, standings and the overall medal tally, updated the second they happen.</p>
         <p className="mt-1 text-sm text-navy-100">{fmtDayLong(snap.event.startDate + "T12:00:00+08:00")} – {fmtDayLong(snap.event.endDate + "T12:00:00+08:00")}</p>
         {countdown ? (
-          <div className="mt-4 flex items-center gap-3">
+          <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="text-xs uppercase tracking-widest text-navy-100">First serve in</span>
             <div className="flex gap-1.5 font-display text-2xl">
               {(["d", "h", "m", "s"] as const).map((u) => (
@@ -69,7 +70,7 @@ export default function HomePage() {
         <section>
           <h2 className="font-display text-2xl font-bold text-navy-950 mb-3 flex items-center gap-2"><span className="live-dot h-2.5 w-2.5 rounded-full bg-crimson-600 inline-block" /> LIVE NOW</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            {data.live.map((m) => <MatchCard key={m.id} match={m} division={data.divById.get(m.divisionId)} sportName={data.sportByDiv.get(m.divisionId)} />)}
+            {data.live.map((m) => <MatchCard key={m.id} match={m} division={data.divById.get(m.divisionId)} sportName={data.sportByDiv.get(m.divisionId)} entrants={data.entrantsByDiv.get(m.divisionId)} />)}
           </div>
         </section>
       )}
@@ -111,7 +112,7 @@ export default function HomePage() {
         <section className="lg:col-span-2">
           <h2 className="font-display text-2xl font-bold text-navy-950 mb-3">UP NEXT</h2>
           <div className="space-y-3">
-            {data.upcoming.slice(0, 4).map((m) => <MatchCard key={m.id} match={m} division={data.divById.get(m.divisionId)} sportName={data.sportByDiv.get(m.divisionId)} />)}
+            {data.upcoming.slice(0, 4).map((m) => <MatchCard key={m.id} match={m} division={data.divById.get(m.divisionId)} sportName={data.sportByDiv.get(m.divisionId)} entrants={data.entrantsByDiv.get(m.divisionId)} />)}
             {data.upcoming.length === 0 && <p className="text-neutral-500 text-sm">No upcoming matches on the board.</p>}
           </div>
         </section>
@@ -121,7 +122,7 @@ export default function HomePage() {
         <section>
           <h2 className="font-display text-2xl font-bold text-navy-950 mb-3">LATEST RESULTS</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {data.results.map((m) => <MatchCard key={m.id} match={m} division={data.divById.get(m.divisionId)} sportName={data.sportByDiv.get(m.divisionId)} />)}
+            {data.results.map((m) => <MatchCard key={m.id} match={m} division={data.divById.get(m.divisionId)} sportName={data.sportByDiv.get(m.divisionId)} entrants={data.entrantsByDiv.get(m.divisionId)} />)}
           </div>
         </section>
       )}

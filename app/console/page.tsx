@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSnapshot } from "../../lib/data/context";
 import { useSession } from "../../lib/data/session";
 import { isTodayManila } from "../../lib/format";
-import MatchCard from "../../components/MatchCard";
+import MatchCard, { divisionEntrantNames } from "../../components/MatchCard";
 
 export default function ConsoleHomePage() {
   const snap = useSnapshot();
@@ -28,6 +28,7 @@ export default function ConsoleHomePage() {
       upcoming: mine.filter((m) => m.status === "scheduled").slice(0, 8),
       review: mine.filter((m) => m.needsReview),
       divById: new Map(snap.divisions.map((d) => [d.id, d])),
+      entrantsByDiv: new Map(snap.divisions.map((d) => [d.id, divisionEntrantNames(snap.entries, snap.teams, d.id)])),
     };
   }, [snap, session.role, scopeSportId]);
 
@@ -76,7 +77,7 @@ export default function ConsoleHomePage() {
           <div className="grid gap-3 sm:grid-cols-2">
             {data.live.map((m) => (
               <Link key={m.id} href={`/console/matches/${m.id}`} className="block">
-                <MatchCard match={m} division={data.divById.get(m.divisionId)} />
+                <MatchCard match={m} division={data.divById.get(m.divisionId)} entrants={data.entrantsByDiv.get(m.divisionId)} />
               </Link>
             ))}
           </div>
@@ -89,7 +90,7 @@ export default function ConsoleHomePage() {
           <div className="grid gap-3 sm:grid-cols-2">
             {data.today.map((m) => (
               <Link key={m.id} href={`/console/matches/${m.id}`} className="block">
-                <MatchCard match={m} division={data.divById.get(m.divisionId)} />
+                <MatchCard match={m} division={data.divById.get(m.divisionId)} entrants={data.entrantsByDiv.get(m.divisionId)} />
               </Link>
             ))}
           </div>
@@ -101,7 +102,7 @@ export default function ConsoleHomePage() {
         <div className="grid gap-3 sm:grid-cols-2">
           {data.upcoming.map((m) => (
             <Link key={m.id} href={`/console/matches/${m.id}`} className="block">
-              <MatchCard match={m} division={data.divById.get(m.divisionId)} />
+              <MatchCard match={m} division={data.divById.get(m.divisionId)} entrants={data.entrantsByDiv.get(m.divisionId)} />
             </Link>
           ))}
         </div>

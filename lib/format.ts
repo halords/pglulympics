@@ -20,3 +20,20 @@ export function manilaDayKey(iso: string | null | undefined): string {
 export function isTodayManila(iso: string | null | undefined): boolean {
   return !!iso && manilaDayKey(iso) === manilaDayKey(new Date().toISOString());
 }
+
+/** Join a label path ("Sport · Division · Label") dropping empty parts and
+ *  exact duplicates (case-insensitive) — e.g. "Laro ng Lahi · Patintero ·
+ *  Patintero" becomes "Laro ng Lahi · Patintero". */
+export function dedupeLabel(parts: (string | null | undefined)[]): string {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const p of parts) {
+    const t = (p ?? "").trim();
+    if (!t) continue;
+    const k = t.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(t);
+  }
+  return out.join(" · ");
+}

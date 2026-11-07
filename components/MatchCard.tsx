@@ -1,8 +1,23 @@
 "use client";
 import Link from "next/link";
-import type { DivisionInfo, MatchInfo } from "../lib/types";
+import type { DivisionInfo, EntryInfo, MatchInfo, TeamInfo } from "../lib/types";
 import { setsWon } from "../lib/standings";
-import { fmtDay, fmtTime } from "../lib/format";
+import { fmtDay, fmtTime, dedupeLabel } from "../lib/format";
+
+export { dedupeLabel };
+
+/** Entrant team names for a division, from the snapshot's entries
+ *  (the same source the sport pages use for their entrant chips). */
+export function divisionEntrantNames(entries: EntryInfo[], teams: TeamInfo[], divisionId: string): string[] {
+  const nameOf = new Map(teams.map((t) => [t.id, t.name]));
+  const out: string[] = [];
+  for (const e of entries) {
+    if (e.divisionId !== divisionId) continue;
+    const n = nameOf.get(e.teamId);
+    if (n && !out.includes(n)) out.push(n);
+  }
+  return out;
+}
 
 export function StatusPill({ status, needsReview }: { status: MatchInfo["status"]; needsReview?: boolean }) {
   if (needsReview) return <span className="inline-flex items-center gap-1 rounded-full bg-gold-100 text-gold-500 border border-gold-500 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide">Under review</span>;
@@ -31,9 +46,10 @@ function scoreText(m: MatchInfo, division?: DivisionInfo): { a: string; b: strin
   return null;
 }
 
-export default function MatchCard({ match, division, sportName }: { match: MatchInfo; division?: DivisionInfo; sportName?: string }) {
+export default function MatchCard({ match, division, sportName, entrants }: { match: MatchInfo; division?: DivisionInfo; sportName?: string; entrants?: string[] }) {
   const score = scoreText(match, division);
   const showScores = match.status === "live" || match.status === "final";
+  const isPlacement = division?.scoringKind === "placement_only";
   const teamLine = (slotNo: 1 | 2) => {
     const slot = match.slots[slotNo - 1];
     const name = slot?.teamName ?? slot?.placeholder ?? "TBD";
@@ -54,13 +70,59 @@ export default function MatchCard({ match, division, sportName }: { match: Match
       </div>
     );
   };
+  const label = dedupeLabel([sportName, division?.name, match.label]);
+  const footer = (
+    <div className="pt-1.5 text-xs text-neutral-500 flex justify-between gap-2">
+      <span className="shrink-0">{fmtDay(match.startsAt)} · {fmtTime(match.startsAt)}</span>
+      <span className="truncate">{match.venue ?? ""}</span>
+    </div>
+  );
+
+  // Placement events are NOT head-to-head matches: render an event card with
+  // the full entrant list as chips (same presentation as the sport pages).
+  if (isPlacement) {
+    const slotNames = match.slots.map((s) => s.teamName).filter((n): n is string => !!n);
+    const chips = [...new Set([...(entrants ?? []), ...slotNames])];
+    const placed = (match.placements ?? [])
+      .filter((p) => p.place != null)
+      .sort((a, b) => (a.place ?? 99) - (b.place ?? 99))
+      .slice(0, 3);
+    return (
+      <Link href={`/matches/${match.id}`} className="block rounded-xl border border-navy-100 bg-white p-3.5 shadow-sm hover:border-navy-800 hover:shadow transition">
+        <div className="flex items-center justify-between gap-2 pb-1.5">
+          <span className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-wider text-neutral-500">{label}</span>
+          <span className="shrink-0"><StatusPill status={match.status} needsReview={match.needsReview} /></span>
+        </div>
+        {placed.length > 0 ? (
+          <ul className="py-1 space-y-0.5">
+            {placed.map((p) => (
+              <li key={p.slotNo} className="flex items-baseline gap-2 text-[15px]">
+                <span className="font-display font-bold text-gold-500 w-7 shrink-0">#{p.place}</span>
+                <span className="font-medium text-navy-900">{match.slots[p.slotNo - 1]?.teamName ?? "Entrant"}</span>
+              </li>
+            ))}
+          </ul>
+        ) : chips.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5 py-1">
+            {chips.map((n) => (
+              <span key={n} className="rounded-full bg-navy-50 border border-navy-100 px-2.5 py-0.5 text-[13px] font-medium text-navy-900">{n}</span>
+            ))}
+          </div>
+        ) : (
+          <p className="py-1 text-[15px] font-medium text-navy-900">Entrants to be announced</p>
+        )}
+        {footer}
+      </Link>
+    );
+  }
+
   return (
     <Link href={`/matches/${match.id}`} className="block rounded-xl border border-navy-100 bg-white p-3.5 shadow-sm hover:border-navy-800 hover:shadow transition">
       <div className="flex items-center justify-between gap-2 pb-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-          {[sportName, division?.name, match.label].filter(Boolean).join(" · ")}
+        <span className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+          {label}
         </span>
-        <StatusPill status={match.status} needsReview={match.needsReview} />
+        <span className="shrink-0"><StatusPill status={match.status} needsReview={match.needsReview} /></span>
       </div>
       {match.slots.length > 2 ? (
         <div className="py-1.5">
@@ -74,10 +136,7 @@ export default function MatchCard({ match, division, sportName }: { match: Match
           {teamLine(2)}
         </>
       )}
-      <div className="pt-1.5 text-xs text-neutral-500 flex justify-between">
-        <span>{fmtDay(match.startsAt)} · {fmtTime(match.startsAt)}</span>
-        <span className="truncate ml-2">{match.venue ?? ""}</span>
-      </div>
+      {footer}
     </Link>
   );
 }

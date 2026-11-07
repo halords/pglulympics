@@ -191,3 +191,24 @@ Reconciliation: coordinator writes SPEC.md v2 from draft + this fix set; round-2
 
 ## Build log
 - H0 scaffold done. Next: migrations 1–6, seed.sql, lib (types/provider/mock), overlap util + tests.
+
+## Fix pass — mobile header/nav, sports menu, schedule IA, placement cards (2026-11-07, post-launch)
+
+Presentation layer only — no schema/migration/data changes; palette unchanged. Committed locally, PUSH PENDING (main agent's one-shot push; the push triggers the Vercel redeploy).
+
+What was wrong:
+- Header crammed wordmark + Home / Medal Tally / Volleyball / Schedule / Console into one non-wrapping row → overflowed 320–430px viewports ("Medal Tally" wrapped, "Console" clipped). "Volleyball" was a hardcoded top-level link left over from the single-sport scaffold.
+- /schedule led with the unscheduled (TBA) block and dumped all 276 fixtures in raw sheet order.
+- Card labels repeated path segments ("LARO NG LAHI · PATINTERO · PATINTERO").
+- placement_only fixtures (Bowling/Athletics/Laro ng Lahi) rendered as two-team versus cards on public surfaces — root cause: the public assembly (lib/data/supabase.ts) only ever builds slots [1,2] from the public_match_cards view, so live placement matches hit the versus branch. NOT fixed at the data layer (out of scope); cards now branch on division.scoringKind.
+
+Changes:
+- NEW components/SiteHeader.tsx (client, in root layout inside Suspense — usePathname requires a boundary in this Next version; static same-height fallback in app/layout.tsx; DataRoot now wraps header + main so nav reads the snapshot). Mobile: compact wordmark + 44px hamburger → slide-down panel, all destinations ≥44px, active page highlighted, closes on selection/navigation. Desktop (md+): full nav unchanged in shape — Home · Medal Tally · Sports · Schedule · Console.
+- Sports nav (addendum): hardcoded Volleyball link GONE. Desktop Sports = dropdown, mobile menu Sports = expandable section; both list ALL sports from the snapshot (no hardcoded names) → /sports/[slug].
+- app/schedule/page.tsx + NEW lib/schedule.ts (buildScheduleSections, unit-tested): LIVE NOW pinned section when any match is live; then sticky day headers (top 60px) ordered nearest-day-first (today while running, else Day 1), past days after (most recent first, dimmed, "— Today" suffix on today's header); within a day upcoming before finished; "To be scheduled (N)" LAST, collapsed behind a toggle. Filters (day/sport/status) apply before grouping, unchanged semantics.
+- Label dedup: dedupeLabel() in lib/format.ts (re-exported from MatchCard) applied to card headers and the match-page breadcrumb.
+- Placement EVENT cards: MatchCard branches on scoringKind === "placement_only" → deduped title, entrant chips (same chip style as sport pages) or top-3 finishers once placements exist, date/venue footer. Callers (home, schedule, sport page, console) pass entrants via divisionEntrantNames(); match detail page shows entrant chips instead of versus rows for placement divisions.
+- CAVEAT (live public mode): snapshot entries are synthesized from awards only (division_entries is staff-only by RLS), so pre-event public placement cards fall back to the two slot teamNames until results/placements exist; sport pages show the same synthesized set, so cards stay consistent with them. Staff/console and mock modes have full rosters. Widening public entrant data would need a view/RLS change — deliberately NOT done in this pass.
+- Small-width audit (checked at source level, ~360px): home (countdown row now flex-wrap; tally table already overflow-x-auto), /tally (contained scroll), sport pages (tables contained; entrant chips wrap), /schedule (filter selects max-w-full, min-h 44px), /console + /admin + /login (collapsing grids), match detail (score spans shrink-0, names min-w-0/break-words). No other overflow sources found.
+
+Verification: npm test 24/24 (15 prior + 9 new in lib/schedule.test.ts covering TBA-last, live pinning, day ordering pre/during event, within-day order, dedupeLabel); npx tsc --noEmit clean; npm run build exit 0 (14 routes); production server smoke — /, /schedule, /tally, 3 sport pages, /console, /login, /admin, /console/fixtures all 200; SSR HTML of /schedule contains the hamburger (aria-label "Open menu", md:hidden) and desktop nav (hidden md:flex); built CSS contains the sticky offset (top:60px); built chunks contain "LIVE NOW" / "To be scheduled" / "Loading sports"; no hardcoded sport names in nav sources. No headless browser in the VM — viewport containment rests on the class contract (mobile header row = wordmark + 44px button only; panel links are full-width blocks) plus the audit above. Lint: every touched file clean; 8 remaining repo lint errors are pre-existing in untouched files (lib/data/*, console/matches/[id]) — also fixed one pre-existing lint error in app/page.tsx useNow along the way.
