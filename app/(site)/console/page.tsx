@@ -154,7 +154,7 @@ export default function ConsoleHomePage() {
           {snap.divisions
             .filter((d) => scopeIds.includes(d.sportId) && isSessionSport(snap.sports.find((s) => s.id === d.sportId)))
             .map((d) => (
-              <Link key={d.id} href={`/board/division/${d.id}`} target="_blank"
+              <Link key={d.id} href={`/board/division/${d.id}`} target="_blank" rel="noreferrer"
                 className="inline-flex min-h-[40px] items-center rounded-lg bg-navy-950 px-3.5 py-2 text-sm font-bold text-white">
                 {d.name} — Teams board ↗
               </Link>

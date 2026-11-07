@@ -97,7 +97,7 @@ export default function ConsoleMatchCard({
       {actions}
       {match.status !== "cancelled" && (
         <div className="mt-2">
-          <Link href={`/board/${match.id}`} target="_blank"
+          <Link href={`/board/${match.id}`} target="_blank" rel="noreferrer"
             className="inline-flex min-h-[44px] w-full items-center justify-center rounded-xl border border-navy-100 bg-navy-50 px-3 text-sm font-bold text-navy-900">
             Scoreboard screen ↗
           </Link>

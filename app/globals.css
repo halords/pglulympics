@@ -83,6 +83,24 @@ body {
   transform: skewX(-18deg);
 }
 
+/* ---- admin Top-3 report: print / Save-as-PDF ----
+   Printing /admin/reports produces a clean A4 document: the app chrome
+   drops out by visibility isolation (only .report-print-area prints),
+   screen-only controls carry .no-print, every sport after the first
+   starts on a fresh page, and a division's Top-3 block never splits. */
+@page { size: A4; margin: 14mm; }
+@media print {
+  body * { visibility: hidden; }
+  .report-print-area, .report-print-area * { visibility: visible; }
+  .report-print-area {
+    position: absolute; left: 0; right: 0; top: 0;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  .report-sport ~ .report-sport { break-before: page; }
+  .report-division { break-inside: avoid; }
+}
+
 /* big touch steppers: no number-input spinners */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }

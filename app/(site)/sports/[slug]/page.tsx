@@ -190,7 +190,7 @@ function SportPageInner({ params }: { params: Promise<{ slug: string }> }) {
 
             {isSessionSport(sport) && (
               <p>
-                <Link href={`/board/division/${div.id}`} target="_blank" className="inline-flex min-h-[40px] items-center rounded-lg bg-navy-950 px-3.5 py-2 text-sm font-bold text-white">
+                <Link href={`/board/division/${div.id}`} target="_blank" rel="noreferrer" className="inline-flex min-h-[40px] items-center rounded-lg bg-navy-950 px-3.5 py-2 text-sm font-bold text-white">
                   {div.name} — Teams board ↗
                 </Link>
               </p>

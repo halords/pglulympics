@@ -111,7 +111,7 @@ function ScoringPageInner({ params }: { params: Promise<{ id: string }> }) {
           {division.scoringKind !== "placement_only" && (
             <Link href={`/console/matches/${matchId}/scoreboard`} className="rounded-lg bg-crimson-600 text-white px-3.5 py-2 text-sm font-bold min-h-[40px] inline-flex items-center">● Courtside scoreboard</Link>
           )}
-          <Link href={`/board/${matchId}`} target="_blank" className="rounded-lg bg-white border-2 border-navy-800 text-navy-950 px-3.5 py-2 text-sm font-bold min-h-[40px] inline-flex items-center">Scoreboard screen ↗</Link>
+          <Link href={`/board/${matchId}`} target="_blank" rel="noreferrer" className="rounded-lg bg-white border-2 border-navy-800 text-navy-950 px-3.5 py-2 text-sm font-bold min-h-[40px] inline-flex items-center">Scoreboard screen ↗</Link>
           <StatusPill status={server.status} needsReview={server.needsReview} />
         </span>
       </div>

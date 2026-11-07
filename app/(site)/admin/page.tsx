@@ -276,6 +276,17 @@ export default function AdminPage() {
       </header>
       {notice && <p className="rounded-lg bg-navy-50 border border-navy-100 px-3 py-2 text-sm">{notice}</p>}
 
+      {/* reports */}
+      <section className="rounded-2xl border border-navy-100 bg-white p-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-display tracking-tight text-2xl font-bold">TOP 3 REPORT</h2>
+          <p className="text-sm text-neutral-600">Winners of every sport and division from confirmed results — on screen, as a printable A4 document, or as an Excel file (Top 3 + Medal Tally sheets).</p>
+        </div>
+        <Link href="/admin/reports" className="rounded-xl bg-crimson-800 text-white px-5 py-3 font-bold text-sm min-h-[48px] inline-flex items-center">
+          Open report →
+        </Link>
+      </section>
+
       <UsersSection sports={snap.sports} isMock={session.isMock} />
 
       {/* reviews */}

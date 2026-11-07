@@ -110,27 +110,35 @@ function TallyView({ ctx }: { ctx: Ctx }) {
         </span>
         <span className="w-[7vw] text-right">Points</span>
       </div>
-      <div className="flex flex-1 flex-col justify-between">
+      {/* FIT BY CONSTRUCTION: the rows container is a size container and
+          every row is flex-1 min-h-0, so each of the 10 rows gets exactly
+          1/10 of the height the slide actually has — on any screen. Row
+          type is sized in cqh (1% of that container height), so numerals
+          and names shrink gracefully at shorter heights instead of
+          overflowing: rank ≤ 8.2cqh and name ≤ 5.6cqh always fit inside
+          a 10cqh row. Never go back to vw-sized row type here — vw does
+          not know the slide got shorter, and the rows clipped. */}
+      <div className="flex min-h-0 flex-1 flex-col [container-type:size]">
         {rows.map((r) => {
           const leader = r.rank === 1 && r.points > 0;
           return (
             <div
               key={r.teamId}
-              className={`flex items-center gap-[1.2vw] px-[1.2vw] ${leader ? "bg-navy-900" : ""}`}
+              className={`flex min-h-0 flex-1 items-center gap-[1.2vw] px-[1.2vw] ${leader ? "bg-navy-900" : ""}`}
               style={leader ? { boxShadow: "inset 10px 0 0 0 var(--color-gold-500)" } : undefined}
             >
-              <span className={`w-[6.5vw] shrink-0 font-display tracking-tight font-bold leading-none tabular-nums ${leader ? "text-gold-500 text-[clamp(44px,5.2vw,92px)]" : "text-navy-100 text-[clamp(38px,4.4vw,78px)]"}`}>
+              <span className={`w-[6.5vw] shrink-0 font-display tracking-tight font-bold leading-none tabular-nums ${leader ? "text-gold-500 text-[clamp(30px,8.2cqh,92px)]" : "text-navy-100 text-[clamp(28px,7.4cqh,80px)]"}`}>
                 {r.points > 0 ? (r.rank || "–") : "–"}
               </span>
-              <span className={`flex-1 truncate font-display tracking-tight font-bold uppercase leading-none ${leader ? "text-[clamp(30px,3.3vw,58px)]" : "text-[clamp(26px,2.9vw,50px)]"}`}>
+              <span className={`flex-1 truncate font-display tracking-tight font-bold uppercase leading-none ${leader ? "text-[clamp(20px,5.6cqh,58px)]" : "text-[clamp(18px,5cqh,50px)]"}`}>
                 {r.teamName}
               </span>
-              <span className="flex w-[17vw] justify-between font-display tracking-tight text-[clamp(24px,2.5vw,44px)] font-semibold">
+              <span className="flex w-[17vw] justify-between font-display tracking-tight text-[clamp(16px,4.4cqh,44px)] font-semibold">
                 {medalCell("bg-gold-500", r.gold)}
                 {medalCell("bg-silver-400", r.silver)}
                 {medalCell("bg-bronze-500", r.bronze)}
               </span>
-              <span className={`w-[7vw] shrink-0 text-right font-display tracking-tight font-bold leading-none tabular-nums ${leader ? "text-gold-500 text-[clamp(40px,4.4vw,78px)]" : "text-[clamp(32px,3.6vw,64px)]"}`}>
+              <span className={`w-[7vw] shrink-0 text-right font-display tracking-tight font-bold leading-none tabular-nums ${leader ? "text-gold-500 text-[clamp(24px,7cqh,78px)]" : "text-[clamp(22px,6.2cqh,64px)]"}`}>
                 {r.points}
               </span>
             </div>
@@ -267,27 +275,30 @@ function UpNextView({ ctx, matches }: { ctx: Ctx; matches: MatchInfo[] }) {
   return (
     <div className="flex h-full flex-col">
       <BoardTitle title="Up Next" right="Coming up at the venues" />
+      {/* List fit-by-construction (same as the tally): 7 rows, each flex-1
+          of a size container; type in cqh (title 6.8 + meta ~4.7 ≤ the
+          14.3cqh row) so the list can never clip at short heights. */}
       {matches.length === 0 ? (
         <p className="flex flex-1 items-center justify-center font-display tracking-tight text-[clamp(26px,3vw,50px)] font-bold uppercase text-navy-100">No fixtures remaining on the board</p>
       ) : (
-        <div className="flex flex-1 flex-col justify-between">
+        <div className="flex min-h-0 flex-1 flex-col [container-type:size]">
           {matches.slice(0, 7).map((m) => {
             const division = ctx.divById.get(m.divisionId);
             const placement = division?.scoringKind === "placement_only";
             return (
-              <div key={m.id} className="flex items-center gap-[1.6vw] border-b border-navy-800 px-[0.6vw] py-[0.7vh]">
-                <span className="w-[5.2em] shrink-0">
-                  <span className="block font-display tracking-tight text-[clamp(26px,2.9vw,50px)] font-bold leading-none tabular-nums">{fmtTime(m.startsAt)}</span>
-                  <span className="block text-[clamp(13px,1.2vw,20px)] font-semibold uppercase tracking-widest text-navy-100">{fmtDay(m.startsAt)}</span>
+              <div key={m.id} className="flex min-h-0 flex-1 items-center gap-[1.6vw] border-b border-navy-800 px-[0.6vw]">
+                <span className="w-[23cqh] shrink-0">
+                  <span className="block font-display tracking-tight text-[clamp(20px,6.2cqh,50px)] font-bold leading-none tabular-nums">{fmtTime(m.startsAt)}</span>
+                  <span className="block text-[clamp(10px,2.7cqh,20px)] font-semibold uppercase tracking-widest text-navy-100">{fmtDay(m.startsAt)}</span>
                 </span>
-                <span className="slash block h-[2.6em] w-[0.5em] shrink-0 bg-crimson-600" aria-hidden="true" />
+                <span className="slash block h-[6.5cqh] w-[0.5em] shrink-0 bg-crimson-600" aria-hidden="true" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-display tracking-tight text-[clamp(26px,3vw,52px)] font-bold uppercase leading-[0.95]">
+                  <span className="block truncate font-display tracking-tight text-[clamp(20px,6.8cqh,52px)] font-bold uppercase leading-[0.95]">
                     {placement
                       ? (division?.name ?? m.label)
                       : <>{teamLine(m, 0)} <span className="text-crimson-400">vs</span> {teamLine(m, 1)}</>}
                   </span>
-                  <span className="block text-[clamp(14px,1.35vw,23px)] font-medium uppercase tracking-widest text-navy-100">
+                  <span className="block text-[clamp(11px,3.1cqh,23px)] font-medium uppercase tracking-widest text-navy-100">
                     {[ctx.sportByDiv.get(m.divisionId), placement ? m.label : division?.name, m.venue].filter(Boolean).join(" · ")}
                   </span>
                 </span>
@@ -306,22 +317,26 @@ function ResultsView({ ctx, matches }: { ctx: Ctx; matches: MatchInfo[] }) {
   return (
     <div className="flex h-full flex-col">
       <BoardTitle title="Latest Results" right="Final scores" />
+      {/* List fit-by-construction (same as the tally): 7 rows, each flex-1
+          of a size container; type in cqh — the tallest content (a placement
+          row's 3 finisher lines at 3.3cqh × 1.25 leading ≈ 12.4cqh, or the
+          8.6cqh score) always fits the 14.3cqh row. */}
       {matches.length === 0 ? (
         <p className="flex flex-1 items-center justify-center text-center font-display tracking-tight text-[clamp(26px,3vw,50px)] font-bold uppercase text-navy-100">
           Results appear here<br />as matches finish
         </p>
       ) : (
-        <div className="flex flex-1 flex-col justify-between">
+        <div className="flex min-h-0 flex-1 flex-col [container-type:size]">
           {matches.slice(0, 7).map((m) => {
             const division = ctx.divById.get(m.divisionId);
             const score = matchScore(m, division);
             const placed = (m.placements ?? []).filter((p) => p.place != null).sort((a, b) => (a.place ?? 99) - (b.place ?? 99)).slice(0, 3);
             const winnerIdx = m.winnerEntryId ? m.slots.findIndex((s) => s.entryId === m.winnerEntryId) : -1;
             return (
-              <div key={m.id} className="flex items-center gap-[1.6vw] border-b border-navy-800 px-[0.6vw] py-[0.7vh]">
-                <span className="shrink-0 bg-navy-800 px-[0.5em] py-[0.2em] font-display tracking-tight text-[clamp(15px,1.45vw,25px)] font-bold uppercase">Final</span>
+              <div key={m.id} className="flex min-h-0 flex-1 items-center gap-[1.6vw] border-b border-navy-800 px-[0.6vw]">
+                <span className="shrink-0 bg-navy-800 px-[0.5em] py-[0.2em] font-display tracking-tight text-[clamp(12px,3.2cqh,25px)] font-bold uppercase">Final</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-display tracking-tight text-[clamp(26px,3vw,52px)] font-bold uppercase leading-[0.95]">
+                  <span className="block truncate font-display tracking-tight text-[clamp(20px,6.8cqh,52px)] font-bold uppercase leading-[0.95]">
                     {division?.scoringKind === "placement_only"
                       ? (division?.name ?? m.label)
                       : (
@@ -332,18 +347,18 @@ function ResultsView({ ctx, matches }: { ctx: Ctx; matches: MatchInfo[] }) {
                         </>
                       )}
                   </span>
-                  <span className="block text-[clamp(14px,1.35vw,23px)] font-medium uppercase tracking-widest text-navy-100">
+                  <span className="block text-[clamp(11px,3.1cqh,23px)] font-medium uppercase tracking-widest text-navy-100">
                     {[ctx.sportByDiv.get(m.divisionId), division?.scoringKind === "placement_only" ? m.label : division?.name, fmtDay(m.startsAt)].filter(Boolean).join(" · ")}
                   </span>
                 </span>
                 {division?.scoringKind === "placement_only" ? (
-                  <span className="shrink-0 text-right font-display tracking-tight text-[clamp(19px,1.9vw,33px)] font-semibold leading-tight">
+                  <span className="shrink-0 text-right font-display tracking-tight text-[clamp(13px,3.3cqh,30px)] font-semibold leading-tight">
                     {placed.map((p) => (
                       <span key={p.slotNo} className="block"><span className="text-crimson-400 tabular-nums">#{p.place}</span> {m.slots[p.slotNo - 1]?.teamName ?? "Entrant"}</span>
                     ))}
                   </span>
                 ) : score ? (
-                  <span className="shrink-0 font-display tracking-tight text-[clamp(38px,4.2vw,74px)] font-bold leading-none tabular-nums">
+                  <span className="shrink-0 font-display tracking-tight text-[clamp(26px,8.6cqh,74px)] font-bold leading-none tabular-nums">
                     {score.a}<span className="text-crimson-400 mx-[0.1em]">–</span>{score.b}
                   </span>
                 ) : null}

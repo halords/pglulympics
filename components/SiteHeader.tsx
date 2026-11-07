@@ -116,7 +116,7 @@ export default function SiteHeader() {
             </div>
             <Link href="/schedule" className={deskLink(isActive(pathname, "/schedule"))} aria-current={isActive(pathname, "/schedule") ? "page" : undefined}>Schedule</Link>
             <Link href="/console" className={deskLink(isActive(pathname, "/console"))} aria-current={isActive(pathname, "/console") ? "page" : undefined}>Console</Link>
-            <Link href="/display" className={deskLink(isActive(pathname, "/display"))} aria-current={isActive(pathname, "/display") ? "page" : undefined}>TV Board</Link>
+            <Link href="/display" target="_blank" rel="noreferrer" className={deskLink(isActive(pathname, "/display"))}>TV Board ↗</Link>
           </nav>
 
           {/* Mobile menu toggle */}
@@ -157,8 +157,8 @@ export default function SiteHeader() {
             className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/schedule") ? "bg-crimson-800 text-white" : ""}`}>Schedule</Link>
           <Link href="/console" onClick={() => setMobileOpen(false)} aria-current={isActive(pathname, "/console") ? "page" : undefined}
             className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/console") ? "bg-crimson-800 text-white" : ""}`}>Console</Link>
-          <Link href="/display" onClick={() => setMobileOpen(false)} aria-current={isActive(pathname, "/display") ? "page" : undefined}
-            className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/display") ? "bg-crimson-800 text-white" : ""}`}>TV Board</Link>
+          <Link href="/display" target="_blank" rel="noreferrer" onClick={() => setMobileOpen(false)}
+            className="flex min-h-[44px] items-center px-4 py-2.5 font-medium">TV Board ↗</Link>
         </nav>
       )}
       <div className="h-1 bg-gradient-to-r from-crimson-800 via-crimson-600 to-navy-800" />

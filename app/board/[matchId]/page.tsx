@@ -96,7 +96,7 @@ function BoardScreen({ params }: { params: Promise<{ matchId: string }> }) {
         <div className="mt-[1.2vh] h-[0.5vh] min-h-[3px] w-full rounded-full" style={{ backgroundColor: identity.tint }} />
         {isSessionSport(sport) && division && (
           <div className="mt-[1.2vh]">
-            <Link href={`/board/division/${division.id}`}
+            <Link href={`/board/division/${division.id}`} target="_blank" rel="noreferrer"
               className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-navy-700 bg-navy-900/80 px-4 py-1.5 font-display tracking-tight text-[clamp(13px,1.3vw,20px)] font-bold uppercase text-navy-100 hover:bg-navy-800">
               All teams →
             </Link>
