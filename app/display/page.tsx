@@ -97,53 +97,76 @@ function TallyView({ ctx }: { ctx: Ctx }) {
       <span className="tabular-nums">{n}</span>
     </span>
   );
+  // TABLE FORM (user direction): the standings read as a broadcast table —
+  // a header band, zebra rows, and a hairline white grid (outer frame +
+  // horizontal row separators + vertical column separators) at low
+  // opacity over the arena navy. The column cells below are shared
+  // verbatim by the header band and every data row, so all separators
+  // line up. Zebra/borders live INSIDE the row boxes (border-box), so
+  // the fit-by-construction sizing below is untouched.
+  const colRank = "w-[6.5vw] shrink-0";
+  const colTeam = "min-w-0 flex-1 border-l border-white/20 px-[0.8vw]";
+  const colMedal = "w-[5.7vw] shrink-0 border-l border-white/20";
+  const colPoints = "w-[7vw] shrink-0 border-l border-white/20 px-[0.6vw]";
   return (
     <div className="flex h-full flex-col">
       <BoardTitle title="Overall Standings" right={`${snap.event.goldPoints} / ${snap.event.silverPoints} / ${snap.event.bronzePoints} pts per medal`} />
-      <div className="flex items-center gap-[1.2vw] px-[1.2vw] pb-[0.8vh] font-display tracking-tight text-[clamp(15px,1.5vw,25px)] font-semibold uppercase text-navy-100">
-        <span className="w-[6.5vw]" />
-        <span className="flex-1">Team</span>
-        <span className="flex w-[17vw] justify-between">
-          <span className="inline-flex items-center gap-[0.35em]"><MedalDot className="bg-gold-500" />Gold</span>
-          <span className="inline-flex items-center gap-[0.35em]"><MedalDot className="bg-silver-400" />Silver</span>
-          <span className="inline-flex items-center gap-[0.35em]"><MedalDot className="bg-bronze-500" />Bronze</span>
-        </span>
-        <span className="w-[7vw] text-right">Points</span>
-      </div>
-      {/* FIT BY CONSTRUCTION: the rows container is a size container and
-          every row is flex-1 min-h-0, so each of the 10 rows gets exactly
-          1/10 of the height the slide actually has — on any screen. Row
-          type is sized in cqh (1% of that container height), so numerals
-          and names shrink gracefully at shorter heights instead of
-          overflowing: rank ≤ 8.2cqh and name ≤ 5.6cqh always fit inside
-          a 10cqh row. Never go back to vw-sized row type here — vw does
-          not know the slide got shorter, and the rows clipped. */}
-      <div className="flex min-h-0 flex-1 flex-col [container-type:size]">
-        {rows.map((r) => {
-          const leader = r.rank === 1 && r.points > 0;
-          return (
-            <div
-              key={r.teamId}
-              className={`flex min-h-0 flex-1 items-center gap-[1.2vw] px-[1.2vw] ${leader ? "bg-navy-900" : ""}`}
-              style={leader ? { boxShadow: "inset 10px 0 0 0 var(--color-gold-500)" } : undefined}
-            >
-              <span className={`w-[6.5vw] shrink-0 font-display tracking-tight font-bold leading-none tabular-nums ${leader ? "text-gold-500 text-[clamp(30px,8.2cqh,92px)]" : "text-navy-100 text-[clamp(28px,7.4cqh,80px)]"}`}>
-                {r.points > 0 ? (r.rank || "–") : "–"}
-              </span>
-              <span className={`flex-1 truncate font-display tracking-tight font-bold uppercase leading-none ${leader ? "text-[clamp(20px,5.6cqh,58px)]" : "text-[clamp(18px,5cqh,50px)]"}`}>
-                {r.teamName}
-              </span>
-              <span className="flex w-[17vw] justify-between font-display tracking-tight text-[clamp(16px,4.4cqh,44px)] font-semibold">
-                {medalCell("bg-gold-500", r.gold)}
-                {medalCell("bg-silver-400", r.silver)}
-                {medalCell("bg-bronze-500", r.bronze)}
-              </span>
-              <span className={`w-[7vw] shrink-0 text-right font-display tracking-tight font-bold leading-none tabular-nums ${leader ? "text-gold-500 text-[clamp(24px,7cqh,78px)]" : "text-[clamp(22px,6.2cqh,64px)]"}`}>
-                {r.points}
-              </span>
-            </div>
-          );
-        })}
+      <div className="flex min-h-0 flex-1 flex-col border border-white/20">
+        <div className="flex items-stretch border-b border-white/25 bg-white/[0.07] px-[1.2vw] font-display tracking-tight text-[clamp(13px,1.4vw,24px)] font-semibold uppercase text-navy-100">
+          <span className={`flex items-center py-[0.9vh] ${colRank}`}>Rank</span>
+          <span className={`flex items-center py-[0.9vh] ${colTeam}`}>Team</span>
+          <span className={`flex items-center justify-center py-[0.9vh] ${colMedal}`}>
+            <span className="inline-flex items-center gap-[0.35em]"><MedalDot className="bg-gold-500" />Gold</span>
+          </span>
+          <span className={`flex items-center justify-center py-[0.9vh] ${colMedal}`}>
+            <span className="inline-flex items-center gap-[0.35em]"><MedalDot className="bg-silver-400" />Silver</span>
+          </span>
+          <span className={`flex items-center justify-center py-[0.9vh] ${colMedal}`}>
+            <span className="inline-flex items-center gap-[0.35em]"><MedalDot className="bg-bronze-500" />Bronze</span>
+          </span>
+          <span className={`flex items-center justify-end py-[0.9vh] ${colPoints}`}>Points</span>
+        </div>
+        {/* FIT BY CONSTRUCTION: the rows container is a size container and
+            every row is flex-1 min-h-0, so each of the 10 rows gets exactly
+            1/10 of the height the slide actually has — on any screen. Row
+            type is sized in cqh (1% of that container height), so numerals
+            and names shrink gracefully at shorter heights instead of
+            overflowing: rank ≤ 8.2cqh and name ≤ 5.6cqh always fit inside
+            a 10cqh row. Never go back to vw-sized row type here — vw does
+            not know the slide got shorter, and the rows clipped. */}
+        <div className="flex min-h-0 flex-1 flex-col [container-type:size]">
+          {rows.map((r, i) => {
+            const leader = r.rank === 1 && r.points > 0;
+            return (
+              <div
+                key={r.teamId}
+                className={`flex min-h-0 flex-1 items-stretch border-b border-white/15 px-[1.2vw] last:border-b-0 ${leader ? "bg-navy-900" : i % 2 === 1 ? "bg-white/5" : ""}`}
+                style={leader ? { boxShadow: "inset 10px 0 0 0 var(--color-gold-500)" } : undefined}
+              >
+                <span className={`flex items-center font-display tracking-tight font-bold leading-none tabular-nums ${colRank} ${leader ? "text-gold-500 text-[clamp(30px,8.2cqh,92px)]" : "text-navy-100 text-[clamp(28px,7.4cqh,80px)]"}`}>
+                  {r.points > 0 ? (r.rank || "–") : "–"}
+                </span>
+                <span className={`flex items-center ${colTeam}`}>
+                  <span className={`truncate font-display tracking-tight font-bold uppercase leading-none ${leader ? "text-[clamp(20px,5.6cqh,58px)]" : "text-[clamp(18px,5cqh,50px)]"}`}>
+                    {r.teamName}
+                  </span>
+                </span>
+                <span className={`flex items-center justify-center font-display tracking-tight text-[clamp(16px,4.4cqh,44px)] font-semibold ${colMedal}`}>
+                  {medalCell("bg-gold-500", r.gold)}
+                </span>
+                <span className={`flex items-center justify-center font-display tracking-tight text-[clamp(16px,4.4cqh,44px)] font-semibold ${colMedal}`}>
+                  {medalCell("bg-silver-400", r.silver)}
+                </span>
+                <span className={`flex items-center justify-center font-display tracking-tight text-[clamp(16px,4.4cqh,44px)] font-semibold ${colMedal}`}>
+                  {medalCell("bg-bronze-500", r.bronze)}
+                </span>
+                <span className={`flex items-center justify-end font-display tracking-tight font-bold leading-none tabular-nums ${colPoints} ${leader ? "text-gold-500 text-[clamp(24px,7cqh,78px)]" : "text-[clamp(22px,6.2cqh,64px)]"}`}>
+                  {r.points}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
