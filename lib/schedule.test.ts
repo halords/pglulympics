@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildScheduleSections } from "./schedule";
+import { buildScheduleSections, nextUpFixtures } from "./schedule";
 import { dedupeLabel } from "./format";
 import type { MatchInfo } from "./types";
 
@@ -57,6 +57,45 @@ describe("buildScheduleSections — audience-first ordering", () => {
     const up = mk({ startsAt: at("11", "15:00"), status: "scheduled" });
     const s = buildScheduleSections([fin, up], "2026-11-11");
     expect(s.days[0].matches).toEqual([up, fin]);
+  });
+});
+
+describe("nextUpFixtures — standings-first pages' up-next rail", () => {
+  it("separates live matches for pinning and never mixes them into upcoming", () => {
+    const live = mk({ status: "live", startsAt: at("11", "10:00") });
+    const next = mk({ startsAt: at("11", "13:00") });
+    const r = nextUpFixtures([next, live], "2026-11-11", 8);
+    expect(r.live).toEqual([live]);
+    expect(r.upcoming).toEqual([next]);
+  });
+
+  it("returns upcoming fixtures chronologically across days, nearest day first", () => {
+    const d16 = mk({ startsAt: at("16", "09:00") });
+    const d09late = mk({ startsAt: at("09", "15:00") });
+    const d09early = mk({ startsAt: at("09", "13:00") });
+    const r = nextUpFixtures([d16, d09late, d09early], "2026-11-07", 8);
+    expect(r.upcoming).toEqual([d09early, d09late, d16]);
+  });
+
+  it("excludes finished matches and past days mid-event", () => {
+    const past = mk({ startsAt: at("09", "09:00"), status: "scheduled" });
+    const finToday = mk({ startsAt: at("11", "09:00"), status: "final" });
+    const upToday = mk({ startsAt: at("11", "15:00"), status: "scheduled" });
+    const r = nextUpFixtures([past, finToday, upToday], "2026-11-11", 8);
+    expect(r.upcoming).toEqual([upToday]);
+  });
+
+  it("respects the limit", () => {
+    const many = Array.from({ length: 12 }, (_, i) => mk({ startsAt: at("09", `${String(8 + i).padStart(2, "0")}:00`) }));
+    expect(nextUpFixtures(many, "2026-11-07", 8).upcoming).toHaveLength(8);
+    expect(nextUpFixtures(many, "2026-11-07").upcoming).toHaveLength(8); // default limit
+  });
+
+  it("TBA fixtures only fill slots left over by dated ones", () => {
+    const tba = mk({ startsAt: null });
+    const dated = mk({ startsAt: at("09", "13:00") });
+    expect(nextUpFixtures([tba, dated], "2026-11-07", 8).upcoming).toEqual([dated, tba]);
+    expect(nextUpFixtures([tba, dated], "2026-11-07", 1).upcoming).toEqual([dated]);
   });
 });
 

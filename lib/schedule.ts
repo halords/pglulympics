@@ -41,3 +41,24 @@ export function buildScheduleSections(matches: MatchInfo[], todayKey: string): S
   });
   return { live, days, tba };
 }
+
+export interface NextUp {
+  live: MatchInfo[];
+  upcoming: MatchInfo[];
+}
+
+/** "Up next" rail (homepage + sport pages): live matches separated out for
+ *  pinning, then the next scheduled fixtures in chronological order —
+ *  nearest day first (today while the event runs, else Day 1), start time
+ *  ascending within a day. Finished matches and past days never appear;
+ *  unscheduled (TBA) fixtures only fill slots left over by dated ones. */
+export function nextUpFixtures(matches: MatchInfo[], todayKey: string, limit = 8): NextUp {
+  const { live, days, tba } = buildScheduleSections(matches, todayKey);
+  const upcoming: MatchInfo[] = [];
+  for (const d of days) {
+    if (d.isPast) continue;
+    for (const m of d.matches) if (m.status === "scheduled") upcoming.push(m);
+  }
+  for (const m of tba) if (m.status === "scheduled") upcoming.push(m);
+  return { live, upcoming: upcoming.slice(0, Math.max(0, limit)) };
+}
