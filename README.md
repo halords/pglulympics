@@ -50,3 +50,5 @@ fixtures in total across all 9 sports). `supabase/seed.sql` is intentionally
 comment-only. Full operator instructions: [SETUP.md](SETUP.md).
 
 Design and decisions: [SPEC.md](SPEC.md) · Build state: [STATE.md](STATE.md).
+
+<!-- supabase integration sync: 2026-11-07 -->
