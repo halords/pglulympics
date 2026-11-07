@@ -145,6 +145,9 @@ export interface DataProvider {
   requestCorrection(matchId: string, reason: string): Promise<void>;
   createFixture(input: FixtureInput, ackHash?: string): Promise<FixtureResult>;
   updateFixture(matchId: string, input: FixtureEditInput, ackHash?: string): Promise<FixtureResult>;
+  /** Change the teams of a not-yet-started fixture (manual entry slots only);
+   *  same conflict warn/acknowledge protocol as create/update. */
+  setFixtureTeams(matchId: string, entryIds: string[], ackHash?: string): Promise<FixtureResult>;
   confirmAwards(divisionId: string, awards: { awardKey: string; medal: "gold" | "silver" | "bronze"; entryId: string; source?: string }[]): Promise<void>;
   resetMatch(matchId: string, reason?: string): Promise<void>;
   // admin facet (rosters + config values; SPEC §6 essentials)

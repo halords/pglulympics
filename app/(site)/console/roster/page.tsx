@@ -1,22 +1,34 @@
 "use client";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSnapshot } from "../../../../lib/data/context";
 import { useSession } from "../../../../lib/data/session";
+import { consoleScopeSportIds } from "../../../../lib/scope";
+import SportSwitcher from "../../../../components/SportSwitcher";
 
 export default function RosterPage() {
   const snap = useSnapshot();
   const session = useSession();
-  const scopeSportId = session.isMock ? snap?.sports[0]?.id ?? null : session.sportId;
+  const [sportFilter, setSportFilter] = useState<string>("all");
+
+  const scopeIds = useMemo(
+    () => (snap ? consoleScopeSportIds(session, snap.sports.map((s) => s.id)) : []),
+    [snap, session],
+  );
+  const scopeSports = useMemo(
+    () => (snap ? snap.sports.filter((s) => scopeIds.includes(s.id)) : []),
+    [snap, scopeIds],
+  );
 
   const data = useMemo(() => {
     if (!snap) return null;
-    const divs = snap.divisions.filter((d) => session.role === "admin" || d.sportId === scopeSportId);
+    const scope = new Set(scopeIds);
+    const divs = snap.divisions.filter((d) => scope.has(d.sportId) && (sportFilter === "all" || d.sportId === sportFilter));
     return divs.map((div) => ({
       div,
       entries: snap.entries.filter((e) => e.divisionId === div.id),
     }));
-  }, [snap, session.role, scopeSportId]);
+  }, [snap, scopeIds, sportFilter]);
 
   if (!session.ready || !snap || !data) return <p className="text-neutral-500 py-10 text-center">Loading…</p>;
   if (!session.role) return <p className="py-10 text-center">Sign in first — <Link href="/login" className="underline font-semibold">go to sign-in</Link>.</p>;
@@ -30,6 +42,7 @@ export default function RosterPage() {
         <h1 className="font-display tracking-tight text-4xl font-bold text-navy-950">TEAM ROSTERS</h1>
         <Link href="/console" className="text-sm font-semibold text-navy-800 underline">← Console</Link>
       </header>
+      <SportSwitcher sports={scopeSports} value={sportFilter} onChange={setSportFilter} />
       <p className="text-sm text-neutral-600">Rosters power the cross-sport player conflict check. Only <strong>verified</strong> rosters are checked — an admin verifies each roster in the Admin page once the team list is final.</p>
       {data.map(({ div, entries }) => (
         <section key={div.id}>

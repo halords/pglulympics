@@ -45,7 +45,10 @@ Environment Variables, for **Production** (and Preview if you want it):
 Then trigger a redeploy (Deployments → ⋯ → Redeploy) so the variables take
 effect. Without these, the site safely falls back to demo/mock mode.
 
-## Step 2 — Create the first super-admin (you)
+## Step 2 — Create the first super-admin (you, one-time bootstrap)
+
+The in-app user manager needs an existing super-admin to sign in with, so the
+very first admin is still created by hand:
 
 1. Supabase dashboard → **Authentication → Users → Add user**: enter your
    email + a password, tick **Auto Confirm User**, create.
@@ -63,22 +66,46 @@ select id, 'super_admin' from auth.users where email = 'YOUR-EMAIL-HERE';
 4. Open the site → **Console** → sign in with that email/password. You should
    land in the coordinator console with an **Admin** button.
 
-## Step 3 — Create coordinator accounts (one per sport)
+## Step 3 — Create coordinator accounts (in the app)
 
-For each sport coordinator:
+Sign in as the super-admin → **Admin → User Accounts**:
+
+1. Enter the coordinator's email, a temporary password (min 8 characters),
+   and a display name; role = **Coordinator**.
+2. Tick **all** the sports they handle — a coordinator can cover several
+   sports, and a sport can have several coordinators. Their console gets a
+   sport switcher for exactly that set, and the database enforces the same
+   scope (they cannot read or score another sport's data).
+3. **Create user** — they can sign in immediately. Hand them the site link +
+   their login.
+4. Later changes live in the same section: **Edit** adjusts role, sports, and
+   display name; unticking **Account active** deactivates sign-in.
+
+> **Multi-sport model (migration 8):** assignments live in
+> `account_sport_assignments` (user × sport). It backfills from the old
+> single-sport column `account_profiles.sport_id`, which stays in the schema
+> as a legacy, unused column. Migration 8 applies automatically via the
+> GitHub integration on merge, like the earlier migrations.
+
+<details>
+<summary>Fallback: create a coordinator with SQL (only if the in-app manager is unavailable)</summary>
 
 1. **Authentication → Users → Add user** (their email + a temporary password,
    Auto Confirm on).
-2. SQL Editor:
+2. SQL Editor — profile first, then one assignment row per sport:
 
 ```sql
-insert into public.account_profiles (user_id, role, sport_id)
-select u.id, 'coordinator', s.id
+insert into public.account_profiles (user_id, role)
+select id, 'coordinator' from auth.users where email = 'COORDINATOR-EMAIL-HERE';
+
+insert into public.account_sport_assignments (user_id, sport_id)
+select u.id, s.id
 from auth.users u, public.sports s
 where u.email = 'COORDINATOR-EMAIL-HERE' and s.slug = 'volleyball';
+-- repeat the second insert per extra sport, changing the slug
 ```
 
-3. Hand them the site link + their login. They only ever see their own sport.
+</details>
 
 ## Step 4 — Verify after the merge (2 minutes)
 
@@ -87,8 +114,8 @@ Open the live site and check:
 - Home page shows the countdown to **Mon Nov 9, 2026, 1:00 PM**.
 - The sports grid shows **9 sports**; Volleyball lists **2 divisions**, Brackets A & B.
 - Schedule shows **276 fixtures** across all sports; **10 teams** in the tally list.
-- Sign in as admin → Admin page loads; sign in as the volleyball coordinator →
-  console shows only volleyball.
+- Sign in as admin → Admin page loads; sign in as a coordinator → the console
+  shows only their assigned sport(s), with a switcher when they have several.
 
 **Two-phone smoke test:** open a match on your phone as coordinator, start it
 and add a set score; on a second phone (public view, no login) the score must

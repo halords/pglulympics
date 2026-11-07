@@ -3,9 +3,11 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useProvider, useSnapshot } from "../../../../lib/data/context";
 import { useSession } from "../../../../lib/data/session";
+import { consoleScopeSportIds } from "../../../../lib/scope";
 import { fmtDay, fmtTime } from "../../../../lib/format";
 import type { ConflictReport, FixtureEditInput, FixtureInput, MatchInfo, MatchStage } from "../../../../lib/types";
 import { StatusPill } from "../../../../components/MatchCard";
+import SportSwitcher from "../../../../components/SportSwitcher";
 
 /** Manila wall-clock input value -> ISO instant. */
 function manilaToISO(local: string): string {
@@ -20,11 +22,14 @@ function isoToManilaLocal(iso: string | null | undefined): string {
   return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
 }
 
+type WarningAction = "create" | "edit" | "teams";
+
 export default function FixturesPage() {
   const snap = useSnapshot();
   const provider = useProvider();
   const session = useSession();
 
+  const [sportFilter, setSportFilter] = useState<string>("all");
   const [divisionId, setDivisionId] = useState("");
   const [label, setLabel] = useState("");
   const [stage, setStage] = useState<MatchStage>("round_robin");
@@ -35,24 +40,38 @@ export default function FixturesPage() {
   const [venueText, setVenueText] = useState("");
   const [entryA, setEntryA] = useState("");
   const [entryB, setEntryB] = useState("");
+  const [placementEntries, setPlacementEntries] = useState<string[]>([]);
   const [warning, setWarning] = useState<{ hash: string; report: ConflictReport } | null>(null);
+  const [warningAction, setWarningAction] = useState<WarningAction>("create");
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState<MatchInfo | null>(null);
   const [editWhen, setEditWhen] = useState("");
   const [editVenueId, setEditVenueId] = useState("");
+  const [editVenueText, setEditVenueText] = useState("");
   const [editLabel, setEditLabel] = useState("");
+  const [editEntries, setEditEntries] = useState<string[]>([]);
 
-  const scopeSportId = session.isMock ? snap?.sports[0]?.id ?? null : session.sportId;
+  // Scope: every sport assigned to this coordinator (admin: all sports).
+  const scopeIds = useMemo(
+    () => (snap ? consoleScopeSportIds(session, snap.sports.map((s) => s.id)) : []),
+    [snap, session],
+  );
+  const scopeSports = useMemo(
+    () => (snap ? snap.sports.filter((s) => scopeIds.includes(s.id)) : []),
+    [snap, scopeIds],
+  );
   const myDivisions = useMemo(() => {
     if (!snap) return [];
-    return snap.divisions.filter((d) => session.role === "admin" || d.sportId === scopeSportId);
-  }, [snap, session.role, scopeSportId]);
+    const scope = new Set(scopeIds);
+    return snap.divisions.filter((d) => scope.has(d.sportId) && (sportFilter === "all" || d.sportId === sportFilter));
+  }, [snap, scopeIds, sportFilter]);
 
   if (!session.ready || !snap) return <p className="text-neutral-500 py-10 text-center">Loading…</p>;
   if (!session.role) return <p className="py-10 text-center">Sign in first — <Link href="/login" className="underline font-semibold">go to sign-in</Link>.</p>;
 
   const div = snap.divisions.find((d) => d.id === (divisionId || myDivisions[0]?.id));
+  const isPlacement = div?.scoringKind === "placement_only";
   const divEntries = div ? snap.entries.filter((e) => e.divisionId === div.id) : [];
   const teamName = (entryId: string) => {
     const e = snap.entries.find((x) => x.id === entryId);
@@ -61,35 +80,67 @@ export default function FixturesPage() {
   const myMatches = snap.matches.filter((m) => myDivisions.some((d) => d.id === m.divisionId))
     .sort((a, b) => (a.startsAt ?? "").localeCompare(b.startsAt ?? ""));
 
+  const teamsEditable = !!editing && editing.status === "scheduled"
+    && editing.slots.every((s) => !s.source || s.source.kind === "entry");
+  const teamsChanged = teamsEditable && editEntries.some((e, i) => e !== (editing!.slots[i].entryId ?? ""));
+
   const submitCreate = async (ackHash?: string) => {
-    if (!div || !when || !entryA || !entryB || entryA === entryB) { setNotice("Pick a division, a date/time, and two different teams."); return; }
+    if (!div || !when) { setNotice("Pick a division and a date/time."); return; }
+    let entryIds: string[];
+    if (isPlacement) {
+      if (placementEntries.length < 2) { setNotice("Pick at least two entrants for the placement event."); return; }
+      entryIds = placementEntries;
+    } else {
+      if (!entryA || !entryB || entryA === entryB) { setNotice("Pick two different teams."); return; }
+      entryIds = [entryA, entryB];
+    }
     const input: FixtureInput = {
       divisionId: div.id, label: label || "Custom match", stage, groupId: groupId || null,
       startsAt: manilaToISO(when), durationMinutes: duration ? Number(duration) : null,
-      venueId: venueId || null, venueText: venueText || null, entryIds: [entryA, entryB],
+      venueId: venueId || null, venueText: venueText || null, entryIds,
     };
     setBusy(true); setNotice(null);
     try {
       const res = await provider.createFixture(input, ackHash);
-      if (res.status === "warning") { setWarning({ hash: res.ackHash, report: res.conflicts }); }
+      if (res.status === "warning") { setWarning({ hash: res.ackHash, report: res.conflicts }); setWarningAction("create"); }
       else { setWarning(null); setNotice("Fixture created."); setLabel(""); }
     } catch (e) { setNotice(e instanceof Error ? e.message : "Create failed"); }
     setBusy(false);
   };
 
-  const submitEdit = async (ackHash?: string) => {
-    if (!editing || !editWhen) return;
-    const input: FixtureEditInput = {
-      startsAt: manilaToISO(editWhen), venueId: editVenueId || null,
-      venueText: null, label: editLabel || undefined, durationMinutes: editing.durationMinutes,
-    };
+  const submitEdit = async (ackHash?: string, step: "edit" | "teams" = "edit") => {
+    if (!editing) return;
     setBusy(true); setNotice(null);
     try {
-      const res = await provider.updateFixture(editing.id, input, ackHash);
-      if (res.status === "warning") { setWarning({ hash: res.ackHash, report: res.conflicts }); }
-      else { setWarning(null); setEditing(null); setNotice("Fixture updated."); }
+      if (step === "edit") {
+        if (!editWhen) { setNotice("Pick a date/time."); setBusy(false); return; }
+        const input: FixtureEditInput = {
+          startsAt: manilaToISO(editWhen), venueId: editVenueId || null,
+          venueText: editVenueId ? null : (editVenueText || null),
+          label: editLabel || undefined, durationMinutes: editing.durationMinutes,
+        };
+        const res = await provider.updateFixture(editing.id, input, ackHash);
+        if (res.status === "warning") { setWarning({ hash: res.ackHash, report: res.conflicts }); setWarningAction("edit"); setBusy(false); return; }
+        if (!teamsChanged) { setWarning(null); setEditing(null); setNotice("Fixture updated."); setBusy(false); return; }
+        // fall through: teams changed too — save them in the same click
+      }
+      if (editEntries.some((e) => !e)) { setNotice("Pick a team for every slot."); setBusy(false); return; }
+      if (new Set(editEntries).size !== editEntries.length) { setNotice("Each slot needs a different team."); setBusy(false); return; }
+      const res = await provider.setFixtureTeams(editing.id, editEntries, step === "teams" ? ackHash : undefined);
+      if (res.status === "warning") { setWarning({ hash: res.ackHash, report: res.conflicts }); setWarningAction("teams"); setBusy(false); return; }
+      setWarning(null); setEditing(null); setNotice("Fixture updated.");
     } catch (e) { setNotice(e instanceof Error ? e.message : "Update failed"); }
     setBusy(false);
+  };
+
+  const startEdit = (m: MatchInfo) => {
+    setEditing(m);
+    setEditWhen(isoToManilaLocal(m.startsAt));
+    setEditVenueId(m.venueId ?? "");
+    setEditVenueText(m.venueId ? "" : (m.venue ?? ""));
+    setEditLabel(m.label);
+    setEditEntries(m.slots.map((s) => s.entryId ?? ""));
+    setWarning(null);
   };
 
   const inputCls = "w-full rounded-lg border border-navy-100 px-3 py-2.5 min-h-[48px] text-sm bg-white";
@@ -101,6 +152,7 @@ export default function FixturesPage() {
         <h1 className="font-display tracking-tight text-4xl font-bold text-navy-950">FIXTURES</h1>
         <Link href="/console" className="text-sm font-semibold text-navy-800 underline">← Console</Link>
       </header>
+      <SportSwitcher sports={scopeSports} value={sportFilter} onChange={setSportFilter} />
       {notice && <p className="rounded-lg bg-navy-50 border border-navy-100 px-3 py-2 text-sm">{notice}</p>}
 
       {warning && (
@@ -123,7 +175,7 @@ export default function FixturesPage() {
           ))}
           <div className="flex gap-2 pt-1">
             <button disabled={busy} className="rounded-xl bg-crimson-800 text-white px-5 py-3 font-bold min-h-[48px] disabled:opacity-60"
-              onClick={() => void (editing ? submitEdit(warning.hash) : submitCreate(warning.hash))}>
+              onClick={() => void (warningAction === "create" ? submitCreate(warning.hash) : submitEdit(warning.hash, warningAction))}>
               Save anyway (acknowledge)
             </button>
             <button className="rounded-xl bg-white border border-navy-100 px-5 py-3 font-semibold min-h-[48px]" onClick={() => setWarning(null)}>Go back and fix</button>
@@ -137,7 +189,7 @@ export default function FixturesPage() {
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <label className={lbl}>Division</label>
-            <select className={inputCls} value={div?.id ?? ""} onChange={(e) => setDivisionId(e.target.value)}>
+            <select className={inputCls} value={div?.id ?? ""} onChange={(e) => { setDivisionId(e.target.value); setEntryA(""); setEntryB(""); setPlacementEntries([]); }}>
               {myDivisions.map((d) => <option key={d.id} value={d.id}>{snap.sports.find((s) => s.id === d.sportId)?.name} — {d.name}</option>)}
             </select>
           </div>
@@ -171,20 +223,41 @@ export default function FixturesPage() {
             <label className={lbl}>Duration minutes (blank = sport default)</label>
             <input type="number" min={1} className={inputCls} value={duration} onChange={(e) => setDuration(e.target.value)} />
           </div>
-          <div>
-            <label className={lbl}>Team A</label>
-            <select className={inputCls} value={entryA} onChange={(e) => setEntryA(e.target.value)}>
-              <option value="">Pick a team…</option>
-              {divEntries.map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className={lbl}>Team B</label>
-            <select className={inputCls} value={entryB} onChange={(e) => setEntryB(e.target.value)}>
-              <option value="">Pick a team…</option>
-              {divEntries.map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
-            </select>
-          </div>
+          {isPlacement ? (
+            <div className="sm:col-span-2">
+              <label className={lbl}>Entrants (placement event — tick everyone taking part)</label>
+              <div className="flex flex-wrap gap-2">
+                {divEntries.map((e) => {
+                  const on = placementEntries.includes(e.id);
+                  return (
+                    <button key={e.id} type="button" aria-pressed={on}
+                      className={`rounded-full px-3.5 py-2 text-sm font-semibold min-h-[44px] ${on ? "bg-navy-950 text-white" : "bg-white border border-navy-100"}`}
+                      onClick={() => setPlacementEntries((prev) => on ? prev.filter((x) => x !== e.id) : [...prev, e.id])}>
+                      {teamName(e.id)}
+                    </button>
+                  );
+                })}
+                {divEntries.length === 0 && <p className="text-sm text-neutral-500">No entries in this division yet.</p>}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div>
+                <label className={lbl}>Team A</label>
+                <select className={inputCls} value={entryA} onChange={(e) => setEntryA(e.target.value)}>
+                  <option value="">Pick a team…</option>
+                  {divEntries.map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={lbl}>Team B</label>
+                <select className={inputCls} value={entryB} onChange={(e) => setEntryB(e.target.value)}>
+                  <option value="">Pick a team…</option>
+                  {divEntries.map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
+                </select>
+              </div>
+            </>
+          )}
           <div>
             <label className={lbl}>Venue</label>
             <select className={inputCls} value={venueId} onChange={(e) => setVenueId(e.target.value)}>
@@ -204,7 +277,7 @@ export default function FixturesPage() {
       </section>
 
       <section className="rounded-2xl border border-navy-100 bg-white p-4">
-        <h2 className="font-display tracking-tight text-2xl font-bold mb-3">ALL FIXTURES — MY SPORT{session.role === "admin" ? "S" : ""}</h2>
+        <h2 className="font-display tracking-tight text-2xl font-bold mb-3">ALL FIXTURES — MY SPORT{session.role === "admin" || scopeIds.length !== 1 ? "S" : ""}</h2>
         <ul className="divide-y divide-navy-100">
           {myMatches.map((m) => (
             <li key={m.id} className="py-2.5 flex flex-wrap items-center justify-between gap-2">
@@ -216,7 +289,7 @@ export default function FixturesPage() {
                 <StatusPill status={m.status} needsReview={m.needsReview} />
                 {m.status === "scheduled" && (
                   <button className="rounded-lg bg-navy-800 text-white px-3 py-1.5 text-sm font-semibold min-h-[40px]"
-                    onClick={() => { setEditing(m); setEditWhen(isoToManilaLocal(m.startsAt)); setEditVenueId(m.venueId ?? ""); setEditLabel(m.label); }}>
+                    onClick={() => startEdit(m)}>
                     Reschedule
                   </button>
                 )}
@@ -232,11 +305,33 @@ export default function FixturesPage() {
               <div><label className={lbl}>New date & time (Manila)</label><input type="datetime-local" className={inputCls} value={editWhen} onChange={(e) => setEditWhen(e.target.value)} /></div>
               <div><label className={lbl}>Venue</label>
                 <select className={inputCls} value={editVenueId} onChange={(e) => setEditVenueId(e.target.value)}>
-                  <option value="">— unchanged / free text —</option>
+                  <option value="">— free text / none —</option>
                   {snap.venues.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
                 </select>
               </div>
+              {!editVenueId && (
+                <div><label className={lbl}>Venue (free text)</label><input className={inputCls} value={editVenueText} onChange={(e) => setEditVenueText(e.target.value)} /></div>
+              )}
             </div>
+            {teamsEditable ? (
+              <div>
+                <label className={lbl}>Teams</label>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {editing.slots.map((s, i) => (
+                    <div key={s.slotNo}>
+                      <label className={lbl}>{editing.slots.length > 2 ? `Entrant ${i + 1}` : i === 0 ? "Team A" : "Team B"}</label>
+                      <select className={inputCls} value={editEntries[i] ?? ""} onChange={(e) => setEditEntries((prev) => prev.map((x, j) => j === i ? e.target.value : x))}>
+                        <option value="">Pick a team…</option>
+                        {snap.entries.filter((e) => e.divisionId === editing.divisionId).map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-neutral-500 mt-1">Team changes are conflict-checked too (players + venue at the fixture&apos;s time).</p>
+              </div>
+            ) : (
+              <p className="text-xs text-neutral-500">This fixture&apos;s teams come from group ranks / earlier results, so they can&apos;t be changed directly.</p>
+            )}
             <div className="flex gap-2">
               <button disabled={busy} onClick={() => void submitEdit()} className="rounded-xl bg-navy-950 text-white px-5 py-3 font-bold min-h-[48px] disabled:opacity-60">Check & save</button>
               <button onClick={() => setEditing(null)} className="rounded-xl bg-white border border-navy-100 px-5 py-3 font-semibold min-h-[48px]">Cancel</button>

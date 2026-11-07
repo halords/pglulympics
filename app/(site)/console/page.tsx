@@ -1,24 +1,35 @@
 "use client";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSnapshot } from "../../../lib/data/context";
 import { useSession } from "../../../lib/data/session";
+import { consoleScopeSportIds } from "../../../lib/scope";
 import { isTodayManila } from "../../../lib/format";
 import MatchCard, { divisionEntrantNames } from "../../../components/MatchCard";
+import SportSwitcher from "../../../components/SportSwitcher";
 
 export default function ConsoleHomePage() {
   const snap = useSnapshot();
   const session = useSession();
+  const [sportFilter, setSportFilter] = useState<string>("all");
 
-  // In live mode the coordinator's sport comes from their profile; in demo mode
-  // the single seeded sport is the scope.
-  const scopeSportId = session.isMock ? snap?.sports[0]?.id ?? null : session.sportId;
+  // Scope = the caller's assigned sports (admin: all; demo coordinator: the
+  // demo subset). The switcher narrows the view to one of them at a time.
+  const scopeIds = useMemo(
+    () => (snap ? consoleScopeSportIds(session, snap.sports.map((s) => s.id)) : []),
+    [snap, session],
+  );
+  const scopeSports = useMemo(
+    () => (snap ? snap.sports.filter((s) => scopeIds.includes(s.id)) : []),
+    [snap, scopeIds],
+  );
+  const viewIds = sportFilter === "all" ? scopeIds : scopeIds.filter((id) => id === sportFilter);
   const data = useMemo(() => {
     if (!snap) return null;
+    const view = new Set(viewIds);
     const inScope = (divisionId: string) => {
-      if (session.role === "admin") return true;
       const div = snap.divisions.find((d) => d.id === divisionId);
-      return div?.sportId === scopeSportId;
+      return !!div && view.has(div.sportId);
     };
     const mine = snap.matches.filter((m) => inScope(m.divisionId))
       .sort((a, b) => (a.startsAt ?? "").localeCompare(b.startsAt ?? ""));
@@ -30,7 +41,7 @@ export default function ConsoleHomePage() {
       divById: new Map(snap.divisions.map((d) => [d.id, d])),
       entrantsByDiv: new Map(snap.divisions.map((d) => [d.id, divisionEntrantNames(snap.entries, snap.teams, d.id)])),
     };
-  }, [snap, session.role, scopeSportId]);
+  }, [snap, viewIds]);
 
   if (!session.ready || !snap || !data) return <p className="text-neutral-500 py-10 text-center">Loading…</p>;
   if (!session.role) {
@@ -48,7 +59,7 @@ export default function ConsoleHomePage() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display tracking-tight text-4xl font-bold text-navy-950">COORDINATOR CONSOLE</h1>
-          <p className="text-sm text-neutral-600">{session.email} · {session.role === "admin" ? "Super admin — all sports" : `Scoped to ${snap.sports.find((s) => s.id === scopeSportId)?.name ?? "your sport"}`}</p>
+          <p className="text-sm text-neutral-600">{session.email} · {session.role === "admin" ? "Super admin — all sports" : scopeSports.length ? `Coordinator — ${scopeSports.length} sport${scopeSports.length === 1 ? "" : "s"}: ${scopeSports.map((s) => s.name).join(", ")}` : "Coordinator — no sports assigned yet"}</p>
         </div>
         <div className="flex gap-2">
           <Link href="/console/fixtures" className="rounded-lg bg-navy-800 text-white px-4 py-2.5 font-semibold text-sm min-h-[44px] inline-flex items-center">Fixtures</Link>
@@ -58,6 +69,8 @@ export default function ConsoleHomePage() {
           <button onClick={() => void session.signOut()} className="rounded-lg bg-white border border-navy-100 px-4 py-2.5 font-semibold text-sm min-h-[44px]">Sign out</button>
         </div>
       </header>
+
+      <SportSwitcher sports={scopeSports} value={sportFilter} onChange={setSportFilter} />
 
       {data.review.length > 0 && (
         <section className="rounded-xl border border-crimson-600 bg-crimson-100 p-4">
@@ -86,7 +99,7 @@ export default function ConsoleHomePage() {
 
       <section>
         <h2 className="font-display tracking-tight text-2xl font-bold text-navy-950 mb-2">TODAY</h2>
-        {data.today.length === 0 ? <p className="text-neutral-500 text-sm">No matches today for your sport.</p> : (
+        {data.today.length === 0 ? <p className="text-neutral-500 text-sm">No matches today in the selected scope.</p> : (
           <div className="grid gap-3 sm:grid-cols-2">
             {data.today.map((m) => (
               <Link key={m.id} href={`/console/matches/${m.id}`} className="block">

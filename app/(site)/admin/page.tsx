@@ -1,9 +1,221 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useProvider, useSnapshot } from "../../../lib/data/context";
 import { useSession } from "../../../lib/data/session";
-import type { AwardInfo } from "../../../lib/types";
+import { getSupabase } from "../../../lib/supabase/client";
+import type { AdminRole, AdminUserRow } from "../../../lib/admin-users";
+import type { AwardInfo, SportInfo } from "../../../lib/types";
+
+/** Call the super-admin API with the current session's access token. The
+ *  server re-validates the token + super_admin profile on every request. */
+async function adminApi(path: string, init?: RequestInit): Promise<Record<string, unknown>> {
+  const sb = getSupabase();
+  const { data } = sb ? await sb.auth.getSession() : { data: { session: null } };
+  const token = data.session?.access_token;
+  const res = await fetch(path, {
+    ...init,
+    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+  if (!res.ok) throw new Error(typeof body.error === "string" ? body.error : `Request failed (${res.status})`);
+  return body;
+}
+
+function SportChecks({ sports, value, onChange }: { sports: SportInfo[]; value: string[]; onChange: (v: string[]) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {sports.map((s) => {
+        const on = value.includes(s.id);
+        return (
+          <button key={s.id} type="button" aria-pressed={on}
+            className={`rounded-full px-3.5 py-2 text-sm font-semibold min-h-[40px] ${on ? "bg-navy-950 text-white" : "bg-white border border-navy-100"}`}
+            onClick={() => onChange(on ? value.filter((x) => x !== s.id) : [...value, s.id])}>
+            {s.name}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function UsersSection({ sports, isMock }: { sports: SportInfo[]; isMock: boolean }) {
+  const [users, setUsers] = useState<AdminUserRow[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [myId, setMyId] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [role, setRole] = useState<AdminRole>("coordinator");
+  const [sportIds, setSportIds] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editRole, setEditRole] = useState<AdminRole>("coordinator");
+  const [editSports, setEditSports] = useState<string[]>([]);
+  const [editActive, setEditActive] = useState(true);
+
+  const refresh = async () => {
+    const body = await adminApi("/api/admin/users");
+    setUsers(body.users as AdminUserRow[]);
+  };
+  useEffect(() => {
+    if (isMock) return;
+    let alive = true;
+    void (async () => {
+      try {
+        const body = await adminApi("/api/admin/users");
+        if (alive) setUsers(body.users as AdminUserRow[]);
+      } catch (e) { if (alive) setError(e instanceof Error ? e.message : "Failed to load users."); }
+    })();
+    const sb = getSupabase();
+    if (sb) void sb.auth.getUser().then(({ data }) => { if (alive) setMyId(data.user?.id ?? null); });
+    return () => { alive = false; };
+  }, [isMock]);
+
+  const run = async (fn: () => Promise<void>, ok: string) => {
+    setBusy(true); setError(null); setNotice(null);
+    try { await fn(); setNotice(ok); } catch (e) { setError(e instanceof Error ? e.message : "Failed"); }
+    setBusy(false);
+  };
+  const inputCls = "rounded-lg border border-navy-100 px-3 py-2 min-h-[44px] text-sm bg-white w-full";
+  const lbl = "block text-sm font-semibold mb-1";
+  const sportName = (id: string) => sports.find((s) => s.id === id)?.name ?? id;
+  const editing = users?.find((u) => u.userId === editingId) ?? null;
+
+  const startEdit = (u: AdminUserRow) => {
+    setEditingId(u.userId);
+    setEditName(u.displayName ?? "");
+    setEditRole(u.role ?? "coordinator");
+    setEditSports(u.sportIds);
+    setEditActive(u.active);
+    setError(null); setNotice(null);
+  };
+
+  return (
+    <section className="rounded-2xl border border-navy-100 bg-white p-4">
+      <h2 className="font-display tracking-tight text-2xl font-bold mb-2">USER ACCOUNTS</h2>
+      {isMock ? (
+        <p className="text-sm text-neutral-600">
+          User management runs against the live Supabase project, so it is unavailable in demo mode.
+          In production: create a coordinator here, assign one or more sports, and hand them the
+          sign-in page — no dashboard or SQL needed. (The first super-admin is still bootstrapped
+          once via SQL — see SETUP.md.)
+        </p>
+      ) : (
+        <>
+          <p className="text-sm text-neutral-600 mb-3">
+            Create sign-ins and assign sports. A coordinator can handle <strong>several sports</strong> and a sport can
+            have several coordinators. Deactivating an account blocks sign-in and removes its sport access immediately.
+          </p>
+          {error && <p className="rounded-lg bg-crimson-100 border border-crimson-600 text-crimson-800 px-3 py-2 text-sm mb-3">{error}</p>}
+          {notice && <p className="rounded-lg bg-navy-50 border border-navy-100 px-3 py-2 text-sm mb-3">{notice}</p>}
+
+          <form className="grid gap-3 sm:grid-cols-2 mb-5" onSubmit={(ev) => {
+            ev.preventDefault();
+            void run(async () => {
+              await adminApi("/api/admin/users", {
+                method: "POST",
+                body: JSON.stringify({ email, password, displayName: displayName || null, role, sportIds: role === "coordinator" ? sportIds : [] }),
+              });
+              setEmail(""); setPassword(""); setDisplayName(""); setSportIds([]);
+              await refresh();
+            }, "User created — they can sign in right away.");
+          }}>
+            <div><label className={lbl}>Email</label><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} autoComplete="off" /></div>
+            <div><label className={lbl}>Temporary password (min 8 characters)</label><input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={inputCls} autoComplete="new-password" /></div>
+            <div><label className={lbl}>Display name</label><input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={inputCls} /></div>
+            <div><label className={lbl}>Role</label>
+              <select value={role} onChange={(e) => setRole(e.target.value as AdminRole)} className={inputCls}>
+                <option value="coordinator">Coordinator</option>
+                <option value="super_admin">Super admin</option>
+              </select>
+            </div>
+            {role === "coordinator" && (
+              <div className="sm:col-span-2"><label className={lbl}>Assigned sports</label><SportChecks sports={sports} value={sportIds} onChange={setSportIds} /></div>
+            )}
+            <div className="sm:col-span-2">
+              <button disabled={busy} className="rounded-xl bg-crimson-800 text-white px-6 py-3 font-bold min-h-[48px] disabled:opacity-60">Create user</button>
+            </div>
+          </form>
+
+          {!users && !error && <p className="text-sm text-neutral-500">Loading users…</p>}
+          {users && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[560px]">
+                <thead>
+                  <tr className="text-left border-b border-navy-100">
+                    <th className="px-2 py-2">Email</th><th className="px-2 py-2">Name</th><th className="px-2 py-2">Role</th>
+                    <th className="px-2 py-2">Sports</th><th className="px-2 py-2">Status</th><th className="px-2 py-2" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u) => (
+                    <tr key={u.userId} className="border-b border-navy-100 last:border-0 align-top">
+                      <td className="px-2 py-2 font-medium break-all">{u.email}{u.userId === myId && <span className="text-neutral-500"> (you)</span>}</td>
+                      <td className="px-2 py-2">{u.displayName ?? "—"}</td>
+                      <td className="px-2 py-2">{u.role === "super_admin" ? "Super admin" : u.role === "coordinator" ? "Coordinator" : <span className="text-crimson-800 font-semibold">No profile</span>}</td>
+                      <td className="px-2 py-2">
+                        <span className="flex flex-wrap gap-1">
+                          {u.role === "super_admin" ? <span className="text-neutral-500">All sports</span>
+                            : u.sportIds.length ? u.sportIds.map((id) => <span key={id} className="rounded-full bg-navy-50 border border-navy-100 px-2 py-0.5 text-xs font-semibold">{sportName(id)}</span>)
+                            : <span className="text-neutral-500">None</span>}
+                        </span>
+                      </td>
+                      <td className="px-2 py-2">{u.active ? <span className="font-semibold">Active</span> : <span className="text-crimson-800 font-semibold">Deactivated</span>}</td>
+                      <td className="px-2 py-2 text-right">
+                        <button disabled={busy} className="rounded-lg bg-navy-800 text-white px-3 py-2 text-sm font-semibold min-h-[40px] disabled:opacity-60" onClick={() => startEdit(u)}>Edit</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {editing && (
+            <div className="mt-4 rounded-xl bg-navy-50 p-4 space-y-3">
+              <h3 className="font-display tracking-tight text-lg font-bold">Edit — {editing.email}</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div><label className={lbl}>Display name</label><input value={editName} onChange={(e) => setEditName(e.target.value)} className={inputCls} /></div>
+                <div><label className={lbl}>Role</label>
+                  <select value={editRole} onChange={(e) => setEditRole(e.target.value as AdminRole)} className={inputCls}>
+                    <option value="coordinator">Coordinator</option>
+                    <option value="super_admin">Super admin</option>
+                  </select>
+                </div>
+              </div>
+              {editRole === "coordinator" && (
+                <div><label className={lbl}>Assigned sports</label><SportChecks sports={sports} value={editSports} onChange={setEditSports} /></div>
+              )}
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <input type="checkbox" checked={editActive} disabled={editing.userId === myId}
+                  onChange={(e) => setEditActive(e.target.checked)} className="h-5 w-5" />
+                Account active {editing.userId === myId && <span className="text-neutral-500">(you can&apos;t deactivate yourself)</span>}
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <button disabled={busy} className="rounded-xl bg-navy-950 text-white px-5 py-3 font-bold min-h-[48px] disabled:opacity-60"
+                  onClick={() => void run(async () => {
+                    const body = await adminApi(`/api/admin/users/${editing.userId}`, {
+                      method: "PATCH",
+                      body: JSON.stringify({ displayName: editName || null, role: editRole, sportIds: editRole === "coordinator" ? editSports : [], active: editActive }),
+                    });
+                    if (typeof body.warning === "string") setError(body.warning);
+                    setEditingId(null);
+                    await refresh();
+                  }, "User updated.")}>
+                  Save changes
+                </button>
+                <button disabled={busy} className="rounded-xl bg-white border border-navy-100 px-5 py-3 font-semibold min-h-[48px] disabled:opacity-60" onClick={() => setEditingId(null)}>Cancel</button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
 
 export default function AdminPage() {
   const snap = useSnapshot();
@@ -54,6 +266,8 @@ export default function AdminPage() {
         <Link href="/console" className="text-sm font-semibold text-navy-800 underline">Console →</Link>
       </header>
       {notice && <p className="rounded-lg bg-navy-50 border border-navy-100 px-3 py-2 text-sm">{notice}</p>}
+
+      <UsersSection sports={snap.sports} isMock={session.isMock} />
 
       {/* reviews */}
       <section className="rounded-2xl border border-navy-100 bg-white p-4">
@@ -191,9 +405,10 @@ export default function AdminPage() {
           ))}
         </div>
         <div className="rounded-xl bg-navy-50 p-3 text-sm">
-          <strong>Coordinator accounts</strong> are created in the Supabase dashboard (Authentication → Users) and scoped
-          by inserting a row into <code>account_profiles</code> — step-by-step in <strong>SETUP.md</strong>. Accounts are
-          never managed from this page (no service-role key ever ships to the browser).
+          <strong>Coordinator accounts</strong> are managed in the <strong>User Accounts</strong> section at the top of
+          this page — create sign-ins and assign one or more sports per coordinator there. The service-role key
+          stays on the server (the admin API re-checks your super-admin session on every call); it never ships
+          to the browser. The old dashboard + SQL path remains only as a fallback in <strong>SETUP.md</strong>.
         </div>
       </section>
     </div>

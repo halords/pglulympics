@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSnapshot } from "../../lib/data/context";
 import { computeTally } from "../../lib/standings";
@@ -14,9 +14,14 @@ import type { DivisionInfo, MatchInfo, Snapshot } from "../../lib/types";
 // accents, a scorebug live view, a solid-gold champion accent on the
 // leader ONLY (medal-literal), and a persistent bottom ticker.
 // Views auto-cycle every 15s; ?view=tally|live|upnext|results pins one.
+// Manual controls (bottom-right, auto-hiding): pause/play + view jump chips;
+// Space pauses/resumes, ←/→ switch views. A pinned board can be unpinned
+// into rotation from the controls; ticker + clock never pause.
 
 type ViewKey = "tally" | "live" | "upnext" | "results";
 const VIEW_MS = 15_000;
+const ALL_VIEWS: ViewKey[] = ["tally", "live", "upnext", "results"];
+const VIEW_LABELS: Record<ViewKey, string> = { tally: "Tally", live: "Live", upnext: "Up Next", results: "Results" };
 
 function useClock() {
   const [now, setNow] = useState(0);
@@ -112,7 +117,7 @@ function TallyView({ ctx }: { ctx: Ctx }) {
               style={leader ? { boxShadow: "inset 10px 0 0 0 var(--color-gold-500)" } : undefined}
             >
               <span className={`w-[6.5vw] shrink-0 font-display tracking-tight font-bold leading-none tabular-nums ${leader ? "text-gold-500 text-[clamp(44px,5.2vw,92px)]" : "text-navy-100 text-[clamp(38px,4.4vw,78px)]"}`}>
-                {r.rank || "–"}
+                {r.points > 0 ? (r.rank || "–") : "–"}
               </span>
               <span className={`flex-1 truncate font-display tracking-tight font-bold uppercase leading-none ${leader ? "text-[clamp(30px,3.3vw,58px)]" : "text-[clamp(26px,2.9vw,50px)]"}`}>
                 {r.teamName}
@@ -330,6 +335,23 @@ function DisplayBoard() {
   const params = useSearchParams();
   const now = useClock();
   const [cycleIdx, setCycleIdx] = useState(0);
+  // Manual control state: `paused` freezes rotation where it is; `manualView`
+  // holds a jumped-to view; `unpinned` releases a ?view= pin into rotation.
+  const [paused, setPaused] = useState(false);
+  const [manualView, setManualView] = useState<ViewKey | null>(null);
+  const [unpinned, setUnpinned] = useState(false);
+  // Control cluster visibility: auto-hides after ~3s without mouse movement.
+  const [uiVisible, setUiVisible] = useState(true);
+  const hideTimer = useRef<number | null>(null);
+  const poke = useCallback(() => {
+    setUiVisible(true);
+    if (hideTimer.current) window.clearTimeout(hideTimer.current);
+    hideTimer.current = window.setTimeout(() => setUiVisible(false), 3000);
+  }, []);
+  useEffect(() => {
+    const kick = window.setTimeout(poke, 0);
+    return () => { window.clearTimeout(kick); if (hideTimer.current) window.clearTimeout(hideTimer.current); };
+  }, [poke]);
 
   const data = useMemo(() => {
     if (!snap) return null;
@@ -367,15 +389,54 @@ function DisplayBoard() {
     : ["tally"];
 
   const pinnedRaw = params.get("view");
-  const pinned: ViewKey | null = (["tally", "live", "upnext", "results"] as string[]).includes(pinnedRaw ?? "")
+  const urlPin: ViewKey | null = (ALL_VIEWS as string[]).includes(pinnedRaw ?? "")
     ? (pinnedRaw as ViewKey)
     : null;
+  const pinned: ViewKey | null = unpinned ? null : urlPin;
 
+  const rotating = !pinned && !manualView && !paused;
   useEffect(() => {
-    if (pinned) return;
+    if (!rotating) return;
     const t = setInterval(() => setCycleIdx((i) => i + 1), VIEW_MS);
     return () => clearInterval(t);
-  }, [pinned]);
+  }, [rotating]);
+
+  const shownRaw: ViewKey = manualView ?? pinned ?? views[cycleIdx % views.length];
+  const active: ViewKey = shownRaw === "live" && (!data || data.live.length === 0) ? "tally" : shownRaw;
+
+  const jump = (v: ViewKey) => {
+    if (v === "live" && (!data || data.live.length === 0)) return;
+    setManualView(v);
+    setPaused(false);
+    poke();
+  };
+  const resumeRotation = () => {
+    const idx = views.indexOf(active);
+    if (idx >= 0) setCycleIdx(idx); // rotation continues from the shown view
+    setManualView(null);
+    setUnpinned(true);
+    setPaused(false);
+    poke();
+  };
+  const togglePlay = () => {
+    if (rotating) { setPaused(true); poke(); } else resumeRotation();
+  };
+  const step = (dir: 1 | -1) => {
+    const order = ALL_VIEWS.filter((v) => v !== "live" || (data && data.live.length > 0));
+    const i = order.indexOf(active);
+    jump(order[(i + dir + order.length) % order.length]);
+  };
+  // Keyboard control for the laptop driving the TV (no dep array: handlers
+  // are re-created every render, so re-subscribe to stay current).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code === "Space") { e.preventDefault(); togglePlay(); }
+      else if (e.key === "ArrowRight") step(1);
+      else if (e.key === "ArrowLeft") step(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
 
   if (!snap || !data) {
     return (
@@ -388,17 +449,14 @@ function DisplayBoard() {
     );
   }
 
-  const active: ViewKey = pinned
-    ? (pinned === "live" && data.live.length === 0 ? "tally" : pinned)
-    : views[cycleIdx % views.length];
-
   // now = 0 only until the mount effect ticks — render placeholders then.
   const clockDate = now > 0 ? new Date(now) : null;
   const clock = clockDate ? CLOCK_FMT.format(clockDate) : "--:--:--";
   const dateLine = clockDate ? DATE_FMT.format(clockDate) : "PGLU Sports Fest";
 
   return (
-    <div className="arena-bg fixed inset-0 flex flex-col overflow-hidden text-white select-none">
+    <div className={`arena-bg fixed inset-0 flex flex-col overflow-hidden text-white select-none ${uiVisible ? "" : "cursor-none"}`}
+      onMouseMove={poke} onTouchStart={poke}>
       {/* persistent top bar: event identity + live clock */}
       <header className="flex items-start justify-between gap-6 px-[3vw] pt-[2vh]">
         <div>
@@ -425,14 +483,32 @@ function DisplayBoard() {
         </div>
       </main>
 
-      {/* rotation progress dots (hidden when pinned) */}
-      {!pinned && views.length > 1 && (
-        <div className="flex items-center justify-center gap-2 pb-[1.2vh]" aria-hidden="true">
-          {views.map((v) => (
-            <span key={v} className={`block h-[0.55vh] min-h-[5px] ${v === active ? "w-[3.2vw] bg-crimson-600" : "w-[1.4vw] bg-navy-700"}`} />
-          ))}
-        </div>
-      )}
+      {/* manual controls — discreet bottom-right cluster, auto-hides after
+          ~3s without mouse movement (move/tap brings it back). The view
+          chips double as the rotation indicators; Live is disabled while
+          nothing is live. Ticker + clock are outside this and never pause. */}
+      <div className={`absolute bottom-[8.5vh] right-[2vw] z-20 flex items-center gap-2 transition-opacity duration-500 ${uiVisible ? "opacity-100" : "pointer-events-none opacity-0"}`}>
+        <span className="mr-1 hidden text-[11px] font-semibold uppercase tracking-widest text-navy-100/70 lg:block">Space play/pause · ←/→ views</span>
+        {ALL_VIEWS.map((v) => {
+          const disabled = v === "live" && data.live.length === 0;
+          const isActiveView = v === active;
+          return (
+            <button key={v} type="button" disabled={disabled} onClick={() => jump(v)} aria-pressed={isActiveView}
+              className={`min-h-[40px] rounded-md px-3 py-2 font-display tracking-tight text-sm font-bold uppercase ${isActiveView ? "bg-crimson-600 text-white" : "border border-navy-700 bg-navy-900/85 text-navy-100 hover:bg-navy-800"} ${disabled ? "cursor-not-allowed opacity-40" : ""}`}>
+              {VIEW_LABELS[v]}
+            </button>
+          );
+        })}
+        <button type="button" onClick={togglePlay} aria-label={rotating ? "Pause rotation" : "Resume rotation"}
+          className="inline-flex min-h-[40px] items-center gap-2 rounded-md border border-navy-700 bg-navy-900/85 px-3 py-2 font-display tracking-tight text-sm font-bold uppercase text-navy-100 hover:bg-navy-800">
+          {rotating ? (
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true"><rect x="5" y="4" width="5" height="16" /><rect x="14" y="4" width="5" height="16" /></svg>
+          ) : (
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z" /></svg>
+          )}
+          <span>{rotating ? "Pause" : "Rotate"}</span>
+        </button>
+      </div>
 
       <Ticker items={data.ticker} />
     </div>

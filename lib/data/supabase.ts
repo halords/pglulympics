@@ -296,6 +296,13 @@ export class SupabaseProvider implements DataProvider {
     if (r.status === "warning") return { status: "warning", ackHash: String(r.ack_hash), conflicts: r.conflicts as never };
     return { status: "ok", matchId };
   }
+  async setFixtureTeams(matchId: string, entryIds: string[], ackHash?: string): Promise<FixtureResult> {
+    const r = await this.rpc<Row>("set_fixture_teams", {
+      p_match_id: matchId, p_entry_ids: entryIds, p_ack_hash: ackHash ?? null,
+    });
+    if (r.status === "warning") return { status: "warning", ackHash: String(r.ack_hash), conflicts: r.conflicts as never };
+    return { status: "ok", matchId };
+  }
   // ---------------- admin facet (direct DML under admin RLS) ----------------
   async upsertPlayer(name: string): Promise<PlayerInfo> {
     const { data: existing } = await this.sb.from("players").select("*").ilike("full_name", name).limit(1);

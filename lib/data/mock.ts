@@ -454,6 +454,28 @@ export class MockProvider implements DataProvider {
     return { status: "ok", matchId };
   }
 
+  async setFixtureTeams(matchId: string, entryIds: string[], ackHash?: string): Promise<FixtureResult> {
+    const m = this.match(matchId);
+    if (m.status !== "scheduled") throw new Error("Teams can only be changed before the match starts");
+    if (m.slots.some((s) => s.source && s.source.kind !== "entry")) {
+      throw new Error("This fixture has bracket-derived slots; teams cannot be changed directly");
+    }
+    if (entryIds.length !== m.slots.length) throw new Error("Team count must match the fixture slot count");
+    const merged: FixtureInput = {
+      divisionId: m.divisionId, label: m.label, stage: m.stage, groupId: m.groupId,
+      startsAt: m.startsAt ?? "", durationMinutes: m.durationMinutes ?? null,
+      venueId: m.venueId ?? null, venueText: null, entryIds,
+    };
+    const { report, hash } = this.checkFor(merged, matchId);
+    const hasIssues = report.playerClashes.length + report.venueClashes.length + report.incomplete.length > 0;
+    if (hasIssues && ackHash !== hash) return { status: "warning", ackHash: hash, conflicts: report };
+    m.slots = m.slots.map((s, i) => ({ ...s, entryId: entryIds[i], teamName: this.teamNameOfEntry(entryIds[i]) }));
+    if (ackHash) m.conflictAck = { hash, by: "demo", at: new Date().toISOString() };
+    m.revision++;
+    this.emit();
+    return { status: "ok", matchId };
+  }
+
   async confirmAwards(divisionId: string, awards: { awardKey: string; medal: AwardInfo["medal"]; entryId: string; source?: string }[]): Promise<void> {
     this.state.awards = this.state.awards.filter((a) => !(a.divisionId === divisionId && a.state !== "void"));
     for (const a of awards) {
