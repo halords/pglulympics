@@ -1,0 +1,1 @@
+[usage model=gpt-6-astra api=responses usage={"input_tokens": 6414, "input_tokens_details": {"cache_write_tokens": 6411, "cached_tokens": 0}, "output_tokens": 9000, "output_tokens_details": {"reasoning_tokens": 2070}, "total_tokens": 15414}]

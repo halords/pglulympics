@@ -1,0 +1,4418 @@
+{
+ "event": {
+  "name": "PGLU Olympics",
+  "startDate": "2026-11-09",
+  "endDate": "2026-11-26"
+ },
+ "teams": [
+  "AGKAYSA GUARDians",
+  "CODE RED",
+  "TRIFORCE BANNUARS",
+  "TEAM 4-MIDABLE",
+  "Agkaysa FOURce",
+  "ELYUNITED HEALTH WARRIORS",
+  "THE CODE BLUES",
+  "ECO-AGKAYSA",
+  "EconoMIX",
+  "PDRRMO HAZARD BREAKERS"
+ ],
+ "sports": [
+  {
+   "name": "Volleyball",
+   "slug": "volleyball",
+   "scoringProfile": "sets",
+   "divisions": [
+    {
+     "name": "Men's",
+     "slug": "mens",
+     "groups": [
+      {
+       "name": "Bracket A",
+       "teams": [
+        "CODE RED",
+        "ELYUNITED HEALTH WARRIORS",
+        "TRIFORCE BANNUARS",
+        "THE CODE BLUES",
+        "TEAM 4-MIDABLE"
+       ]
+      },
+      {
+       "name": "Bracket B",
+       "teams": [
+        "Agkaysa FOURce",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "1",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-09",
+       "time": "13:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "CODE RED",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "2",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-09",
+       "time": "14:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "3",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-11",
+       "time": "12:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "4",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-11",
+       "time": "13:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "CODE RED"
+      },
+      {
+       "label": "5",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-11",
+       "time": "14:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "THE CODE BLUES",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "6",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-11",
+       "time": "15:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "EconoMIX",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "7",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-16",
+       "time": "12:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "8",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-16",
+       "time": "13:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "9",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-16",
+       "time": "14:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "10",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-16",
+       "time": "15:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "CODE RED",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "11",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-18",
+       "time": "09:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "12",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-18",
+       "time": "10:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "13",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-18",
+       "time": "11:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "14",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-18",
+       "time": "12:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "15",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-23",
+       "time": "09:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "THE CODE BLUES",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "16",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-23",
+       "time": "10:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "CODE RED"
+      },
+      {
+       "label": "Semis G1",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-25",
+       "time": "12:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Bracket A",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Bracket B",
+        "rank": 2
+       }
+      },
+      {
+       "label": "Semis G2",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-25",
+       "time": "13:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Bracket B",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Bracket A",
+        "rank": 2
+       }
+      },
+      {
+       "label": "Bronze Match",
+       "stage": "bronze",
+       "group": null,
+       "date": "2026-11-26",
+       "time": "09:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G1",
+        "outcome": "loser"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G2",
+        "outcome": "loser"
+       }
+      },
+      {
+       "label": "Gold Match",
+       "stage": "gold",
+       "group": null,
+       "date": "2026-11-26",
+       "time": "10:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G1",
+        "outcome": "winner"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G2",
+        "outcome": "winner"
+       }
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 25,
+      "deciding_set_target": 15,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "Women's",
+     "slug": "womens",
+     "groups": [
+      {
+       "name": "Bracket A",
+       "teams": [
+        "CODE RED",
+        "ELYUNITED HEALTH WARRIORS",
+        "TRIFORCE BANNUARS",
+        "THE CODE BLUES",
+        "TEAM 4-MIDABLE"
+       ]
+      },
+      {
+       "name": "Bracket B",
+       "teams": [
+        "Agkaysa FOURce",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "1",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-09",
+       "time": "15:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "CODE RED",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "2",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-09",
+       "time": "16:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "3",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-11",
+       "time": "08:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "CODE RED"
+      },
+      {
+       "label": "4",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-11",
+       "time": "09:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "THE CODE BLUES",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "5",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-11",
+       "time": "10:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "6",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-11",
+       "time": "11:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "EconoMIX",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "7",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-16",
+       "time": "08:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "8",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-16",
+       "time": "09:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "9",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-16",
+       "time": "10:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "CODE RED",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "10",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-16",
+       "time": "11:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "11",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-18",
+       "time": "13:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "12",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-18",
+       "time": "14:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "13",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-18",
+       "time": "15:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "14",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-18",
+       "time": "16:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "15",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-23",
+       "time": "11:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "THE CODE BLUES",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "16",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-23",
+       "time": "12:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "CODE RED"
+      },
+      {
+       "label": "Semis G1",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-25",
+       "time": "14:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Bracket A",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Bracket B",
+        "rank": 2
+       }
+      },
+      {
+       "label": "Semis G2",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-25",
+       "time": "15:30",
+       "venue": "DMMMSU Covered Court",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Bracket B",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Bracket A",
+        "rank": 2
+       }
+      },
+      {
+       "label": "Bronze Match",
+       "stage": "bronze",
+       "group": null,
+       "date": "2026-11-26",
+       "time": "11:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G1",
+        "outcome": "loser"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G2",
+        "outcome": "loser"
+       }
+      },
+      {
+       "label": "Gold Match",
+       "stage": "gold",
+       "group": null,
+       "date": "2026-11-26",
+       "time": "12:00",
+       "venue": "DMMMSU Covered Court",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G1",
+        "outcome": "winner"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G2",
+        "outcome": "winner"
+       }
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 25,
+      "deciding_set_target": 15,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    }
+   ],
+   "defaultDurationMinutes": 60,
+   "formatNote": "Round-robin brackets, then crossover semifinals, bronze and gold matches."
+  },
+  {
+   "name": "Basketball",
+   "slug": "basketball",
+   "defaultDurationMinutes": 60,
+   "formatNote": "Men: two brackets of five, crossover semifinals. Women: four-team round robin, top four to semifinals. Then bronze and gold matches.",
+   "divisions": [
+    {
+     "name": "Men's",
+     "slug": "mens",
+     "scoringKind": "simple",
+     "scoringConfig": {
+      "allow_forfeit": true
+     },
+     "groups": [
+      {
+       "name": "Bracket A",
+       "teams": [
+        "AGKAYSA GUARDians",
+        "TRIFORCE BANNUARS",
+        "Agkaysa FOURce",
+        "THE CODE BLUES",
+        "EconoMIX"
+       ]
+      },
+      {
+       "name": "Bracket B",
+       "teams": [
+        "CODE RED",
+        "TEAM 4-MIDABLE",
+        "ELYUNITED HEALTH WARRIORS",
+        "ECO-AGKAYSA",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-09",
+       "time": "13:00",
+       "venue": "DMMMSU Gym",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-09",
+       "time": "14:00",
+       "venue": "DMMMSU Gym",
+       "teamA": "CODE RED",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-09",
+       "time": "15:20",
+       "venue": "DMMMSU Gym",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-09",
+       "time": "16:20",
+       "venue": "DMMMSU Gym",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-11",
+       "time": "08:30",
+       "venue": "San Juan Gym",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "AGKAYSA GUARDians"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-11",
+       "time": "09:30",
+       "venue": "San Juan Gym",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 11",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-11",
+       "time": "10:30",
+       "venue": "San Juan Gym",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "CODE RED"
+      },
+      {
+       "label": "Match 12",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-11",
+       "time": "11:30",
+       "venue": "San Juan Gym",
+       "teamA": "THE CODE BLUES",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 13",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-16",
+       "time": "10:30",
+       "venue": "San Juan Gym",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 14",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-16",
+       "time": "11:30",
+       "venue": "San Juan Gym",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 17",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-16",
+       "time": "08:30",
+       "venue": "San Juan Gym",
+       "teamA": "EconoMIX",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 18",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-16",
+       "time": "09:30",
+       "venue": "San Juan Gym",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 19",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-18",
+       "time": "12:30",
+       "venue": "San Juan Gym",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 20",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-18",
+       "time": "13:30",
+       "venue": "San Juan Gym",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 21",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-18",
+       "time": "14:30",
+       "venue": "San Juan Gym",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 22",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-18",
+       "time": "15:30",
+       "venue": "San Juan Gym",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 23",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-23",
+       "time": "09:00",
+       "venue": "San Juan Gym",
+       "teamA": "THE CODE BLUES",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 24",
+       "stage": "round_robin",
+       "group": "Bracket A",
+       "date": "2026-11-23",
+       "time": "10:00",
+       "venue": "San Juan Gym",
+       "teamA": "EconoMIX",
+       "teamB": "AGKAYSA GUARDians"
+      },
+      {
+       "label": "Match 25",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-23",
+       "time": "11:00",
+       "venue": "San Juan Gym",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 26",
+       "stage": "round_robin",
+       "group": "Bracket B",
+       "date": "2026-11-23",
+       "time": "12:00",
+       "venue": "San Juan Gym",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "CODE RED"
+      },
+      {
+       "label": "Semis G1",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-25",
+       "time": "09:00",
+       "venue": "San Juan Gym",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Bracket A",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Bracket B",
+        "rank": 2
+       }
+      },
+      {
+       "label": "Semis G2",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-25",
+       "time": "10:30",
+       "venue": "San Juan Gym",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Bracket B",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Bracket A",
+        "rank": 2
+       }
+      },
+      {
+       "label": "Bronze Match",
+       "stage": "bronze",
+       "group": null,
+       "date": "2026-11-26",
+       "time": "15:00",
+       "venue": "San Juan Gym",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G1",
+        "outcome": "loser"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G2",
+        "outcome": "loser"
+       }
+      },
+      {
+       "label": "Gold Match",
+       "stage": "gold",
+       "group": null,
+       "date": "2026-11-26",
+       "time": "16:00",
+       "venue": "San Juan Gym",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G1",
+        "outcome": "winner"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G2",
+        "outcome": "winner"
+       }
+      }
+     ]
+    },
+    {
+     "name": "Women's",
+     "slug": "womens",
+     "scoringKind": "simple",
+     "scoringConfig": {
+      "allow_forfeit": true
+     },
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "CODE RED",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "THE CODE BLUES"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-09",
+       "time": "12:50",
+       "venue": "DMMMSU Gym",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "CODE RED"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-09",
+       "time": "15:10",
+       "venue": "DMMMSU Gym",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-11",
+       "time": "12:30",
+       "venue": "San Juan Gym",
+       "teamA": "THE CODE BLUES",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-11",
+       "time": "12:40",
+       "venue": "San Juan Gym",
+       "teamA": "CODE RED",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 15",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:30",
+       "venue": "San Juan Gym",
+       "teamA": "THE CODE BLUES",
+       "teamB": "CODE RED"
+      },
+      {
+       "label": "Match 16",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:40",
+       "venue": "San Juan Gym",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Semis G1",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-25",
+       "time": "10:20",
+       "venue": "San Juan Gym",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 4
+       }
+      },
+      {
+       "label": "Semis G2",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-25",
+       "time": "10:00",
+       "venue": "San Juan Gym",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 2
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 3
+       }
+      },
+      {
+       "label": "Bronze Match",
+       "stage": "bronze",
+       "group": null,
+       "date": "2026-11-26",
+       "time": "13:00",
+       "venue": "San Juan Gym",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G1",
+        "outcome": "loser"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G2",
+        "outcome": "loser"
+       }
+      },
+      {
+       "label": "Gold Match",
+       "stage": "gold",
+       "group": null,
+       "date": "2026-11-26",
+       "time": "14:00",
+       "venue": "San Juan Gym",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G1",
+        "outcome": "winner"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semis G2",
+        "outcome": "winner"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Pickleball",
+   "slug": "pickleball",
+   "defaultDurationMinutes": 15,
+   "formatNote": "Nine age/executive categories on two courts at Heritage 2500 (Nov 16 & 18). Single round robin per category; 39 & under categories continue to semifinals, third-place and championship matches.",
+   "divisions": [
+    {
+     "name": "Executive Boys",
+     "slug": "executive-boys",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "AGKAYSA GUARDians",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "TEAM 4-MIDABLE"
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 11,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "Executive Girls",
+     "slug": "executive-girls",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "TEAM 4-MIDABLE"
+       ]
+      }
+     ],
+     "fixtures": [],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 11,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "Executive Mixed",
+     "slug": "executive-mixed",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "AGKAYSA GUARDians",
+        "TEAM 4-MIDABLE",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "AGKAYSA GUARDians"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "TEAM 4-MIDABLE"
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 11,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "40 Boys",
+     "slug": "40-boys",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "THE CODE BLUES",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 11,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "40 Girls",
+     "slug": "40-girls",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "CODE RED",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "EconoMIX"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "CODE RED"
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 11,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "40 Mixed",
+     "slug": "40-mixed",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "THE CODE BLUES"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "Agkaysa FOURce"
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 11,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "39 Boys",
+     "slug": "39-boys",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 11",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 12",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 13",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "EconoMIX",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 14",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 15",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 16",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 17",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "THE CODE BLUES",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 18",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 19",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 20",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "17:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 21",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 22",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Third-Place Match",
+       "stage": "bronze",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "08:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "loser"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "loser"
+       }
+      },
+      {
+       "label": "Semifinal 2",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "09:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 2
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 3
+       }
+      },
+      {
+       "label": "Championship",
+       "stage": "gold",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "09:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "winner"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "winner"
+       }
+      },
+      {
+       "label": "Semifinal 1",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "17:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 4
+       }
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 11,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "39 Girls",
+     "slug": "39-girls",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "THE CODE BLUES",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 11",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 12",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 13",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "THE CODE BLUES",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 14",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 15",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "EconoMIX",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 16",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "EconoMIX",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 17",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "EconoMIX",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 18",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 19",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 20",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "09:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "THE CODE BLUES",
+       "teamB": "EconoMIX"
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 11,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "39 Mixed",
+     "slug": "39-mixed",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "EconoMIX",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 11",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 12",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 13",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "THE CODE BLUES",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 14",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "17:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 15",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 16",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Semifinal 1",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "08:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 4
+       }
+      },
+      {
+       "label": "Third-Place Match",
+       "stage": "bronze",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "09:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "loser"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "loser"
+       }
+      },
+      {
+       "label": "Semifinal 2",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "09:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 2
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 3
+       }
+      },
+      {
+       "label": "Championship",
+       "stage": "gold",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "09:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "winner"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "winner"
+       }
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 11,
+      "win_by": 2,
+      "cap": null,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    }
+   ]
+  },
+  {
+   "name": "Badminton",
+   "slug": "badminton",
+   "defaultDurationMinutes": 15,
+   "formatNote": "Nine age/executive categories on two courts at Heritage 2500 (Nov 16 & 18). Single round robin per category; 39 & under categories continue to semifinals, third-place and championship matches.",
+   "divisions": [
+    {
+     "name": "Executive Boys",
+     "slug": "executive-boys",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "TEAM 4-MIDABLE"
+       ]
+      }
+     ],
+     "fixtures": [],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 21,
+      "win_by": 2,
+      "cap": 30,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "Executive Girls",
+     "slug": "executive-girls",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "TEAM 4-MIDABLE"
+       ]
+      }
+     ],
+     "fixtures": [],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 21,
+      "win_by": 2,
+      "cap": 30,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "Executive Mixed",
+     "slug": "executive-mixed",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "TEAM 4-MIDABLE"
+       ]
+      }
+     ],
+     "fixtures": [],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 21,
+      "win_by": 2,
+      "cap": 30,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "40 Boys",
+     "slug": "40-boys",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "THE CODE BLUES",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "THE CODE BLUES"
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 21,
+      "win_by": 2,
+      "cap": 30,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "40 Girls",
+     "slug": "40-girls",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "ECO-AGKAYSA",
+        "EconoMIX"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 11",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 12",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 13",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 14",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "17:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 15",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 21,
+      "win_by": 2,
+      "cap": 30,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "40 Mixed",
+     "slug": "40-mixed",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "ECO-AGKAYSA"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 11",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 12",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 13",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 14",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 15",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 21,
+      "win_by": 2,
+      "cap": 30,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "39 Boys",
+     "slug": "39-boys",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "EconoMIX",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "THE CODE BLUES",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Semifinal 1",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "08:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 4
+       }
+      },
+      {
+       "label": "Match 11",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 12",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "09:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Semifinal 2",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "09:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 2
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 3
+       }
+      },
+      {
+       "label": "Third-Place Match",
+       "stage": "bronze",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "10:00",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "loser"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "loser"
+       }
+      },
+      {
+       "label": "Championship",
+       "stage": "gold",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "10:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "winner"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "winner"
+       }
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 21,
+      "win_by": 2,
+      "cap": 30,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "39 Girls",
+     "slug": "39-girls",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "ELYUNITED HEALTH WARRIORS",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "EconoMIX",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "EconoMIX",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "THE CODE BLUES",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 11",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 12",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "17:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "THE CODE BLUES",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 13",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 14",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "CODE RED",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 15",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 16",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "09:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "Agkaysa FOURce",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Semifinal 1",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "09:45",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 4
+       }
+      },
+      {
+       "label": "Third-Place Match",
+       "stage": "bronze",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "10:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "loser"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "loser"
+       }
+      },
+      {
+       "label": "Semifinal 2",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "10:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 2
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 3
+       }
+      },
+      {
+       "label": "Championship",
+       "stage": "gold",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "10:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "winner"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "winner"
+       }
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 21,
+      "win_by": 2,
+      "cap": 30,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    },
+    {
+     "name": "39 Mixed",
+     "slug": "39-mixed",
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": [
+      {
+       "label": "Match 1",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "08:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 2",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 3",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "09:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 4",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "10:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "THE CODE BLUES",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 5",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "11:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 6",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 7",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "12:30",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TRIFORCE BANNUARS",
+       "teamB": "THE CODE BLUES"
+      },
+      {
+       "label": "Match 8",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "EconoMIX",
+       "teamB": "ELYUNITED HEALTH WARRIORS"
+      },
+      {
+       "label": "Match 9",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "13:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "TEAM 4-MIDABLE"
+      },
+      {
+       "label": "Match 10",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "14:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 11",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 12",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "15:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 13",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 14",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "TEAM 4-MIDABLE",
+       "teamB": "ECO-AGKAYSA"
+      },
+      {
+       "label": "Match 15",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-16",
+       "time": "16:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "PDRRMO HAZARD BREAKERS"
+      },
+      {
+       "label": "Match 16",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "08:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "AGKAYSA GUARDians",
+       "teamB": "TRIFORCE BANNUARS"
+      },
+      {
+       "label": "Match 17",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "09:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "CODE RED",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 18",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "09:15",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "THE CODE BLUES",
+       "teamB": "EconoMIX"
+      },
+      {
+       "label": "Match 19",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "09:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": "ECO-AGKAYSA",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Match 20",
+       "stage": "round_robin",
+       "group": "Round Robin",
+       "date": "2026-11-18",
+       "time": "09:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": "PDRRMO HAZARD BREAKERS",
+       "teamB": "Agkaysa FOURce"
+      },
+      {
+       "label": "Semifinal 2",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "10:15",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 2
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 3
+       }
+      },
+      {
+       "label": "Semifinal 1",
+       "stage": "semifinal",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "10:30",
+       "venue": "Heritage 2500 \u00b7 Court 1",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 1
+       },
+       "slotB": {
+        "kind": "group_rank",
+        "group": "Round Robin",
+        "rank": 4
+       }
+      },
+      {
+       "label": "Third-Place Match",
+       "stage": "bronze",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "10:45",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "loser"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "loser"
+       }
+      },
+      {
+       "label": "Championship",
+       "stage": "gold",
+       "group": null,
+       "date": "2026-11-18",
+       "time": "11:00",
+       "venue": "Heritage 2500 \u00b7 Court 2",
+       "teamA": null,
+       "teamB": null,
+       "slotA": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 1",
+        "outcome": "winner"
+       },
+       "slotB": {
+        "kind": "match_outcome",
+        "matchLabel": "Semifinal 2",
+        "outcome": "winner"
+       }
+      }
+     ],
+     "scoringKind": "set_based",
+     "scoringConfig": {
+      "best_of": 3,
+      "set_target": 21,
+      "win_by": 2,
+      "cap": 30,
+      "allow_forfeit": true,
+      "provisional": true
+     }
+    }
+   ]
+  },
+  {
+   "name": "Bowling",
+   "slug": "bowling",
+   "defaultDurationMinutes": 60,
+   "formatNote": "One-day team event on November 25 \u2014 three mixed categories, results by final placement. The workbook lists team entries only (no fixtures).",
+   "divisions": [
+    {
+     "name": "Executive Mixed",
+     "slug": "executive-mixed",
+     "groups": [],
+     "entries": [
+      "CODE RED",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "THE CODE BLUES",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "Executive Mixed",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-25",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "CODE RED",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "40 Mixed",
+     "slug": "40-mixed",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "40 Mixed",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-25",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "39 Mixed",
+     "slug": "39-mixed",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "39 Mixed",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-25",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    }
+   ]
+  },
+  {
+   "name": "Athletics",
+   "slug": "athletics",
+   "defaultDurationMinutes": 60,
+   "formatNote": "November 9 \u2014 nine track & field events, results by final placement. The workbook lists team entries only (no start lists or times).",
+   "divisions": [
+    {
+     "name": "100 Boys",
+     "slug": "100-boys",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "100 Boys",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "100 Girls",
+     "slug": "100-girls",
+     "groups": [],
+     "entries": [
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "ECO-AGKAYSA",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "100 Girls",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "ECO-AGKAYSA",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "200 Boys",
+     "slug": "200-boys",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "200 Boys",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "200 Girls",
+     "slug": "200-girls",
+     "groups": [],
+     "entries": [
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "ELYUNITED HEALTH WARRIORS",
+      "ECO-AGKAYSA",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "200 Girls",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "ELYUNITED HEALTH WARRIORS",
+        "ECO-AGKAYSA",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "4X100 Mixed",
+     "slug": "4x100-mixed",
+     "groups": [],
+     "entries": [
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "4X100 Mixed",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "800 Boys",
+     "slug": "800-boys",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "ECO-AGKAYSA",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "800 Boys",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "800 Girls",
+     "slug": "800-girls",
+     "groups": [],
+     "entries": [
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ECO-AGKAYSA",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "800 Girls",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ECO-AGKAYSA",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "Shot Put Boys",
+     "slug": "shot-put-boys",
+     "groups": [],
+     "entries": [
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "Shot Put Boys",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "Shot Put Girls",
+     "slug": "shot-put-girls",
+     "groups": [],
+     "entries": [
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "ECO-AGKAYSA",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "Shot Put Girls",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "ECO-AGKAYSA",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    }
+   ]
+  },
+  {
+   "name": "Laro ng Lahi",
+   "slug": "laro-ng-lahi",
+   "defaultDurationMinutes": 60,
+   "formatNote": "November 9 \u2014 five traditional games, results by final placement. The workbook lists team entries only.",
+   "divisions": [
+    {
+     "name": "Kadang-Kadang",
+     "slug": "kadang-kadang",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "THE CODE BLUES",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "Kadang-Kadang",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "Shatong",
+     "slug": "shatong",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "CODE RED",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "Shatong",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "Sack Race",
+     "slug": "sack-race",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "Sack Race",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "Patintero",
+     "slug": "patintero",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "ELYUNITED HEALTH WARRIORS",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "Patintero",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    },
+    {
+     "name": "Tumbang Preso",
+     "slug": "tumbang-preso",
+     "groups": [],
+     "entries": [
+      "AGKAYSA GUARDians",
+      "CODE RED",
+      "TRIFORCE BANNUARS",
+      "TEAM 4-MIDABLE",
+      "Agkaysa FOURce",
+      "THE CODE BLUES",
+      "ECO-AGKAYSA",
+      "EconoMIX",
+      "PDRRMO HAZARD BREAKERS"
+     ],
+     "fixtures": [
+      {
+       "label": "Tumbang Preso",
+       "stage": "placement",
+       "group": null,
+       "date": "2026-11-09",
+       "time": null,
+       "venue": null,
+       "entries": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "scoringKind": "placement_only",
+     "scoringConfig": {
+      "provisional": true
+     }
+    }
+   ]
+  },
+  {
+   "name": "Mobile Games",
+   "slug": "mobile-games",
+   "defaultDurationMinutes": 45,
+   "formatNote": "November 9 \u2014 Mobile Legends (all 10 teams) and Call of Duty: Mobile (6 teams). The workbook lists entries only; fixtures are created in-app by the coordinator.",
+   "divisions": [
+    {
+     "name": "Mobile Legends",
+     "slug": "ml",
+     "scoringKind": "simple",
+     "scoringConfig": {
+      "allow_forfeit": true
+     },
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "ELYUNITED HEALTH WARRIORS",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": []
+    },
+    {
+     "name": "CODM",
+     "slug": "codm",
+     "scoringKind": "simple",
+     "scoringConfig": {
+      "allow_forfeit": true
+     },
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "THE CODE BLUES",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": []
+    }
+   ]
+  },
+  {
+   "name": "Chess",
+   "slug": "chess",
+   "defaultDurationMinutes": 60,
+   "formatNote": "November 9 \u2014 Boys (9 teams) and Girls (2 teams). The workbook lists entries only; fixtures are created in-app by the coordinator.",
+   "divisions": [
+    {
+     "name": "Boys",
+     "slug": "boys",
+     "scoringKind": "simple",
+     "scoringConfig": {
+      "allow_forfeit": true
+     },
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "AGKAYSA GUARDians",
+        "CODE RED",
+        "TRIFORCE BANNUARS",
+        "TEAM 4-MIDABLE",
+        "Agkaysa FOURce",
+        "THE CODE BLUES",
+        "ECO-AGKAYSA",
+        "EconoMIX",
+        "PDRRMO HAZARD BREAKERS"
+       ]
+      }
+     ],
+     "fixtures": []
+    },
+    {
+     "name": "Girls",
+     "slug": "girls",
+     "scoringKind": "simple",
+     "scoringConfig": {
+      "allow_forfeit": true
+     },
+     "groups": [
+      {
+       "name": "Round Robin",
+       "teams": [
+        "ELYUNITED HEALTH WARRIORS",
+        "EconoMIX"
+       ]
+      }
+     ],
+     "fixtures": []
+    }
+   ]
+  }
+ ]
+}

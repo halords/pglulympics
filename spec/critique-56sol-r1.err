@@ -1,0 +1,1 @@
+[usage model=gpt-5.6-sol api=responses usage={"input_tokens": 14786, "input_tokens_details": {"cache_write_tokens": 14783, "cached_tokens": 0}, "output_tokens": 9000, "output_tokens_details": {"reasoning_tokens": 7706}, "total_tokens": 23786}]

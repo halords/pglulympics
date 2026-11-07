@@ -1,0 +1,5 @@
+-- PGLUlympics — seed.sql (LOCAL ONLY)
+-- The Supabase GitHub integration never runs this file against production.
+-- Official event data lives in migrations/20261107090500_official_data.sql (idempotent),
+-- so `supabase db reset` locally yields the full production dataset with no duplication.
+-- Put local-only demo extras (demo players, test rosters) below this line if needed.
