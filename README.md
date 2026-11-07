@@ -52,3 +52,5 @@ comment-only. Full operator instructions: [SETUP.md](SETUP.md).
 Design and decisions: [SPEC.md](SPEC.md) · Build state: [STATE.md](STATE.md).
 
 <!-- supabase integration sync: 2026-11-07 -->
+
+<!-- supabase integration sync: migration 8 check 2026-11-07 -->
