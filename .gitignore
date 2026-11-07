@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated roster import template (delivered out-of-band, not part of the app bundle)
+/roster-template.xlsx

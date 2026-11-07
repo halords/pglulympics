@@ -75,6 +75,10 @@ export interface AwardInfo {
 }
 export interface PlayerInfo { id: string; name: string }
 export interface VenueInfo { id: string; name: string }
+/** One team's public lineup for a match (display names only). Populated
+ *  from the public_lineups projection in live public mode; derived from
+ *  entries/rosters where those exist (mock + staff). See lib/lineups.ts. */
+export interface LineupTeam { entryId: string | null; teamName: string; players: string[] }
 
 export interface Snapshot {
   event: EventInfo;
@@ -87,6 +91,8 @@ export interface Snapshot {
   awards: AwardInfo[]; // public: confirmed only; staff snapshot may include drafts
   players: PlayerInfo[];
   rosters: Record<string, string[]>; // entryId -> playerIds
+  /** matchId -> public lineup teams (live public mode, migration 10). */
+  lineups?: Record<string, LineupTeam[]>;
   venues: VenueInfo[];
   revision: number; // event revision (monotonic; drives patch/gap logic)
 }

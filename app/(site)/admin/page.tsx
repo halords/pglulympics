@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useProvider, useSnapshot } from "../../../lib/data/context";
 import { useSession } from "../../../lib/data/session";
 import { getSupabase } from "../../../lib/supabase/client";
+import { downloadCsvSkeleton, downloadRosterTemplate } from "../../../lib/roster-file";
 import type { AdminRole, AdminUserRow } from "../../../lib/admin-users";
 import type { AwardInfo, SportInfo } from "../../../lib/types";
 
@@ -252,6 +253,14 @@ export default function AdminPage() {
     try { await fn(); setNotice(ok); } catch (e) { setNotice(e instanceof Error ? e.message : "Failed"); }
     setBusy(false);
   };
+  const downloadTemplate = async () => {
+    setBusy(true); setNotice(null);
+    try {
+      await downloadRosterTemplate(snap, snap.sports.map((s) => s.id));
+      setNotice("Roster template downloaded — dropdowns baked from the live lists.");
+    } catch (e) { setNotice(e instanceof Error ? e.message : "Template download failed."); }
+    setBusy(false);
+  };
   const teamName = (entryId: string) => {
     const e = snap.entries.find((x) => x.id === entryId);
     return e ? snap.teams.find((t) => t.id === e.teamId)?.name ?? entryId : entryId;
@@ -317,6 +326,20 @@ export default function AdminPage() {
       <section className="rounded-2xl border border-navy-100 bg-white p-4">
         <h2 className="font-display tracking-tight text-2xl font-bold mb-2">ROSTERS & VERIFICATION</h2>
         <p className="text-sm text-neutral-600 mb-3">Add players to each team entry, then mark the roster <strong>verified</strong> — only verified rosters feed the conflict checker.</p>
+        <div className="rounded-xl bg-navy-50 p-3 mb-4 space-y-2">
+          <p className="text-sm"><strong>Bulk import:</strong> give encoders the controlled template — they type only player names and pick Sport / Team / Division from dropdowns, so those values can&apos;t be misspelled. The upload + preview + confirm flow lives on the console Roster page.</p>
+          <div className="flex flex-wrap gap-2">
+            <button disabled={busy} className="rounded-lg bg-navy-950 text-white px-4 py-2.5 text-sm font-semibold min-h-[44px] disabled:opacity-60" onClick={() => void downloadTemplate()}>
+              Download roster template (.xlsx)
+            </button>
+            <button className="rounded-lg bg-white border border-navy-100 px-4 py-2.5 text-sm font-semibold min-h-[44px]" onClick={() => downloadCsvSkeleton()}>
+              Download CSV skeleton
+            </button>
+            <Link href="/console/roster" className="rounded-lg bg-crimson-800 text-white px-4 py-2.5 text-sm font-semibold min-h-[44px] inline-flex items-center">
+              Open bulk import →
+            </Link>
+          </div>
+        </div>
         <div className="space-y-4">
           {snap.divisions.map((div) => (
             <div key={div.id}>

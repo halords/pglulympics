@@ -5,6 +5,7 @@ import { useSnapshot } from "../../../../lib/data/context";
 import { useSession } from "../../../../lib/data/session";
 import { consoleScopeSportIds } from "../../../../lib/scope";
 import SportSwitcher from "../../../../components/SportSwitcher";
+import RosterImport from "../../../../components/RosterImport";
 
 export default function RosterPage() {
   const snap = useSnapshot();
@@ -44,6 +45,7 @@ export default function RosterPage() {
       </header>
       <SportSwitcher sports={scopeSports} value={sportFilter} onChange={setSportFilter} />
       <p className="text-sm text-neutral-600">Rosters power the cross-sport player conflict check. Only <strong>verified</strong> rosters are checked — an admin verifies each roster in the Admin page once the team list is final.</p>
+      <RosterImport snap={snap} scopeSportIds={scopeIds} />
       {data.map(({ div, entries }) => (
         <section key={div.id}>
           <h2 className="font-display tracking-tight text-2xl font-bold text-navy-950 mb-2">{div.name}</h2>

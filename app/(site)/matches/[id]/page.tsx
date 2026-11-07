@@ -3,6 +3,7 @@ import { Suspense, use, useMemo } from "react";
 import Link from "next/link";
 import { useSnapshot } from "../../../../lib/data/context";
 import { setsWon } from "../../../../lib/standings";
+import { lineupsForMatch } from "../../../../lib/lineups";
 import { fmtDayLong, fmtTime } from "../../../../lib/format";
 import { StatusPill, dedupeLabel, divisionEntrantNames } from "../../../../components/MatchCard";
 
@@ -29,6 +30,11 @@ function MatchDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
     ...divisionEntrantNames(snap.entries, snap.teams, match.divisionId),
     ...match.slots.map((s) => s.teamName).filter((n): n is string => !!n),
   ])];
+  // Lineups: the public_lineups projection when the live snapshot carries
+  // it (migration 10), otherwise derived from entries/rosters (mock +
+  // signed-in staff). Teams without an encoded roster show the empty
+  // state and light up as rosters/imports land.
+  const lineupTeams = snap.lineups?.[match.id] ?? lineupsForMatch(snap, match);
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
@@ -76,6 +82,26 @@ function MatchDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
         })}
         <p className="text-sm text-navy-100 pt-2">{match.venue ?? "Venue TBA"}{match.outcome === "forfeit" ? " · decided by forfeit" : ""}{match.outcome === "draw" ? " · draw" : ""}</p>
       </section>
+
+      {lineupTeams.length > 0 && (
+        <section>
+          <h2 className="font-display tracking-tight text-2xl font-bold text-navy-950 mb-2">LINEUPS</h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {lineupTeams.map((team) => (
+              <div key={team.entryId ?? team.teamName} className="rounded-xl border border-navy-100 bg-white p-4">
+                <h3 className="font-semibold mb-1.5">{team.teamName}</h3>
+                {team.players.length > 0 ? (
+                  <ul className="text-sm space-y-0.5 list-disc list-inside">
+                    {team.players.map((name) => <li key={name}>{name}</li>)}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-neutral-500 italic">Roster not yet submitted</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {match.segments.length > 0 && (
         <section>

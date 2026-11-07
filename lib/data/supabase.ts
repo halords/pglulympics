@@ -5,9 +5,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   AwardInfo, ConflictReport, DataProvider, DivisionInfo, EntryInfo, EventInfo, FixtureEditInput,
-  FixtureInput, FixtureResult, GroupInfo, MatchInfo, MatchStatus, PlayerInfo,
+  FixtureInput, FixtureResult, GroupInfo, LineupTeam, MatchInfo, MatchStatus, PlayerInfo,
   ScorePayload, Snapshot, SportInfo, TeamInfo, VenueInfo,
 } from "../types";
+import { lineupsFromViewRows, type PublicLineupRow } from "../lineups";
 
 /** Stamp the severity model onto a conflict report coming back from the
  *  RPCs: player clashes are MAJOR, venue clashes MINOR (migration 9 also
@@ -72,6 +73,7 @@ export class SupabaseProvider implements DataProvider {
     let awards: AwardInfo[] = [];
     let players: PlayerInfo[] = [];
     let rosters: Record<string, string[]> = {};
+    let lineups: Record<string, LineupTeam[]> | undefined;
 
     if (staff) {
       const [divs, grps, ents, mts, slots, segs, segScores, totals, places, results, pls, roster] = await Promise.all([
@@ -165,12 +167,22 @@ export class SupabaseProvider implements DataProvider {
       }
     } else {
       // public assembly from projection views
-      const [groupsRes, cards, segScores, results] = await Promise.all([
+      const [groupsRes, cards, segScores, results, lineupRows] = await Promise.all([
         sb.from("groups").select("*"),
         sb.from("public_match_cards").select("*"),
         sb.from("public_segment_scores").select("*"),
         sb.from("public_results").select("*"),
+        sb.from("public_lineups").select("*"),
       ]);
+      // public_lineups arrives with migration 10; until the hosted database
+      // applies it, the query errors and lineups stay undefined (the match
+      // page then derives what it can and panels light up after the merge).
+      if (!lineupRows.error && lineupRows.data) {
+        lineups = lineupsFromViewRows((lineupRows.data as Row[]).map((r) => ({
+          match_id: s(r.match_id)!, division_id: (r.division_id as string) ?? null,
+          entry_id: s(r.entry_id)!, team_name: s(r.team_name)!, player_name: (r.player_name as string) ?? null,
+        })) as PublicLineupRow[]);
+      }
       groups = (groupsRes.data ?? []).map((g: Row) => ({ id: s(g.id)!, divisionId: s(g.division_id)!, name: s(g.name)! }));
       const segsByMatch = new Map<string, Map<number, { kind: "set" | "period"; status: "open" | "closed"; points: number[] }>>();
       for (const r of (segScores.data ?? []) as Row[]) {
@@ -223,7 +235,7 @@ export class SupabaseProvider implements DataProvider {
     const revRes = await sb.from("event_updates").select("revision").order("revision", { ascending: false }).limit(1);
     const revision = Number((revRes.data?.[0] as Row | undefined)?.revision ?? 0);
     this.lastRevision = revision;
-    return { event, teams: teamList, sports: sportList, divisions, groups, entries, matches, awards, players, rosters, venues: venueList, revision };
+    return { event, teams: teamList, sports: sportList, divisions, groups, entries, matches, awards, players, rosters, lineups, venues: venueList, revision };
   }
 
   async getSnapshot(): Promise<Snapshot> { return this.assemble(); }
