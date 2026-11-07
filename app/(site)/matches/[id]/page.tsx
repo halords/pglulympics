@@ -38,11 +38,14 @@ function MatchDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div className="text-sm text-neutral-500">
-        <Link href={`/sports/${sport?.slug ?? ""}`} className="underline">{sport?.name}</Link>
-        {dedupeLabel([division?.name, group?.name, match.label]) && (
-          <span>{" · "}{dedupeLabel([division?.name, group?.name, match.label])}</span>
-        )}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="text-sm text-neutral-500">
+          <Link href={`/sports/${sport?.slug ?? ""}`} className="underline">{sport?.name}</Link>
+          {dedupeLabel([division?.name, group?.name, match.label]) && (
+            <span>{" · "}{dedupeLabel([division?.name, group?.name, match.label])}</span>
+          )}
+        </div>
+        <Link href={`/board/${match.id}`} target="_blank" className="rounded-lg bg-navy-950 text-white px-3.5 py-2 text-sm font-bold min-h-[40px] inline-flex items-center">Scoreboard screen ↗</Link>
       </div>
       <section className="rounded-2xl bg-navy-950 text-white p-5 sm:p-7">
         <div className="flex items-center justify-between gap-2">

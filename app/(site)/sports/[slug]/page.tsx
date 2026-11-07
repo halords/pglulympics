@@ -1,6 +1,8 @@
 "use client";
 import { Suspense, use, useMemo } from "react";
+import Link from "next/link";
 import { useSnapshot } from "../../../../lib/data/context";
+import { isSessionSport } from "../../../../lib/board";
 import { computeStandings, sortStandings } from "../../../../lib/standings";
 import { manilaDayKey, fmtDayLong } from "../../../../lib/format";
 import { nextUpFixtures } from "../../../../lib/schedule";
@@ -185,6 +187,14 @@ function SportPageInner({ params }: { params: Promise<{ slug: string }> }) {
         return (
           <section key={div.id} className="space-y-4">
             <h2 className="font-display tracking-tight text-3xl font-bold text-navy-950 border-b-2 border-crimson-800 pb-1">{div.name.toUpperCase()}</h2>
+
+            {isSessionSport(sport) && (
+              <p>
+                <Link href={`/board/division/${div.id}`} target="_blank" className="inline-flex min-h-[40px] items-center rounded-lg bg-navy-950 px-3.5 py-2 text-sm font-bold text-white">
+                  {div.name} — Teams board ↗
+                </Link>
+              </p>
+            )}
 
             {div.scoringKind === "placement_only" && (
               <div>

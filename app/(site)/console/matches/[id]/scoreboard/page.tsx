@@ -209,6 +209,7 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
         <Link href="/console" className="text-sm font-semibold text-navy-800 underline">← Console</Link>
         <span className="flex items-center gap-2">
           <Link href={`/console/matches/${matchId}`} className="text-sm font-semibold text-navy-800 underline">Scoring details</Link>
+          <Link href={`/board/${matchId}`} target="_blank" className="text-sm font-semibold text-navy-800 underline">Scoreboard screen ↗</Link>
           <StatusPill status={server.status} needsReview={server.needsReview} />
         </span>
       </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useProvider, useSnapshot } from "../../../lib/data/context";
 import { useSession } from "../../../lib/data/session";
 import { consoleScopeSportIds } from "../../../lib/scope";
+import { isSessionSport } from "../../../lib/board";
 import { fmtDayLong, isTodayManila, manilaDayKey } from "../../../lib/format";
 import { SportIcon } from "../../../lib/sport-identity";
 import { divisionEntrantNames } from "../../../components/MatchCard";
@@ -144,6 +145,22 @@ export default function ConsoleHomePage() {
       </section>
 
       <SportSwitcher sports={scopeSports} value={sportFilter} onChange={setSportFilter} />
+
+      {/* Session-sport teams boards — one per game/division (Mobile
+          Legends and CODM are separate boards, never merged). */}
+      {snap.divisions.filter((d) => scopeIds.includes(d.sportId) && isSessionSport(snap.sports.find((s) => s.id === d.sportId))).length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Session boards</span>
+          {snap.divisions
+            .filter((d) => scopeIds.includes(d.sportId) && isSessionSport(snap.sports.find((s) => s.id === d.sportId)))
+            .map((d) => (
+              <Link key={d.id} href={`/board/division/${d.id}`} target="_blank"
+                className="inline-flex min-h-[40px] items-center rounded-lg bg-navy-950 px-3.5 py-2 text-sm font-bold text-white">
+                {d.name} — Teams board ↗
+              </Link>
+            ))}
+        </div>
+      )}
 
       {/* conflicts: a summary line, not the headline act */}
       {majorCount !== null && minorCount !== null && (
