@@ -53,11 +53,11 @@ effect. Without these, the site safely falls back to demo/mock mode.
 3. Supabase dashboard → **SQL Editor**, run (paste your UID and email):
 
 ```sql
-insert into public.account_profiles (user_id, role, email)
-select id, 'admin', email from auth.users where email = 'YOUR-EMAIL-HERE';
+insert into public.account_profiles (user_id, role)
+select id, 'super_admin' from auth.users where email = 'YOUR-EMAIL-HERE';
 -- or, with the UID directly:
--- insert into public.account_profiles (user_id, role, email)
--- values ('USER-UID-HERE', 'admin', 'YOUR-EMAIL-HERE');
+-- insert into public.account_profiles (user_id, role)
+-- values ('USER-UID-HERE', 'super_admin');
 ```
 
 4. Open the site → **Console** → sign in with that email/password. You should
@@ -72,8 +72,8 @@ For each sport coordinator:
 2. SQL Editor:
 
 ```sql
-insert into public.account_profiles (user_id, role, sport_id, email)
-select u.id, 'coordinator', s.id, u.email
+insert into public.account_profiles (user_id, role, sport_id)
+select u.id, 'coordinator', s.id
 from auth.users u, public.sports s
 where u.email = 'COORDINATOR-EMAIL-HERE' and s.slug = 'volleyball';
 ```
@@ -128,3 +128,24 @@ refresh every 5 seconds while Realtime is investigated.
 - *Scores save but viewers don't update:* check the transport env var
   (Step 1) and that Realtime is enabled for the project (it is on by default;
   migration 5 adds `event_updates` to the realtime publication).
+
+## TV display board (venue screen)
+
+The site ships a dedicated fullscreen board for the venue TV at **`/display`**
+(e.g. `https://<your-site>/display`). It is chromeless — no header, nav or
+footer — and updates live from the same data feed as the public site, so
+scores and the tally refresh on screen with no reload and no interaction.
+
+- **Run it:** open `/display` in the TV's browser (or a laptop on HDMI),
+  then press **F11** for fullscreen. Any modern smart-TV browser works;
+  nothing to install, no sign-in needed.
+- **What it shows:** views auto-cycle every ~15 seconds — **Overall
+  Standings** (all 10 teams) → **Live Now** (scorebug view, only in the
+  rotation while matches are live) → **Up Next** → **Latest Results** —
+  over a persistent bottom ticker of the latest results and upcoming
+  fixtures, with a live clock in the corner.
+- **Second screen / fixed view:** pin one view with a query parameter —
+  `/display?view=tally`, `?view=live`, `?view=upnext` or `?view=results`.
+  A pinned `live` view falls back to the tally when nothing is live.
+- Sized for distance reading at 1920×1080 and 1366×768 — keep the TV at
+  its native resolution and browser zoom at 100%.

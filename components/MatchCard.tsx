@@ -20,7 +20,7 @@ export function divisionEntrantNames(entries: EntryInfo[], teams: TeamInfo[], di
 }
 
 export function StatusPill({ status, needsReview }: { status: MatchInfo["status"]; needsReview?: boolean }) {
-  if (needsReview) return <span className="inline-flex items-center gap-1 rounded-full bg-gold-100 text-gold-500 border border-gold-500 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide">Under review</span>;
+  if (needsReview) return <span className="inline-flex items-center gap-1 rounded-full bg-crimson-100 text-crimson-800 border border-crimson-600 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide">Under review</span>;
   switch (status) {
     case "live":
       return <span className="inline-flex items-center gap-1.5 rounded-full bg-crimson-600 text-white px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide"><span className="live-dot inline-block h-2 w-2 rounded-full bg-white" />Live</span>;
@@ -46,6 +46,12 @@ function scoreText(m: MatchInfo, division?: DivisionInfo): { a: string; b: strin
   return null;
 }
 
+/** Score pair for public display (sets won for set-based sports, totals
+ *  otherwise) — shared by the match cards and the /display TV board. */
+export function matchScore(m: MatchInfo, division?: DivisionInfo): { a: string; b: string } | null {
+  return scoreText(m, division);
+}
+
 export default function MatchCard({ match, division, sportName, entrants }: { match: MatchInfo; division?: DivisionInfo; sportName?: string; entrants?: string[] }) {
   const score = scoreText(match, division);
   const showScores = match.status === "live" || match.status === "final";
@@ -61,11 +67,11 @@ export default function MatchCard({ match, division, sportName, entrants }: { ma
       <div className="flex items-center justify-between gap-2 py-1">
         <span className={`truncate text-[15px] ${isWinner ? "font-bold text-navy-950" : "font-medium text-navy-900"}`}>
           {name}
-          {isWinner && <span className="ml-2 text-gold-500" aria-label="winner">●</span>}
+          {isWinner && <span className="ml-2 text-crimson-600" aria-label="winner">●</span>}
         </span>
         <span className="flex items-center gap-2 shrink-0">
           {segScores && showScores && <span className="text-xs text-neutral-500 tabular-nums">{segScores}</span>}
-          {showScores && score && <span className={`font-display text-2xl leading-none tabular-nums ${isWinner ? "text-navy-950 font-bold" : "text-navy-800"}`}>{slotNo === 1 ? score.a : score.b}</span>}
+          {showScores && score && <span className={`font-display tracking-tight text-2xl leading-none tabular-nums ${isWinner ? "text-navy-950 font-bold" : "text-navy-800"}`}>{slotNo === 1 ? score.a : score.b}</span>}
         </span>
       </div>
     );
@@ -88,7 +94,7 @@ export default function MatchCard({ match, division, sportName, entrants }: { ma
       .sort((a, b) => (a.place ?? 99) - (b.place ?? 99))
       .slice(0, 3);
     return (
-      <Link href={`/matches/${match.id}`} className="block rounded-xl border border-navy-100 bg-white p-3.5 shadow-sm hover:border-navy-800 hover:shadow transition">
+      <Link href={`/matches/${match.id}`} className="block rounded-xl border border-navy-100 bg-white p-3.5 shadow-sm hover:border-crimson-600 hover:shadow transition">
         <div className="flex items-center justify-between gap-2 pb-1.5">
           <span className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-wider text-neutral-500">{label}</span>
           <span className="shrink-0"><StatusPill status={match.status} needsReview={match.needsReview} /></span>
@@ -97,7 +103,7 @@ export default function MatchCard({ match, division, sportName, entrants }: { ma
           <ul className="py-1 space-y-0.5">
             {placed.map((p) => (
               <li key={p.slotNo} className="flex items-baseline gap-2 text-[15px]">
-                <span className="font-display font-bold text-gold-500 w-7 shrink-0">#{p.place}</span>
+                <span className="font-display tracking-tight font-bold tabular-nums text-crimson-600 w-7 shrink-0">#{p.place}</span>
                 <span className="font-medium text-navy-900">{match.slots[p.slotNo - 1]?.teamName ?? "Entrant"}</span>
               </li>
             ))}
@@ -117,7 +123,7 @@ export default function MatchCard({ match, division, sportName, entrants }: { ma
   }
 
   return (
-    <Link href={`/matches/${match.id}`} className="block rounded-xl border border-navy-100 bg-white p-3.5 shadow-sm hover:border-navy-800 hover:shadow transition">
+    <Link href={`/matches/${match.id}`} className="block rounded-xl border border-navy-100 bg-white p-3.5 shadow-sm hover:border-crimson-600 hover:shadow transition">
       <div className="flex items-center justify-between gap-2 pb-1.5">
         <span className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
           {label}

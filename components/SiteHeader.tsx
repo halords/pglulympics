@@ -32,7 +32,7 @@ const isActive = (pathname: string, href: string) =>
   href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
 const deskLink = (active: boolean) =>
-  `px-2.5 py-1.5 rounded transition-colors whitespace-nowrap ${active ? "bg-navy-800 font-semibold" : "hover:bg-navy-800"}`;
+  `px-2.5 py-1.5 rounded transition-colors whitespace-nowrap ${active ? "bg-crimson-800 text-white font-semibold" : "hover:bg-navy-800"}`;
 
 export default function SiteHeader() {
   const pathname = usePathname() ?? "/";
@@ -77,7 +77,7 @@ export default function SiteHeader() {
             href={`/sports/${s.slug}`}
             onClick={onNavigate}
             aria-current={pathname === `/sports/${s.slug}` ? "page" : undefined}
-            className={`flex min-h-[44px] items-center px-4 py-2.5 text-[15px] transition-colors hover:bg-navy-800 ${pathname === `/sports/${s.slug}` ? "bg-navy-800 font-semibold text-gold-500" : ""}`}
+            className={`flex min-h-[44px] items-center px-4 py-2.5 text-[15px] transition-colors hover:bg-navy-800 ${pathname === `/sports/${s.slug}` ? "bg-crimson-800 font-semibold text-white" : ""}`}
           >
             {s.name}
           </Link>
@@ -89,7 +89,7 @@ export default function SiteHeader() {
         <div className="flex items-center justify-between gap-2 h-14">
           <Link href="/" className="flex min-w-0 items-baseline gap-2" aria-label="PGLUlympics home">
             <span className="font-display text-2xl font-bold tracking-wide whitespace-nowrap">
-              PGLU<span className="text-gold-500">LYMPICS</span>
+              PGLU<span className="text-crimson-400">LYMPICS</span>
             </span>
             <span className="hidden sm:inline text-[11px] uppercase tracking-widest text-navy-100 whitespace-nowrap">Nov 9–26, 2026</span>
           </Link>
@@ -136,14 +136,14 @@ export default function SiteHeader() {
       {mobileOpen && (
         <nav id="mobile-nav" className="md:hidden border-t border-navy-800" aria-label="Mobile">
           <Link href="/" onClick={() => setMobileOpen(false)} aria-current={isActive(pathname, "/") ? "page" : undefined}
-            className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/") ? "bg-navy-800 text-gold-500" : ""}`}>Home</Link>
+            className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/") ? "bg-crimson-800 text-white" : ""}`}>Home</Link>
           <Link href="/tally" onClick={() => setMobileOpen(false)} aria-current={isActive(pathname, "/tally") ? "page" : undefined}
-            className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/tally") ? "bg-navy-800 text-gold-500" : ""}`}>Medal Tally</Link>
+            className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/tally") ? "bg-crimson-800 text-white" : ""}`}>Medal Tally</Link>
           <button
             type="button"
             onClick={() => setMobileSportsOpen((v) => !v)}
             aria-expanded={mobileSportsOpen}
-            className={`flex min-h-[44px] w-full items-center justify-between px-4 py-2.5 font-medium text-left ${sportsActive ? "text-gold-500" : ""}`}
+            className={`flex min-h-[44px] w-full items-center justify-between px-4 py-2.5 font-medium text-left ${sportsActive ? "bg-crimson-800 text-white" : ""}`}
           >
             Sports <Chevron open={mobileSportsOpen} />
           </button>
@@ -153,12 +153,12 @@ export default function SiteHeader() {
             </div>
           )}
           <Link href="/schedule" onClick={() => setMobileOpen(false)} aria-current={isActive(pathname, "/schedule") ? "page" : undefined}
-            className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/schedule") ? "bg-navy-800 text-gold-500" : ""}`}>Schedule</Link>
+            className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/schedule") ? "bg-crimson-800 text-white" : ""}`}>Schedule</Link>
           <Link href="/console" onClick={() => setMobileOpen(false)} aria-current={isActive(pathname, "/console") ? "page" : undefined}
-            className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/console") ? "bg-navy-800 text-gold-500" : ""}`}>Console</Link>
+            className={`flex min-h-[44px] items-center px-4 py-2.5 font-medium ${isActive(pathname, "/console") ? "bg-crimson-800 text-white" : ""}`}>Console</Link>
         </nav>
       )}
-      <div className="h-1 bg-gradient-to-r from-crimson-800 via-gold-500 to-navy-800" />
+      <div className="h-1 bg-gradient-to-r from-crimson-800 via-crimson-600 to-navy-800" />
     </header>
   );
 }

@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
-/* PGLUlympics palette (user-directed): dark blue + white + dark red core,
-   gold reserved for medals and highlights. */
+/* PGLUlympics palette (user-directed): dark blue + white + dark red core.
+   CRIMSON is the accent — nav states, eyebrows, live badges, primary
+   buttons, hovers, focus rings. GOLD is reserved for medal-literal
+   contexts ONLY (tally medal columns/dots, medal contexts, and the
+   /display board's champion accent) — never as a general highlight. */
 @theme {
   --color-navy-950: #061a3a;
   --color-navy-900: #0a2450;
@@ -11,8 +14,13 @@
   --color-navy-50: #eef4fd;
   --color-crimson-800: #8b1e1e;
   --color-crimson-600: #c1272d;
+  --color-crimson-400: #e05252;
+  --color-crimson-100: #f9e2e2;
+  --color-crimson-50: #fdf1f1;
   --color-gold-500: #d4a017;
   --color-gold-100: #faf0d2;
+  --color-silver-400: #c7ccd4;
+  --color-bronze-500: #c47b42;
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
   --font-sans: "Barlow", system-ui, sans-serif;
 }
@@ -25,12 +33,55 @@ body {
 
 .font-display { font-family: var(--font-display); }
 
+/* crimson focus ring everywhere (accent consistency) */
+:focus-visible {
+  outline: 2px solid var(--color-crimson-600);
+  outline-offset: 2px;
+}
+
 /* live pulse dot */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.45; transform: scale(0.8); }
 }
 .live-dot { animation: pulse-dot 1.2s ease-in-out infinite; }
+
+/* ---- /display TV board ---- */
+/* arena texture: hard-stop diagonal pinstripes over navy — a pattern,
+   not a gradient blend; solid colors only, no glass/backdrop effects. */
+.arena-bg {
+  background-color: var(--color-navy-950);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.028) 0px,
+    rgba(255, 255, 255, 0.028) 2px,
+    transparent 2px,
+    transparent 16px
+  );
+}
+
+/* view cuts: quick slide + fade (~400ms), boards cut, they don't dissolve */
+@keyframes board-view-in {
+  from { opacity: 0; transform: translateX(28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.board-view-in { animation: board-view-in 0.4s cubic-bezier(0.22, 0.9, 0.3, 1) both; }
+
+/* bottom ticker: seamless marquee (content duplicated, -50% loop) */
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-track {
+  animation: ticker-scroll 55s linear infinite;
+  will-change: transform;
+}
+
+/* angled broadcast slash (parallelogram accent) */
+.slash {
+  display: inline-block;
+  transform: skewX(-18deg);
+}
 
 /* big touch steppers: no number-input spinners */
 input[type="number"]::-webkit-outer-spin-button,

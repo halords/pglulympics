@@ -19,7 +19,7 @@ export default function TallyTable({ rows, compact }: { rows: TallyRow[]; compac
         <tbody>
           {shown.map((r, i) => (
             <tr key={r.teamId} className={i % 2 ? "bg-navy-50" : "bg-white"}>
-              <td className="px-3 py-2 font-display text-lg text-navy-800">{r.rank || "—"}</td>
+              <td className="px-3 py-2 font-display tracking-tight text-lg font-semibold tabular-nums text-navy-800">{r.rank || "—"}</td>
               <td className="px-3 py-2 font-semibold text-navy-950">{r.teamName}</td>
               <td className="px-2 py-2 text-center tabular-nums">{r.gold || "—"}</td>
               <td className="px-2 py-2 text-center tabular-nums">{r.silver || "—"}</td>

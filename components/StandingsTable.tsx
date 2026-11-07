@@ -19,8 +19,8 @@ export default function StandingsTable({ rows }: { rows: StandingRow[] }) {
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={r.entryId} className={i < 2 ? "bg-gold-100/50" : i % 2 ? "bg-navy-50" : "bg-white"}>
-              <td className="px-3 py-1.5 font-display text-base">{i + 1}</td>
+            <tr key={r.entryId} className={i < 2 ? "bg-crimson-100/60" : i % 2 ? "bg-navy-50" : "bg-white"}>
+              <td className="px-3 py-1.5 font-display tracking-tight text-base font-semibold tabular-nums">{i + 1}</td>
               <td className="px-3 py-1.5 font-medium">{r.teamName}</td>
               <td className="px-2 py-1.5 text-center tabular-nums">{r.played}</td>
               <td className="px-2 py-1.5 text-center tabular-nums font-semibold">{r.wins}</td>
