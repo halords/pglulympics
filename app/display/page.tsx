@@ -6,7 +6,8 @@ import { computeTally } from "../../lib/standings";
 import { fmtDay, fmtTime, manilaDayKey } from "../../lib/format";
 import { nextUpFixtures } from "../../lib/schedule";
 import { matchScore } from "../../components/MatchCard";
-import type { DivisionInfo, MatchInfo, Snapshot } from "../../lib/types";
+import { sportIdentity, SportIcon } from "../../lib/sport-identity";
+import type { DivisionInfo, MatchInfo, Snapshot, SportInfo } from "../../lib/types";
 
 // /display — venue TV board. Chromeless (lives OUTSIDE the (site) route
 // group, so no header/footer/nav), arena-dark, broadcast grammar:
@@ -69,11 +70,13 @@ interface Ctx {
   snap: Snapshot;
   divById: Map<string, DivisionInfo>;
   sportByDiv: Map<string, string>;
+  sportObjByDiv: Map<string, SportInfo | undefined>;
 }
 const ctxOf = (snap: Snapshot): Ctx => ({
   snap,
   divById: new Map(snap.divisions.map((d) => [d.id, d])),
   sportByDiv: new Map(snap.divisions.map((d) => [d.id, snap.sports.find((s) => s.id === d.sportId)?.name ?? ""])),
+  sportObjByDiv: new Map(snap.divisions.map((d) => [d.id, snap.sports.find((s) => s.id === d.sportId)])),
 });
 
 const teamLine = (m: MatchInfo, i: 0 | 1) => m.slots[i]?.teamName ?? m.slots[i]?.placeholder ?? "TBD";
@@ -140,62 +143,120 @@ function TallyView({ ctx }: { ctx: Ctx }) {
 
 /* ------------------------------ LIVE (scorebug) ------------------------------ */
 
-function Scorebug({ ctx, match }: { ctx: Ctx; match: MatchInfo }) {
+// Tailored per-sport bug: SPORT NAME big on top (identity icon + tint
+// accent), category/division + match label under it, then the teams and the
+// score in the sport's own shape (sets strip for rally sports, running total
+// for the rest). `featured` scales the same bug up to full-board size.
+function Scorebug({ ctx, match, featured = false }: { ctx: Ctx; match: MatchInfo; featured?: boolean }) {
   const division = ctx.divById.get(match.divisionId);
+  const sport = ctx.sportObjByDiv.get(match.divisionId);
+  const identity = sportIdentity(sport);
+  const sportLabel = ctx.sportByDiv.get(match.divisionId) ?? "";
   const score = matchScore(match, division);
-  const label = [ctx.sportByDiv.get(match.divisionId), division?.name, match.label].filter(Boolean).join(" · ");
+  const team = (i: 0 | 1) => match.slots[i]?.teamName ?? match.slots[i]?.placeholder ?? "TBD";
+  const header = (
+    <>
+      <div className="flex items-center gap-[1vw]">
+        <span className={`flex shrink-0 items-center justify-center rounded-[0.6vw] text-white ${featured ? "h-[clamp(44px,4.4vw,76px)] w-[clamp(44px,4.4vw,76px)]" : "h-[clamp(30px,3vw,50px)] w-[clamp(30px,3vw,50px)]"}`}
+          style={{ backgroundColor: identity.tint }}>
+          <SportIcon sport={sport} className="h-[70%] w-[70%]" />
+        </span>
+        <p className={`font-display tracking-tight font-bold uppercase leading-none text-white ${featured ? "text-[clamp(36px,4.8vw,84px)]" : "text-[clamp(22px,2.6vw,44px)]"}`}>
+          {sportLabel}
+        </p>
+        <span className="ml-auto inline-flex shrink-0 items-center gap-[0.5vw] rounded-full bg-crimson-600 px-[1vw] py-[0.4vh] font-display tracking-tight font-bold uppercase text-[clamp(13px,1.3vw,24px)]">
+          <span className="live-dot block h-[0.55vw] w-[0.55vw] min-h-2 min-w-2 rounded-full bg-white" />Live
+        </span>
+      </div>
+      <div className="mt-[0.8vh] h-[0.45vh] min-h-[3px] w-full rounded-full" style={{ backgroundColor: identity.tint }} />
+      <p className={`mt-[0.7vh] truncate font-semibold uppercase tracking-[0.18em] text-navy-100 ${featured ? "text-[clamp(16px,1.7vw,30px)]" : "text-[clamp(12px,1.25vw,22px)]"}`}>
+        {division?.name} · {match.label}{match.venue ? <> · {match.venue}</> : null}
+      </p>
+    </>
+  );
   if (division?.scoringKind === "placement_only") {
-    const placed = (match.placements ?? []).filter((p) => p.place != null).sort((a, b) => (a.place ?? 99) - (b.place ?? 99));
-    const names = placed.length > 0
-      ? placed.map((p) => `#${p.place} ${match.slots[p.slotNo - 1]?.teamName ?? "Entrant"}`)
-      : match.slots.map((s) => s.teamName).filter((n): n is string => !!n);
     return (
-      <div className="bg-navy-900 px-[2vw] py-[2vh]">
-        <div className="flex items-center justify-between gap-4">
-          <p className="font-display tracking-tight text-[clamp(16px,1.6vw,27px)] font-semibold uppercase text-navy-100">{label}</p>
-          <LiveBug />
-        </div>
-        <p className="mt-[1vh] font-display tracking-tight text-[clamp(28px,3vw,52px)] font-bold uppercase leading-tight">{names.join("  ·  ") || "Event in progress"}</p>
+      <div className={`rounded-[1vw] border border-navy-800 bg-navy-900 ${featured ? "px-[3vw] py-[3vh]" : "px-[2vw] py-[2vh]"}`}>
+        {header}
+        <p className={`mt-[1.2vh] font-display tracking-tight font-bold uppercase text-white ${featured ? "text-[clamp(34px,4vw,72px)]" : "text-[clamp(26px,3vw,52px)]"}`}>{match.label}</p>
+        <p className={`mt-[0.6vh] font-medium text-navy-100 ${featured ? "text-[clamp(20px,2.2vw,38px)]" : "text-[clamp(16px,1.8vw,30px)]"}`}>
+          {match.slots.map((s) => s.teamName).filter(Boolean).join("  ·  ")}
+        </p>
+        <p className="mt-[0.6vh] font-display tracking-tight font-bold uppercase text-crimson-400 text-[clamp(14px,1.5vw,26px)]">Now competing</p>
       </div>
     );
   }
-  const segStrip = match.segments.length > 0 && (
-    <div className="mt-[1.4vh] flex flex-wrap justify-center gap-x-[2.2vw] gap-y-1 border-t-2 border-navy-800 pt-[1.2vh]">
-      {match.segments.map((s) => (
-        <span key={s.segmentNo} className="font-display tracking-tight text-[clamp(19px,1.9vw,33px)] font-semibold uppercase text-navy-100">
-          {division?.scoringKind === "set_based" ? `Set ${s.segmentNo}` : `P${s.segmentNo}`}{" "}
-          <span className="text-white tabular-nums">{s.points[0] ?? 0}–{s.points[1] ?? 0}</span>
-          {s.status === "closed" ? "" : " ·"}
-        </span>
-      ))}
-    </div>
-  );
   return (
-    <div className="bg-navy-900 px-[2vw] py-[2vh]">
-      <div className="flex items-center justify-between gap-4">
-        <p className="font-display tracking-tight text-[clamp(16px,1.6vw,27px)] font-semibold uppercase text-navy-100">{label}</p>
-        <LiveBug />
-      </div>
-      <div className="mt-[0.6vh] grid grid-cols-[1fr_auto_1fr] items-center gap-[2vw]">
-        <p className="text-right font-display tracking-tight text-[clamp(30px,3.6vw,64px)] font-bold uppercase leading-[0.95]">{teamLine(match, 0)}</p>
-        <p className="font-display tracking-tight text-[clamp(64px,8.5vw,150px)] font-bold leading-none tabular-nums">
-          {score ? <>{score.a}<span className="text-crimson-400 mx-[0.12em]">–</span>{score.b}</> : "VS"}
+    <div className={`rounded-[1vw] border border-navy-800 bg-navy-900 ${featured ? "px-[3vw] py-[3vh]" : "px-[2vw] py-[2vh]"}`}>
+      {header}
+      <div className="mt-[1.4vh] grid grid-cols-[1fr_auto_1fr] items-center gap-[1.5vw]">
+        <p className={`font-display tracking-tight font-bold uppercase leading-[1.02] text-white break-words ${featured ? "text-[clamp(44px,5vw,96px)]" : "text-[clamp(30px,3.6vw,64px)]"}`}>{team(0)}</p>
+        <p className={`font-display tracking-tight font-bold leading-none tabular-nums text-white ${featured ? "text-[clamp(120px,14vw,240px)]" : "text-[clamp(64px,8.5vw,150px)]"}`}>
+          {score ? <>{score.a}<span className="text-crimson-400">–</span>{score.b}</> : "–"}
         </p>
-        <p className="font-display tracking-tight text-[clamp(30px,3.6vw,64px)] font-bold uppercase leading-[0.95]">{teamLine(match, 1)}</p>
+        <p className={`text-right font-display tracking-tight font-bold uppercase leading-[1.02] text-white break-words ${featured ? "text-[clamp(44px,5vw,96px)]" : "text-[clamp(30px,3.6vw,64px)]"}`}>{team(1)}</p>
       </div>
-      {segStrip}
-      {match.venue && <p className="mt-[1vh] text-center text-[clamp(14px,1.3vw,22px)] uppercase tracking-widest text-navy-100">{match.venue}</p>}
+      {match.segments.length > 0 && (
+        <div className="mt-[1.2vh] flex flex-wrap justify-center gap-[0.6vw]">
+          {match.segments.map((s) => (
+            <span key={s.segmentNo} className={`rounded-full px-[0.9vw] py-[0.3vh] font-display tracking-tight font-bold tabular-nums text-[clamp(13px,1.4vw,26px)] ${s.status === "open" ? "bg-crimson-600 text-white" : "bg-navy-800 text-navy-100"}`}>
+              {division?.scoringKind === "set_based" ? `S${s.segmentNo}` : `Q${s.segmentNo}`} {s.points[0] ?? 0}–{s.points[1] ?? 0}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-function LiveView({ ctx, matches }: { ctx: Ctx; matches: MatchInfo[] }) {
+// Live presentation = MANUAL SLIDESHOW (user direction: no auto-scroll
+// marquee, no auto-advance between games). Slides are discrete pages: one
+// game at featured size when 1–2 are live; 2×2 pages when 3+ are live. Only
+// the operator moves between slides (control cluster, ←/→, game chips). A
+// featured game (picker or ?game=) is the slideshow locked to one slide.
+function liveSlides(matches: MatchInfo[]): MatchInfo[][] {
+  if (matches.length <= 2) return matches.map((m) => [m]);
+  const pages: MatchInfo[][] = [];
+  for (let i = 0; i < matches.length; i += 4) pages.push(matches.slice(i, i + 4));
+  return pages;
+}
+
+function LiveView({ ctx, matches, featuredId, slide, slideCount }: {
+  ctx: Ctx; matches: MatchInfo[]; featuredId: string | null; slide: number; slideCount: number;
+}) {
+  const featured = featuredId ? matches.find((m) => m.id === featuredId) : undefined;
+  const right = featured
+    ? "Featured match"
+    : slideCount > 1
+      ? `${matches.length} matches in play · slide ${Math.min(slide, slideCount - 1) + 1} of ${slideCount} — use ← → or the game chips`
+      : `${matches.length} match${matches.length === 1 ? "" : "es"} in play`;
   return (
-    <div className="flex h-full flex-col">
-      <BoardTitle title="Live Now" right={`${matches.length} match${matches.length === 1 ? "" : "es"} in play`} />
-      <div className={`grid flex-1 content-center gap-[2vh] ${matches.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
-        {matches.slice(0, 4).map((m) => <Scorebug key={m.id} ctx={ctx} match={m} />)}
+    <div className="flex h-full flex-col px-[3vw] pb-[2vh] pt-[6.5vh]">
+      <BoardTitle title="Live now" right={right} />
+      {featured ? (
+        <div className="flex min-h-0 flex-1 items-center">
+          <div className="w-full"><Scorebug ctx={ctx} match={featured} featured /></div>
+        </div>
+      ) : (
+        <LiveSlideshow ctx={ctx} matches={matches} slide={slide} />
+      )}
+    </div>
+  );
+}
+
+function LiveSlideshow({ ctx, matches, slide }: { ctx: Ctx; matches: MatchInfo[]; slide: number }) {
+  const pages = liveSlides(matches);
+  const page = pages[Math.min(slide, pages.length - 1)] ?? [];
+  if (page.length <= 1) {
+    return (
+      <div className="flex min-h-0 flex-1 items-center">
+        <div className="w-full">{page[0] && <Scorebug ctx={ctx} match={page[0]} featured />}</div>
       </div>
+    );
+  }
+  return (
+    <div className="grid min-h-0 flex-1 grid-cols-2 grid-rows-2 content-center gap-[1.2vw]">
+      {page.map((m) => <Scorebug key={m.id} ctx={ctx} match={m} />)}
     </div>
   );
 }
@@ -340,6 +401,11 @@ function DisplayBoard() {
   const [paused, setPaused] = useState(false);
   const [manualView, setManualView] = useState<ViewKey | null>(null);
   const [unpinned, setUnpinned] = useState(false);
+  // Live slideshow position (manual only — never auto-advances) and the
+  // featured game picked from the control cluster (a ?game= pin is the
+  // URL-borne equivalent and releases the same way, via Rotate).
+  const [liveSlide, setLiveSlide] = useState(0);
+  const [featuredId, setFeaturedId] = useState<string | null>(null);
   // Control cluster visibility: auto-hides after ~3s without mouse movement.
   const [uiVisible, setUiVisible] = useState(true);
   const hideTimer = useRef<number | null>(null);
@@ -392,7 +458,12 @@ function DisplayBoard() {
   const urlPin: ViewKey | null = (ALL_VIEWS as string[]).includes(pinnedRaw ?? "")
     ? (pinnedRaw as ViewKey)
     : null;
-  const pinned: ViewKey | null = unpinned ? null : urlPin;
+  const gameRaw = params.get("game");
+  const gamePin: string | null = !unpinned && gameRaw && data?.live.some((m) => m.id === gameRaw) ? gameRaw : null;
+  const pinned: ViewKey | null = gamePin ? "live" : unpinned ? null : urlPin;
+  const effFeatured: string | null = featuredId && data?.live.some((m) => m.id === featuredId) ? featuredId : gamePin;
+  const slideCount = data ? liveSlides(data.live).length : 0;
+  const slideIdx = Math.min(liveSlide, Math.max(0, slideCount - 1));
 
   const rotating = !pinned && !manualView && !paused;
   useEffect(() => {
@@ -406,6 +477,7 @@ function DisplayBoard() {
 
   const jump = (v: ViewKey) => {
     if (v === "live" && (!data || data.live.length === 0)) return;
+    if (v !== "live") setFeaturedId(null); // leaving Live releases the feature
     setManualView(v);
     setPaused(false);
     poke();
@@ -415,6 +487,7 @@ function DisplayBoard() {
     if (idx >= 0) setCycleIdx(idx); // rotation continues from the shown view
     setManualView(null);
     setUnpinned(true);
+    setFeaturedId(null);
     setPaused(false);
     poke();
   };
@@ -426,13 +499,26 @@ function DisplayBoard() {
     const i = order.indexOf(active);
     jump(order[(i + dir + order.length) % order.length]);
   };
+  // Slideshow paging — wraps around; the ONLY way slides ever change.
+  const stepSlide = (dir: 1 | -1) => {
+    if (slideCount <= 1) return;
+    setLiveSlide((s) => (Math.min(s, slideCount - 1) + dir + slideCount) % slideCount);
+    poke();
+  };
+  const feature = (id: string) => {
+    setFeaturedId(id);
+    setManualView("live");
+    setPaused(false);
+    poke();
+  };
   // Keyboard control for the laptop driving the TV (no dep array: handlers
-  // are re-created every render, so re-subscribe to stay current).
+  // are re-created every render, so re-subscribe to stay current). On the
+  // Live view, ←/→ page the game slideshow; everywhere else they step views.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === "Space") { e.preventDefault(); togglePlay(); }
-      else if (e.key === "ArrowRight") step(1);
-      else if (e.key === "ArrowLeft") step(-1);
+      else if (e.key === "ArrowRight") { if (active === "live" && !effFeatured && slideCount > 1) stepSlide(1); else step(1); }
+      else if (e.key === "ArrowLeft") { if (active === "live" && !effFeatured && slideCount > 1) stepSlide(-1); else step(-1); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -477,7 +563,7 @@ function DisplayBoard() {
       <main className="min-h-0 flex-1 px-[3vw] pt-[1.6vh]">
         <div key={active} className="board-view-in h-full">
           {active === "tally" && <TallyView ctx={data.ctx} />}
-          {active === "live" && <LiveView ctx={data.ctx} matches={data.live} />}
+          {active === "live" && <LiveView ctx={data.ctx} matches={data.live} featuredId={effFeatured} slide={slideIdx} slideCount={slideCount} />}
           {active === "upnext" && <UpNextView ctx={data.ctx} matches={data.upcoming} />}
           {active === "results" && <ResultsView ctx={data.ctx} matches={data.results} />}
         </div>
@@ -487,8 +573,48 @@ function DisplayBoard() {
           ~3s without mouse movement (move/tap brings it back). The view
           chips double as the rotation indicators; Live is disabled while
           nothing is live. Ticker + clock are outside this and never pause. */}
-      <div className={`absolute bottom-[8.5vh] right-[2vw] z-20 flex items-center gap-2 transition-opacity duration-500 ${uiVisible ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-        <span className="mr-1 hidden text-[11px] font-semibold uppercase tracking-widest text-navy-100/70 lg:block">Space play/pause · ←/→ views</span>
+      <div className={`absolute bottom-[8.5vh] right-[2vw] z-20 flex flex-col items-end gap-2 transition-opacity duration-500 ${uiVisible ? "opacity-100" : "pointer-events-none opacity-0"}`}>
+        {active === "live" && data.live.length > 0 && (
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {effFeatured ? (
+              <>
+                <span className="rounded-md bg-crimson-600 px-3 py-2 font-display tracking-tight text-sm font-bold uppercase text-white">
+                  ★ Featured: {data.ctx.sportByDiv.get(data.live.find((m) => m.id === effFeatured)?.divisionId ?? "")} — {(() => { const f = data.live.find((m) => m.id === effFeatured); return f ? `${teamLine(f, 0)} vs ${teamLine(f, 1)}` : ""; })()}
+                </span>
+                <button type="button" onClick={resumeRotation}
+                  className="min-h-[40px] rounded-md border border-navy-700 bg-navy-900/85 px-3 py-2 font-display tracking-tight text-sm font-bold uppercase text-navy-100 hover:bg-navy-800">
+                  Release feature
+                </button>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={() => stepSlide(-1)} disabled={slideCount <= 1}
+                  className="min-h-[40px] rounded-md border border-navy-700 bg-navy-900/85 px-3 py-2 font-display tracking-tight text-sm font-bold uppercase text-navy-100 hover:bg-navy-800 disabled:opacity-40">‹ Prev game</button>
+                {liveSlides(data.live).map((page, i) => (
+                  <button key={page.map((m) => m.id).join("|")} type="button" onClick={() => { setLiveSlide(i); poke(); }} aria-pressed={i === slideIdx}
+                    className={`min-h-[40px] rounded-md px-3 py-2 font-display tracking-tight text-sm font-bold uppercase ${i === slideIdx ? "bg-crimson-600 text-white" : "border border-navy-700 bg-navy-900/85 text-navy-100 hover:bg-navy-800"}`}>
+                    {page.length === 1 ? `${data.ctx.sportByDiv.get(page[0].divisionId)} · ${page[0].label}` : `Games ${i * 4 + 1}–${Math.min(i * 4 + 4, data.live.length)}`}
+                  </button>
+                ))}
+                <button type="button" onClick={() => stepSlide(1)} disabled={slideCount <= 1}
+                  className="min-h-[40px] rounded-md border border-navy-700 bg-navy-900/85 px-3 py-2 font-display tracking-tight text-sm font-bold uppercase text-navy-100 hover:bg-navy-800 disabled:opacity-40">Next game ›</button>
+                <select aria-label="Feature a live game" value="" onChange={(e) => { if (e.target.value) feature(e.target.value); }}
+                  className="min-h-[40px] rounded-md border border-navy-700 bg-navy-900/85 px-2 py-2 font-display tracking-tight text-sm font-bold uppercase text-navy-100">
+                  <option value="">★ Feature a game…</option>
+                  {[...new Set(data.live.map((m) => data.ctx.sportByDiv.get(m.divisionId) ?? ""))].map((sportName) => (
+                    <optgroup key={sportName} label={sportName}>
+                      {data.live.filter((m) => (data.ctx.sportByDiv.get(m.divisionId) ?? "") === sportName).map((m) => (
+                        <option key={m.id} value={m.id}>{teamLine(m, 0)} vs {teamLine(m, 1)} — {data.ctx.divById.get(m.divisionId)?.name}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </>
+            )}
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+        <span className="mr-1 hidden text-[11px] font-semibold uppercase tracking-widest text-navy-100/70 lg:block">Space play/pause · ←/→ views or games</span>
         {ALL_VIEWS.map((v) => {
           const disabled = v === "live" && data.live.length === 0;
           const isActiveView = v === active;
@@ -508,6 +634,7 @@ function DisplayBoard() {
           )}
           <span>{rotating ? "Pause" : "Rotate"}</span>
         </button>
+        </div>
       </div>
 
       <Ticker items={data.ticker} />

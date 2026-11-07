@@ -107,7 +107,12 @@ function ScoringPageInner({ params }: { params: Promise<{ id: string }> }) {
     <div className="space-y-5 pb-28 max-w-3xl mx-auto">
       <div className="flex items-center justify-between gap-2">
         <Link href="/console" className="text-sm font-semibold text-navy-800 underline">← Console</Link>
-        <StatusPill status={server.status} needsReview={server.needsReview} />
+        <span className="flex items-center gap-2">
+          {division.scoringKind !== "placement_only" && (
+            <Link href={`/console/matches/${matchId}/scoreboard`} className="rounded-lg bg-crimson-600 text-white px-3.5 py-2 text-sm font-bold min-h-[40px] inline-flex items-center">● Courtside scoreboard</Link>
+          )}
+          <StatusPill status={server.status} needsReview={server.needsReview} />
+        </span>
       </div>
       <header>
         <h1 className="font-display tracking-tight text-3xl font-bold text-navy-950">{teamName(1)} <span className="text-crimson-800">vs</span> {teamName(2)}</h1>

@@ -121,5 +121,29 @@ describe("mock provider end-to-end", () => {
 
     const conflicts = await p.listConflicts();
     expect(conflicts.some((c) => c.kind === "player" && c.playerName === "Shared Player One")).toBe(true);
+    expect(conflicts.filter((c) => c.kind === "player").every((c) => c.severity === "major")).toBe(true);
+  });
+
+  it("venue-only overlaps are MINOR: they save immediately and ride back as notes", async () => {
+    const p = new MockProvider();
+    const snap = await p.getSnapshot();
+    const vb = snap.sports.find((s) => s.slug === "volleyball")!;
+    const men = snap.divisions.find((d) => d.sportId === vb.id && d.name.includes("Men"))!;
+    const m0 = snap.matches.find((m) => m.divisionId === men.id && m.startsAt && m.venueId)!;
+    const playing = new Set(m0.slots.map((s) => s.entryId));
+    const others = snap.entries.filter((e) => e.divisionId === men.id && !playing.has(e.id)).slice(0, 2);
+    expect(others).toHaveLength(2);
+    // same venue, same time as m0 — but completely different players
+    const res = await p.createFixture({
+      divisionId: men.id, label: "Venue Note Test", stage: "round_robin", groupId: null,
+      startsAt: m0.startsAt!, durationMinutes: 60, venueId: m0.venueId, venueText: null,
+      entryIds: [others[0].id, others[1].id],
+    });
+    expect(res.status).toBe("ok"); // no warning round, no acknowledgement needed
+    if (res.status !== "ok") throw new Error("expected ok");
+    expect(res.notes?.venueClashes.length).toBeGreaterThan(0);
+    expect(res.notes?.venueClashes[0].severity).toBe("minor");
+    const rows = await p.listConflicts();
+    expect(rows.some((c) => c.kind === "venue" && c.severity === "minor")).toBe(true);
   });
 });

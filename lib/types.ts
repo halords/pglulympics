@@ -97,13 +97,21 @@ export interface ScorePayload {
   totals?: Record<number, number> | null;
   placements?: { slotNo: number; place?: number | null; finish: string; note?: string | null }[] | null;
 }
+/** Conflict severity (user re-tier, 2026-11-07): PLAYER overlaps are MAJOR —
+ *  the only conflicts that block a save behind warn → acknowledge. VENUE
+ *  double-bookings are MINOR — a venue may have multiple courts, so they are
+ *  informational notes only, never blocking, never acknowledged. Coverage
+ *  notes (`incomplete`) are informational too. */
+export type ConflictSeverity = "major" | "minor";
 export interface PlayerClash {
   player_id: string; player_name: string; other_match_id: string; other_label: string;
   other_sport: string; other_starts_at: string; other_ends_at: string;
+  severity: "major";
 }
 export interface VenueClash {
   venue_id: string; venue_name: string; other_match_id: string; other_label: string;
   other_sport: string; other_starts_at: string; other_ends_at: string;
+  severity: "minor";
 }
 export interface ConflictReport {
   playerClashes: PlayerClash[];
@@ -112,7 +120,10 @@ export interface ConflictReport {
   incomplete: string[];
 }
 export type FixtureResult =
-  | { status: "ok"; matchId: string }
+  /** `notes` carries the MINOR side of the report (venue overlaps + coverage
+   *  notes) when a save went through without a major warning, so the UI can
+   *  still surface them as information. */
+  | { status: "ok"; matchId: string; notes?: ConflictReport }
   | { status: "warning"; ackHash: string; conflicts: ConflictReport };
 
 export interface FixtureInput {
@@ -128,6 +139,7 @@ export interface FixtureEditInput {
 
 export interface ConflictRow {
   kind: "player" | "venue";
+  severity: ConflictSeverity;
   playerId?: string | null; playerName?: string | null;
   matchId: string; label: string; sport: string; division: string;
   startsAt: string; endsAt: string;

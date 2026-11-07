@@ -40,13 +40,33 @@ export interface ConflictReportTS {
   playerClashes: {
     player_id: string; player_name: string; other_match_id: string; other_label: string;
     other_sport: string; other_starts_at: string; other_ends_at: string;
+    severity: "major";
   }[];
   venueClashes: {
     venue_id: string; venue_name: string; other_match_id: string; other_label: string;
     other_sport: string; other_starts_at: string; other_ends_at: string;
+    severity: "minor";
   }[];
   anomalies: { player_id: string; player_name: string; match_id: string }[];
   incomplete: string[];
+}
+
+/** Severity model (user re-tier): player overlaps = MAJOR (the only blocking
+ *  conflicts); venue double-bookings = MINOR (multi-court venues — notes
+ *  only). Derived from the clash kind everywhere, never stored separately. */
+export function severityOfKind(kind: "player" | "venue"): "major" | "minor" {
+  return kind === "player" ? "major" : "minor";
+}
+
+/** A report blocks a save (warn → acknowledge) only on MAJOR content. */
+export function hasMajorConflicts(report: { playerClashes: readonly unknown[] }): boolean {
+  return report.playerClashes.length > 0;
+}
+
+/** True when the report carries MINOR information worth surfacing after a
+ *  save that did not warn (venue overlaps and/or coverage notes). */
+export function hasMinorNotes(report: { venueClashes: readonly unknown[]; incomplete: readonly string[] }): boolean {
+  return report.venueClashes.length > 0 || report.incomplete.length > 0;
 }
 
 function iso(ms: number): string { return new Date(ms).toISOString(); }
@@ -100,6 +120,7 @@ export function checkFixtureConflicts(
         venue_name: proposed.venueName ?? other.venueName ?? "",
         other_match_id: other.id, other_label: other.label, other_sport: other.sportName,
         other_starts_at: iso(theirs.start), other_ends_at: iso(theirs.end),
+        severity: "minor",
       });
     }
     // player clashes
@@ -113,6 +134,7 @@ export function checkFixtureConflicts(
           player_id: pid, player_name: rosters.playerName[pid] ?? pid,
           other_match_id: other.id, other_label: other.label, other_sport: other.sportName,
           other_starts_at: iso(theirs.start), other_ends_at: iso(theirs.end),
+          severity: "major",
         });
       }
     }
@@ -121,12 +143,14 @@ export function checkFixtureConflicts(
   return report;
 }
 
-/** Deterministic hash binding an acknowledgement to proposed fields + clash set (SPEC §11.4). */
+/** Deterministic hash binding an acknowledgement to proposed fields + the
+ *  MAJOR clash set (SPEC §11.4). Since the severity re-tier, only player
+ *  clashes are ever acknowledged — venue overlaps and coverage notes are
+ *  informational and deliberately NOT part of the ack binding, so a minor
+ *  note appearing/disappearing can never invalidate an acknowledgement. */
 export function conflictAckHash(canonical: string, report: ConflictReportTS): string {
   const keys = [
     ...report.playerClashes.map((c) => `${c.player_id}@${c.other_match_id}`),
-    ...report.venueClashes.map((c) => `venue@${c.other_match_id}`),
-    ...report.incomplete.map((i) => `inc:${i}`),
   ].sort();
   const s = canonical + "|" + keys.join(",");
   // FNV-1a (display/demo parity; the SQL side uses sha256 — the hash is only ever

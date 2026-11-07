@@ -1,5 +1,5 @@
-import type { MatchInfo } from "./types";
-import { manilaDayKey } from "./format";
+import type { DivisionInfo, MatchInfo, SportInfo } from "./types";
+import { fmtTime, manilaDayKey } from "./format";
 
 // Audience-first schedule ordering (SPEC addendum): live matches pinned
 // first, then day groups starting from the nearest day (today while the
@@ -40,6 +40,49 @@ export function buildScheduleSections(matches: MatchInfo[], todayKey: string): S
     return { key: k, matches: [...open, ...done], isPast: k < todayKey };
   });
   return { live, days, tba };
+}
+
+export interface DayScheduleRow {
+  matchId: string;
+  time: string;
+  sportName: string;
+  divisionName: string;
+  label: string;
+  teamsText: string;
+  venue: string | null;
+  status: MatchInfo["status"];
+}
+
+/** Read-only "what's already on that day" context for the fixture create /
+ *  reschedule pickers (Part 4): every non-cancelled match on a Manila day,
+ *  chronological, with sport / division / teams / venue for display. Purely
+ *  informational — player-conflict checking stays with the conflict engine. */
+export function dayScheduleRows(
+  matches: MatchInfo[],
+  divisions: DivisionInfo[],
+  sports: SportInfo[],
+  dayKey: string,
+  excludeMatchId?: string,
+): DayScheduleRow[] {
+  const divById = new Map(divisions.map((d) => [d.id, d]));
+  const sportName = (id: string) => sports.find((s) => s.id === id)?.name ?? "";
+  return matches
+    .filter((m) => m.id !== excludeMatchId && m.status !== "cancelled" && !!m.startsAt && manilaDayKey(m.startsAt) === dayKey)
+    .sort(byStart)
+    .map((m) => {
+      const div = divById.get(m.divisionId);
+      const names = m.slots.map((s) => s.teamName ?? s.placeholder ?? "TBD");
+      return {
+        matchId: m.id,
+        time: fmtTime(m.startsAt),
+        sportName: div ? sportName(div.sportId) : "",
+        divisionName: div?.name ?? "",
+        label: m.label,
+        teamsText: names.length > 2 ? `${names.length} teams entered` : names.join(" vs "),
+        venue: m.venue ?? null,
+        status: m.status,
+      };
+    });
 }
 
 export interface NextUp {

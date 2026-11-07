@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { intervalOf, overlaps, checkFixtureConflicts, type FixtureLike, type RosterLike } from "./overlap";
+import {
+  intervalOf, overlaps, checkFixtureConflicts, conflictAckHash, canonicalFixture,
+  hasMajorConflicts, hasMinorNotes, severityOfKind, type FixtureLike, type RosterLike,
+} from "./overlap";
 
 // SPEC §11.6 binding test list.
 const MNL = (d: string, t: string) => new Date(`${d}T${t}:00+08:00`).toISOString(); // Asia/Manila wall time -> UTC instant
@@ -84,5 +87,60 @@ describe("checkFixtureConflicts (SPEC §11.3)", () => {
     const r = checkFixtureConflicts(fx({ entryIds: ["e4", "e2"], venueId: null }), [], rosters);
     expect(r.incomplete).toContain("roster_unverified");
     expect(r.incomplete).toContain("venue_unmapped");
+  });
+});
+
+describe("severity re-tier (player = major/blocking, venue = minor/notes)", () => {
+  it("severity is derived from the clash kind", () => {
+    expect(severityOfKind("player")).toBe("major");
+    expect(severityOfKind("venue")).toBe("minor");
+  });
+  it("clashes are stamped with their severity", () => {
+    const playerOther = fx({ id: "fx-bball", label: "7", sportName: "Basketball", startsAt: MNL("2026-11-09", "13:30"), entryIds: ["e3"] });
+    const r = checkFixtureConflicts(fx({}), [playerOther], rosters);
+    expect(r.playerClashes[0].severity).toBe("major");
+    expect(r.venueClashes[0]?.severity ?? "minor").toBe("minor"); // same fixture + venue also overlaps
+    const venueOnly = checkFixtureConflicts(fx({ entryIds: ["e2"] }),
+      [fx({ id: "fx-other", startsAt: MNL("2026-11-09", "13:45"), entryIds: ["e4"] })], rosters);
+    expect(venueOnly.venueClashes[0].severity).toBe("minor");
+  });
+  it("only player clashes make a report major", () => {
+    const venueOnly = checkFixtureConflicts(fx({ entryIds: ["e2"] }),
+      [fx({ id: "fx-other", startsAt: MNL("2026-11-09", "13:45"), entryIds: ["e4"] })], rosters);
+    expect(hasMajorConflicts(venueOnly)).toBe(false);
+    expect(hasMinorNotes(venueOnly)).toBe(true);
+    const player = checkFixtureConflicts(fx({}),
+      [fx({ id: "fx-bball", label: "7", sportName: "Basketball", startsAt: MNL("2026-11-09", "13:30"), entryIds: ["e3"] })], rosters);
+    expect(hasMajorConflicts(player)).toBe(true);
+    const clean = checkFixtureConflicts(fx({}), [], rosters);
+    expect(hasMajorConflicts(clean)).toBe(false);
+    expect(hasMinorNotes(clean)).toBe(false);
+  });
+  it("coverage notes alone count as minor notes, never major", () => {
+    const r = checkFixtureConflicts(fx({ entryIds: ["e4", "e2"], venueId: null }), [], rosters);
+    expect(hasMajorConflicts(r)).toBe(false);
+    expect(hasMinorNotes(r)).toBe(true);
+  });
+  it("ack hash binds the major set only: venue/incomplete churn cannot invalidate it", () => {
+    const canonical = canonicalFixture({
+      divisionId: "d1", label: "1", stage: "round_robin", startsAt: MNL("2026-11-09", "13:00"), entryIds: ["e1", "e2"],
+    });
+    const base = checkFixtureConflicts(fx({}),
+      [fx({ id: "fx-bball", label: "7", sportName: "Basketball", startsAt: MNL("2026-11-09", "13:30"), entryIds: ["e3"] })], rosters);
+    const withVenueNoise = {
+      ...base,
+      venueClashes: [...base.venueClashes, {
+        venue_id: "v1", venue_name: "X", other_match_id: "fx-z", other_label: "9", other_sport: "Chess",
+        other_starts_at: base.playerClashes[0].other_starts_at, other_ends_at: base.playerClashes[0].other_ends_at,
+        severity: "minor" as const,
+      }],
+      incomplete: [...base.incomplete, "venue_unmapped"],
+    };
+    expect(conflictAckHash(canonical, withVenueNoise)).toBe(conflictAckHash(canonical, base));
+    const differentPlayer = {
+      ...base,
+      playerClashes: base.playerClashes.map((c) => ({ ...c, player_id: "someone-else" })),
+    };
+    expect(conflictAckHash(canonical, differentPlayer)).not.toBe(conflictAckHash(canonical, base));
   });
 });

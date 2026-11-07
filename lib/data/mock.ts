@@ -8,7 +8,7 @@ import type {
   MatchStatus, PlayerInfo, ScorePayload, Snapshot, SportInfo, TeamInfo, VenueInfo,
 } from "../types";
 import { computedWinner, computeStandings, sortStandings, standingsTied } from "../standings";
-import { checkFixtureConflicts, conflictAckHash, canonicalFixture, type FixtureLike, type RosterLike } from "../conflicts/overlap";
+import { checkFixtureConflicts, conflictAckHash, canonicalFixture, hasMajorConflicts, hasMinorNotes, type FixtureLike, type RosterLike } from "../conflicts/overlap";
 
 const LS_KEY = "pglulympics-mock-v2";
 
@@ -348,7 +348,7 @@ export class MockProvider implements DataProvider {
         const divName = (id: string) => this.state.divisions.find((d) => d.id === id)?.name ?? "";
         for (const c of rep.playerClashes) {
           rows.push({
-            kind: "player", playerId: c.player_id, playerName: c.player_name,
+            kind: "player", severity: "major", playerId: c.player_id, playerName: c.player_name,
             matchId: a.id, label: a.label, sport: a.sportName, division: divName(a.divisionId),
             startsAt: a.startsAt!, endsAt: new Date(Date.parse(a.startsAt!) + (a.durationMinutes ?? 60) * 60000).toISOString(),
             otherMatchId: b.id, otherLabel: b.label, otherSport: b.sportName,
@@ -358,7 +358,7 @@ export class MockProvider implements DataProvider {
         }
         for (const c of rep.venueClashes) {
           rows.push({
-            kind: "venue",
+            kind: "venue", severity: "minor",
             matchId: a.id, label: a.label, sport: a.sportName, division: divName(a.divisionId),
             startsAt: a.startsAt!, endsAt: new Date(Date.parse(a.startsAt!) + (a.durationMinutes ?? 60) * 60000).toISOString(),
             otherMatchId: b.id, otherLabel: b.label, otherSport: b.sportName,
@@ -412,8 +412,9 @@ export class MockProvider implements DataProvider {
 
   async createFixture(input: FixtureInput, ackHash?: string): Promise<FixtureResult> {
     const { report, hash } = this.checkFor(input);
-    const hasIssues = report.playerClashes.length + report.venueClashes.length + report.incomplete.length > 0;
-    if (hasIssues && ackHash !== hash) return { status: "warning", ackHash: hash, conflicts: report };
+    // Severity model: only MAJOR (player) clashes block behind warn → ack.
+    // Venue overlaps + coverage notes ride along as informational notes.
+    if (hasMajorConflicts(report) && ackHash !== hash) return { status: "warning", ackHash: hash, conflicts: report };
     const id = `match:${this.division(input.divisionId).slug}:custom-${Date.now().toString(36)}`;
     const m: MatchInfo = {
       id, divisionId: input.divisionId, groupId: input.groupId ?? null,
@@ -429,7 +430,7 @@ export class MockProvider implements DataProvider {
     };
     this.state.matches.push(m);
     this.emit();
-    return { status: "ok", matchId: id };
+    return { status: "ok", matchId: id, notes: !hasMajorConflicts(report) && hasMinorNotes(report) ? report : undefined };
   }
 
   async updateFixture(matchId: string, input: FixtureEditInput, ackHash?: string): Promise<FixtureResult> {
@@ -441,8 +442,7 @@ export class MockProvider implements DataProvider {
       entryIds: m.slots.map((s) => s.entryId).filter((x): x is string => !!x),
     };
     const { report, hash } = this.checkFor(merged, matchId);
-    const hasIssues = report.playerClashes.length + report.venueClashes.length + report.incomplete.length > 0;
-    if (hasIssues && ackHash !== hash) return { status: "warning", ackHash: hash, conflicts: report };
+    if (hasMajorConflicts(report) && ackHash !== hash) return { status: "warning", ackHash: hash, conflicts: report };
     m.startsAt = input.startsAt;
     m.durationMinutes = input.durationMinutes ?? null;
     m.venueId = input.venueId ?? null;
@@ -451,7 +451,7 @@ export class MockProvider implements DataProvider {
     if (ackHash) m.conflictAck = { hash, by: "demo", at: new Date().toISOString() };
     m.revision++;
     this.emit();
-    return { status: "ok", matchId };
+    return { status: "ok", matchId, notes: !hasMajorConflicts(report) && hasMinorNotes(report) ? report : undefined };
   }
 
   async setFixtureTeams(matchId: string, entryIds: string[], ackHash?: string): Promise<FixtureResult> {
@@ -467,13 +467,12 @@ export class MockProvider implements DataProvider {
       venueId: m.venueId ?? null, venueText: null, entryIds,
     };
     const { report, hash } = this.checkFor(merged, matchId);
-    const hasIssues = report.playerClashes.length + report.venueClashes.length + report.incomplete.length > 0;
-    if (hasIssues && ackHash !== hash) return { status: "warning", ackHash: hash, conflicts: report };
+    if (hasMajorConflicts(report) && ackHash !== hash) return { status: "warning", ackHash: hash, conflicts: report };
     m.slots = m.slots.map((s, i) => ({ ...s, entryId: entryIds[i], teamName: this.teamNameOfEntry(entryIds[i]) }));
     if (ackHash) m.conflictAck = { hash, by: "demo", at: new Date().toISOString() };
     m.revision++;
     this.emit();
-    return { status: "ok", matchId };
+    return { status: "ok", matchId, notes: !hasMajorConflicts(report) && hasMinorNotes(report) ? report : undefined };
   }
 
   async confirmAwards(divisionId: string, awards: { awardKey: string; medal: AwardInfo["medal"]; entryId: string; source?: string }[]): Promise<void> {

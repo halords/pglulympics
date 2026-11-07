@@ -6,6 +6,7 @@ import { manilaDayKey, fmtDayLong } from "../../../../lib/format";
 import { nextUpFixtures } from "../../../../lib/schedule";
 import MatchCard, { divisionEntrantNames } from "../../../../components/MatchCard";
 import StandingsTable from "../../../../components/StandingsTable";
+import { sportIdentity, SportIcon } from "../../../../lib/sport-identity";
 
 const SPORT_NOTES: Record<string, string> = {
   volleyball: "Round-robin brackets, then crossover semifinals, bronze and gold matches.",
@@ -66,10 +67,20 @@ function SportPageInner({ params }: { params: Promise<{ slug: string }> }) {
 
   return (
     <div className="space-y-8">
-      <header className="rounded-2xl bg-navy-950 text-white px-5 py-6">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-crimson-400 font-bold">PGLUlympics</p>
-        <h1 className="font-display tracking-tight text-5xl font-bold uppercase">{sport.name}</h1>
-        <p className="text-navy-100 mt-1">{divisions.length <= 4 ? `${divisions.map((d) => d.name).join(" · ")} — ` : ""}{SPORT_NOTES[sport.slug] ?? ""}</p>
+      <header className="overflow-hidden rounded-2xl bg-navy-950 text-white">
+        <div className="h-1.5" style={{ backgroundColor: sportIdentity(sport).tint }} />
+        <div className="px-5 py-6">
+          <div className="flex items-center gap-4">
+            <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-white" style={{ backgroundColor: sportIdentity(sport).tint }}>
+              <SportIcon sport={sport} className="h-10 w-10" />
+            </span>
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.25em] text-crimson-400 font-bold">PGLUlympics</p>
+              <h1 className="font-display tracking-tight text-5xl font-bold uppercase">{sport.name}</h1>
+            </div>
+          </div>
+          <p className="text-navy-100 mt-2">{divisions.length <= 4 ? `${divisions.map((d) => d.name).join(" · ")} — ` : ""}{SPORT_NOTES[sport.slug] ?? ""}</p>
+        </div>
       </header>
 
       {/* LEAD: standings first — group tables, latest placements, or entrants. */}

@@ -1,10 +1,12 @@
 "use client";
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useProvider, useSnapshot } from "../../../../lib/data/context";
 import { useSession } from "../../../../lib/data/session";
 import { consoleScopeSportIds } from "../../../../lib/scope";
-import { fmtDay, fmtTime } from "../../../../lib/format";
+import { fmtDay, fmtDayLong, fmtTime } from "../../../../lib/format";
+import { dayScheduleRows, type DayScheduleRow } from "../../../../lib/schedule";
 import type { ConflictReport, FixtureEditInput, FixtureInput, MatchInfo, MatchStage } from "../../../../lib/types";
 import { StatusPill } from "../../../../components/MatchCard";
 import SportSwitcher from "../../../../components/SportSwitcher";
@@ -24,10 +26,64 @@ function isoToManilaLocal(iso: string | null | undefined): string {
 
 type WarningAction = "create" | "edit" | "teams";
 
-export default function FixturesPage() {
+const COVERAGE_TEXT: Record<string, string> = {
+  roster_unverified: "at least one involved roster is not verified, so its players could not be checked",
+  venue_unmapped: "no venue selected, so venue double-booking could not be checked",
+  participants_unresolved_elsewhere: "another overlapping fixture has unresolved participants (e.g. a playoff slot), so its players could not be checked",
+  uncheckable_no_time: "this fixture has no date/time yet, so nothing could be checked",
+};
+
+/** MINOR notes box (venue overlaps + coverage notes): muted, clearly
+ *  informational — these never block a save and are never acknowledged. */
+function MinorNotes({ report, heading }: { report: ConflictReport; heading: string }) {
+  if (report.venueClashes.length === 0 && report.incomplete.length === 0) return null;
+  return (
+    <section className="rounded-xl border border-navy-100 bg-navy-50 p-4 space-y-1.5">
+      <h3 className="font-display tracking-tight text-base font-bold text-navy-900">
+        {heading} <span className="ml-1 rounded bg-navy-100 border border-navy-100 px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-navy-800">Minor</span>
+      </h3>
+      {report.venueClashes.map((c, i) => (
+        <p key={`v${i}`} className="text-sm text-neutral-600">
+          <strong>Venue overlap:</strong> {c.venue_name} is also booked by <strong>{c.other_label}</strong> ({c.other_sport}) {fmtDay(c.other_starts_at)} {fmtTime(c.other_starts_at)}–{fmtTime(c.other_ends_at)}. Venues may have multiple courts, so this is a note, not a block.
+        </p>
+      ))}
+      {report.incomplete.map((code, i) => (
+        <p key={`i${i}`} className="text-sm text-neutral-500">Coverage note: {COVERAGE_TEXT[code] ?? code}.</p>
+      ))}
+    </section>
+  );
+}
+
+/** "Already on <date>" — read-only day context for the date pickers. */
+function DayContext({ dayKey, rows }: { dayKey: string; rows: DayScheduleRow[] }) {
+  return (
+    <div className="rounded-xl border border-navy-100 bg-navy-50 p-3.5">
+      <p className="text-sm font-bold text-navy-950">Already on {fmtDayLong(`${dayKey}T12:00:00+08:00`)} — {rows.length} match{rows.length === 1 ? "" : "es"}</p>
+      {rows.length === 0 ? (
+        <p className="text-sm text-neutral-500 mt-1">Nothing else scheduled that day.</p>
+      ) : (
+        <ul className="mt-1.5 space-y-1 text-sm text-neutral-700">
+          {rows.slice(0, 10).map((r) => (
+            <li key={r.matchId}>
+              <strong className="tabular-nums">{r.time}</strong> · {r.sportName} — {r.divisionName} · {r.label}: {r.teamsText}
+              {r.venue ? <> · {r.venue}</> : null}
+              {r.status === "live" ? <> · <span className="font-semibold text-crimson-600">LIVE</span></> : null}
+              {r.status === "final" ? <> · final</> : null}
+            </li>
+          ))}
+          {rows.length > 10 && <li className="text-neutral-500">…and {rows.length - 10} more.</li>}
+        </ul>
+      )}
+      <p className="text-xs text-neutral-500 mt-1.5">For information only — player clashes are still checked on save.</p>
+    </div>
+  );
+}
+
+function FixturesPageInner() {
   const snap = useSnapshot();
   const provider = useProvider();
   const session = useSession();
+  const params = useSearchParams();
 
   const [sportFilter, setSportFilter] = useState<string>("all");
   const [divisionId, setDivisionId] = useState("");
@@ -44,6 +100,7 @@ export default function FixturesPage() {
   const [warning, setWarning] = useState<{ hash: string; report: ConflictReport } | null>(null);
   const [warningAction, setWarningAction] = useState<WarningAction>("create");
   const [notice, setNotice] = useState<string | null>(null);
+  const [minorNotes, setMinorNotes] = useState<ConflictReport | null>(null);
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState<MatchInfo | null>(null);
   const [editWhen, setEditWhen] = useState("");
@@ -66,6 +123,23 @@ export default function FixturesPage() {
     const scope = new Set(scopeIds);
     return snap.divisions.filter((d) => scope.has(d.sportId) && (sportFilter === "all" || d.sportId === sportFilter));
   }, [snap, scopeIds, sportFilter]);
+
+  // Deep link from the console match cards: /console/fixtures?edit=<matchId>
+  // opens the reschedule panel for that fixture.
+  const editParam = params.get("edit");
+  useEffect(() => {
+    if (!editParam || !snap || editing) return;
+    const m = snap.matches.find((x) => x.id === editParam);
+    if (!m || m.status !== "scheduled") return;
+    if (!snap.divisions.some((d) => d.id === m.divisionId && scopeIds.includes(d.sportId))) return;
+    setEditing(m);
+    setEditWhen(isoToManilaLocal(m.startsAt));
+    setEditVenueId(m.venueId ?? "");
+    setEditVenueText(m.venueId ? "" : (m.venue ?? ""));
+    setEditLabel(m.label);
+    setEditEntries(m.slots.map((s) => s.entryId ?? ""));
+    setWarning(null);
+  }, [editParam, snap, editing, scopeIds]);
 
   if (!session.ready || !snap) return <p className="text-neutral-500 py-10 text-center">Loading…</p>;
   if (!session.role) return <p className="py-10 text-center">Sign in first — <Link href="/login" className="underline font-semibold">go to sign-in</Link>.</p>;
@@ -99,18 +173,18 @@ export default function FixturesPage() {
       startsAt: manilaToISO(when), durationMinutes: duration ? Number(duration) : null,
       venueId: venueId || null, venueText: venueText || null, entryIds,
     };
-    setBusy(true); setNotice(null);
+    setBusy(true); setNotice(null); setMinorNotes(null);
     try {
       const res = await provider.createFixture(input, ackHash);
       if (res.status === "warning") { setWarning({ hash: res.ackHash, report: res.conflicts }); setWarningAction("create"); }
-      else { setWarning(null); setNotice("Fixture created."); setLabel(""); }
+      else { setWarning(null); setNotice("Fixture created."); setLabel(""); setMinorNotes(res.notes ?? null); }
     } catch (e) { setNotice(e instanceof Error ? e.message : "Create failed"); }
     setBusy(false);
   };
 
   const submitEdit = async (ackHash?: string, step: "edit" | "teams" = "edit") => {
     if (!editing) return;
-    setBusy(true); setNotice(null);
+    setBusy(true); setNotice(null); setMinorNotes(null);
     try {
       if (step === "edit") {
         if (!editWhen) { setNotice("Pick a date/time."); setBusy(false); return; }
@@ -121,19 +195,20 @@ export default function FixturesPage() {
         };
         const res = await provider.updateFixture(editing.id, input, ackHash);
         if (res.status === "warning") { setWarning({ hash: res.ackHash, report: res.conflicts }); setWarningAction("edit"); setBusy(false); return; }
-        if (!teamsChanged) { setWarning(null); setEditing(null); setNotice("Fixture updated."); setBusy(false); return; }
+        if (!teamsChanged) { setWarning(null); setEditing(null); setNotice("Fixture updated."); setMinorNotes(res.notes ?? null); setBusy(false); return; }
         // fall through: teams changed too — save them in the same click
       }
       if (editEntries.some((e) => !e)) { setNotice("Pick a team for every slot."); setBusy(false); return; }
       if (new Set(editEntries).size !== editEntries.length) { setNotice("Each slot needs a different team."); setBusy(false); return; }
       const res = await provider.setFixtureTeams(editing.id, editEntries, step === "teams" ? ackHash : undefined);
       if (res.status === "warning") { setWarning({ hash: res.ackHash, report: res.conflicts }); setWarningAction("teams"); setBusy(false); return; }
-      setWarning(null); setEditing(null); setNotice("Fixture updated.");
+      setWarning(null); setEditing(null); setNotice("Fixture updated."); setMinorNotes(res.notes ?? null);
     } catch (e) { setNotice(e instanceof Error ? e.message : "Update failed"); }
     setBusy(false);
   };
 
   const startEdit = (m: MatchInfo) => {
+    setMinorNotes(null);
     setEditing(m);
     setEditWhen(isoToManilaLocal(m.startsAt));
     setEditVenueId(m.venueId ?? "");
@@ -156,33 +231,29 @@ export default function FixturesPage() {
       {notice && <p className="rounded-lg bg-navy-50 border border-navy-100 px-3 py-2 text-sm">{notice}</p>}
 
       {warning && (
-        <section className="rounded-xl border-2 border-crimson-800 bg-white p-4 space-y-2">
-          <h2 className="font-display tracking-tight text-xl font-bold text-crimson-800">⚠ SCHEDULING CONFLICTS — NOT SAVED YET</h2>
-          {warning.report.playerClashes.map((c, i) => (
-            <p key={`p${i}`} className="text-sm"><strong>{c.player_name}</strong> is also playing <strong>{c.other_label}</strong> ({c.other_sport}) {fmtDay(c.other_starts_at)} {fmtTime(c.other_starts_at)}–{fmtTime(c.other_ends_at)}.</p>
-          ))}
-          {warning.report.venueClashes.map((c, i) => (
-            <p key={`v${i}`} className="text-sm"><strong>Venue clash:</strong> {c.venue_name} is booked by <strong>{c.other_label}</strong> ({c.other_sport}) {fmtDay(c.other_starts_at)} {fmtTime(c.other_starts_at)}–{fmtTime(c.other_ends_at)}.</p>
-          ))}
-          {warning.report.incomplete.map((code, i) => (
-            <p key={`i${i}`} className="text-sm text-neutral-600">{
-              code === "roster_unverified" ? "Coverage note: at least one involved roster is not verified, so its players could not be checked."
-              : code === "venue_unmapped" ? "Coverage note: no venue selected, so venue double-booking could not be checked."
-              : code === "participants_unresolved_elsewhere" ? "Coverage note: another overlapping fixture has unresolved participants (e.g. a playoff slot), so its players could not be checked."
-              : code === "uncheckable_no_time" ? "Coverage note: this fixture has no date/time yet, so nothing could be checked."
-              : `Coverage note: ${code}`
-            }</p>
-          ))}
-          <div className="flex gap-2 pt-1">
-            <button disabled={busy} className="rounded-xl bg-crimson-800 text-white px-5 py-3 font-bold min-h-[48px] disabled:opacity-60"
-              onClick={() => void (warningAction === "create" ? submitCreate(warning.hash) : submitEdit(warning.hash, warningAction))}>
-              Save anyway (acknowledge)
-            </button>
-            <button className="rounded-xl bg-white border border-navy-100 px-5 py-3 font-semibold min-h-[48px]" onClick={() => setWarning(null)}>Go back and fix</button>
-          </div>
-          <p className="text-xs text-neutral-500">Saving anyway records your acknowledgement with the exact clash list. Player checks only cover teams with verified rosters — unverified rosters are listed as incomplete coverage above.</p>
-        </section>
+        <div className="space-y-3">
+          <section className="rounded-xl border-2 border-crimson-800 bg-white p-4 space-y-2">
+            <h2 className="font-display tracking-tight text-xl font-bold text-crimson-800">
+              ⚠ PLAYER CONFLICTS — NOT SAVED YET
+              <span className="ml-2 rounded bg-crimson-800 px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white align-middle">Major</span>
+            </h2>
+            {warning.report.playerClashes.map((c, i) => (
+              <p key={`p${i}`} className="text-sm"><strong>{c.player_name}</strong> is also playing <strong>{c.other_label}</strong> ({c.other_sport}) {fmtDay(c.other_starts_at)} {fmtTime(c.other_starts_at)}–{fmtTime(c.other_ends_at)}.</p>
+            ))}
+            <div className="flex gap-2 pt-1">
+              <button disabled={busy} className="rounded-xl bg-crimson-800 text-white px-5 py-3 font-bold min-h-[48px] disabled:opacity-60"
+                onClick={() => void (warningAction === "create" ? submitCreate(warning.hash) : submitEdit(warning.hash, warningAction))}>
+                Save anyway (acknowledge)
+              </button>
+              <button className="rounded-xl bg-white border border-navy-100 px-5 py-3 font-semibold min-h-[48px]" onClick={() => setWarning(null)}>Go back and fix</button>
+            </div>
+            <p className="text-xs text-neutral-500">Only player overlaps block saving — a player cannot be in two places at once. Saving anyway records your acknowledgement with the exact clash list. Player checks only cover teams with verified rosters.</p>
+          </section>
+          <MinorNotes report={warning.report} heading="Also noted (does not block saving)" />
+        </div>
       )}
+
+      {minorNotes && !warning && <MinorNotes report={minorNotes} heading="Saved — with minor notes" />}
 
       <section className="rounded-2xl border border-navy-100 bg-white p-4">
         <h2 className="font-display tracking-tight text-2xl font-bold mb-3">NEW FIXTURE</h2>
@@ -270,10 +341,15 @@ export default function FixturesPage() {
             <input className={inputCls} value={venueText} onChange={(e) => setVenueText(e.target.value)} />
           </div>
         </div>
+        {when && (
+          <div className="mt-3">
+            <DayContext dayKey={when.slice(0, 10)} rows={dayScheduleRows(snap.matches, snap.divisions, snap.sports, when.slice(0, 10))} />
+          </div>
+        )}
         <button disabled={busy} onClick={() => void submitCreate()} className="mt-4 rounded-xl bg-crimson-800 text-white px-6 py-3 font-bold min-h-[52px] disabled:opacity-60">
           Check & create fixture
         </button>
-        <p className="text-xs text-neutral-500 mt-2">Every save is cross-checked event-wide: players on both teams against all fixtures in all sports, plus venue double-booking.</p>
+        <p className="text-xs text-neutral-500 mt-2">Every save is cross-checked event-wide: a player overlap blocks the save until you acknowledge it; a shared venue is only noted (venues may have multiple courts).</p>
       </section>
 
       <section className="rounded-2xl border border-navy-100 bg-white p-4">
@@ -332,6 +408,9 @@ export default function FixturesPage() {
             ) : (
               <p className="text-xs text-neutral-500">This fixture&apos;s teams come from group ranks / earlier results, so they can&apos;t be changed directly.</p>
             )}
+            {editWhen && (
+              <DayContext dayKey={editWhen.slice(0, 10)} rows={dayScheduleRows(snap.matches, snap.divisions, snap.sports, editWhen.slice(0, 10), editing.id)} />
+            )}
             <div className="flex gap-2">
               <button disabled={busy} onClick={() => void submitEdit()} className="rounded-xl bg-navy-950 text-white px-5 py-3 font-bold min-h-[48px] disabled:opacity-60">Check & save</button>
               <button onClick={() => setEditing(null)} className="rounded-xl bg-white border border-navy-100 px-5 py-3 font-semibold min-h-[48px]">Cancel</button>
@@ -340,5 +419,13 @@ export default function FixturesPage() {
         )}
       </section>
     </div>
+  );
+}
+
+export default function FixturesPage() {
+  return (
+    <Suspense fallback={<p className="text-neutral-500 py-10 text-center">Loading…</p>}>
+      <FixturesPageInner />
+    </Suspense>
   );
 }

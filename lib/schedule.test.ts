@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { buildScheduleSections, nextUpFixtures } from "./schedule";
+import { buildScheduleSections, dayScheduleRows, nextUpFixtures } from "./schedule";
 import { dedupeLabel } from "./format";
-import type { MatchInfo } from "./types";
+import type { DivisionInfo, MatchInfo, SportInfo } from "./types";
 
 let n = 0;
 function mk(partial: Partial<MatchInfo>): MatchInfo {
@@ -112,5 +112,36 @@ describe("dedupeLabel", () => {
   });
   it("keeps distinct parts in order", () => {
     expect(dedupeLabel(["Basketball", "Bracket A", "Match 3"])).toBe("Basketball · Bracket A · Match 3");
+  });
+});
+
+describe("dayScheduleRows — reschedule date context", () => {
+  const sports: SportInfo[] = [
+    { id: "s-vb", name: "Volleyball", slug: "volleyball", defaultDurationMinutes: 60 },
+    { id: "s-bb", name: "Basketball", slug: "basketball", defaultDurationMinutes: 60 },
+  ];
+  const divisions: DivisionInfo[] = [
+    { id: "d1", sportId: "s-vb", name: "Men's", slug: "mens", scoringKind: "set_based", scoringConfig: {}, standingsConfig: {}, medalPolicy: {} },
+    { id: "d2", sportId: "s-bb", name: "Women's", slug: "womens", scoringKind: "simple", scoringConfig: {}, standingsConfig: {}, medalPolicy: {} },
+  ];
+  const team = (teamName: string) => ({ slotNo: 1, entryId: null, teamName });
+  it("lists the day's matches chronologically with sport/division/teams/venue, excluding cancelled, other days, and the edited match", () => {
+    const rows = dayScheduleRows([
+      mk({ id: "late", divisionId: "d2", label: "BB 3", startsAt: at("17", "15:00"), venue: "San Juan Gym", slots: [team("A"), { slotNo: 2, entryId: null, teamName: "B" }] }),
+      mk({ id: "early", divisionId: "d1", label: "VB 1", startsAt: at("17", "09:00"), venue: "DMMMSU Covered Court", slots: [team("C"), { slotNo: 2, entryId: null, teamName: "D" }] }),
+      mk({ id: "cancelled", divisionId: "d1", startsAt: at("17", "10:00"), status: "cancelled" }),
+      mk({ id: "other-day", divisionId: "d1", startsAt: at("18", "09:00") }),
+      mk({ id: "editing", divisionId: "d1", startsAt: at("17", "11:00") }),
+      mk({ id: "tba", divisionId: "d1", startsAt: null }),
+    ], divisions, sports, "2026-11-17", "editing");
+    expect(rows.map((r) => r.matchId)).toEqual(["early", "late"]);
+    expect(rows[0]).toMatchObject({ sportName: "Volleyball", divisionName: "Men's", teamsText: "C vs D", venue: "DMMMSU Covered Court" });
+    expect(rows[1].time).toBe("3:00 PM");
+  });
+  it("summarizes multi-team placement events instead of a fake versus", () => {
+    const rows = dayScheduleRows([
+      mk({ id: "pl", divisionId: "d1", startsAt: at("17", "08:00"), slots: [team("A"), team("B"), team("C")] }),
+    ], divisions, sports, "2026-11-17");
+    expect(rows[0].teamsText).toBe("3 teams entered");
   });
 });

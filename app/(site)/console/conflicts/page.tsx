@@ -41,11 +41,23 @@ export default function ConflictsPage() {
         <Link href="/console" className="text-sm font-semibold text-navy-800 underline">← Console</Link>
       </header>
       <p className="text-sm text-neutral-600">
-        Event-wide overlap scan across all sports: players double-booked across fixtures, and venues double-booked.
+        Event-wide overlap scan across all sports. <strong>Major</strong> conflicts are players double-booked
+        across fixtures — the only conflicts that block a save. <strong>Minor</strong> notes are shared venues:
+        a venue may have multiple courts, so those are informational only.
         Player checks cover <strong>verified rosters only</strong> — teams without a verified roster are a blind spot
         {snap ? <> ({snap.entries.filter((e) => e.rosterStatus !== "verified").length} of {snap.entries.length} entries unverified)</> : null}.
-        Rows marked <em>acknowledged</em> were saved with the clash accepted.
+        Major rows marked <em>acknowledged</em> were saved with the clash accepted.
       </p>
+      {rows && rows.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-crimson-800 text-white px-3.5 py-1.5 text-sm font-bold">
+            ⚠ {rows.filter((r) => r.severity === "major").length} major — player conflicts
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full bg-navy-50 border border-navy-100 text-navy-900 px-3.5 py-1.5 text-sm font-semibold">
+            {rows.filter((r) => r.severity === "minor").length} minor — venue overlaps (multi-court venues)
+          </span>
+        </div>
+      )}
       <div className="flex gap-2">
         {(["player", "team", "venue"] as const).map((g) => (
           <button key={g} onClick={() => setGroupBy(g)}
@@ -62,12 +74,16 @@ export default function ConflictsPage() {
           <h2 className="font-display tracking-tight text-xl font-bold">{key} — {rs.length} clash{rs.length === 1 ? "" : "es"}</h2>
           <ul className="mt-2 space-y-2 text-sm">
             {rs.map((r, i) => (
-              <li key={i} className="rounded-lg bg-navy-50 px-3 py-2">
+              <li key={i} className={`rounded-lg px-3 py-2 ${r.severity === "major" ? "bg-crimson-50 border border-crimson-100" : "bg-navy-50 text-neutral-600"}`}>
+                {r.severity === "major"
+                  ? <span className="mr-2 rounded bg-crimson-800 px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">Major</span>
+                  : <span className="mr-2 rounded bg-navy-100 px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-navy-800">Minor</span>}
                 <strong>{r.label}</strong> ({r.sport}) {fmtDay(r.startsAt)} {fmtTime(r.startsAt)}–{fmtTime(r.endsAt)}
                 {" ↔ "}
                 <strong>{r.otherLabel}</strong> ({r.otherSport}) {fmtDay(r.otherStartsAt)} {fmtTime(r.otherStartsAt)}–{fmtTime(r.otherEndsAt)}
                 {r.kind === "player" && r.playerName && <> · player: <strong>{r.playerName}</strong></>}
-                {r.acked && <span className="ml-2 rounded bg-crimson-100 border border-crimson-600 px-1.5 py-0.5 text-[11px] font-semibold">acknowledged</span>}
+                {r.kind === "venue" && <> · same venue — may simply be different courts</>}
+                {r.acked && r.severity === "major" && <span className="ml-2 rounded bg-crimson-100 border border-crimson-600 px-1.5 py-0.5 text-[11px] font-semibold">acknowledged</span>}
               </li>
             ))}
           </ul>

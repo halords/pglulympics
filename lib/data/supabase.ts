@@ -4,10 +4,24 @@
 // emitted server-side per SPEC §2 for API consumers). Polling: 5s while visible.
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
-  AwardInfo, DataProvider, DivisionInfo, EntryInfo, EventInfo, FixtureEditInput,
+  AwardInfo, ConflictReport, DataProvider, DivisionInfo, EntryInfo, EventInfo, FixtureEditInput,
   FixtureInput, FixtureResult, GroupInfo, MatchInfo, MatchStatus, PlayerInfo,
   ScorePayload, Snapshot, SportInfo, TeamInfo, VenueInfo,
 } from "../types";
+
+/** Stamp the severity model onto a conflict report coming back from the
+ *  RPCs: player clashes are MAJOR, venue clashes MINOR (migration 9 also
+ *  stamps them server-side; doing it here keeps the client correct against
+ *  a database that has not applied migration 9 yet). */
+function normalizeConflicts(raw: unknown): ConflictReport {
+  const r = (raw ?? {}) as Partial<ConflictReport>;
+  return {
+    playerClashes: (r.playerClashes ?? []).map((c) => ({ ...c, severity: "major" as const })),
+    venueClashes: (r.venueClashes ?? []).map((c) => ({ ...c, severity: "minor" as const })),
+    anomalies: r.anomalies ?? [],
+    incomplete: r.incomplete ?? [],
+  };
+}
 
 type Row = Record<string, unknown>;
 const s = (v: unknown) => (v == null ? undefined : String(v));
@@ -243,7 +257,9 @@ export class SupabaseProvider implements DataProvider {
     const { data, error } = await this.sb.rpc("list_conflicts");
     if (error) throw new Error(error.message);
     return ((data ?? []) as Row[]).map((r) => ({
-      kind: r.kind as "player" | "venue", playerId: (r.player_id as string) ?? null,
+      kind: r.kind as "player" | "venue",
+      severity: (r.severity as "major" | "minor" | undefined) ?? (r.kind === "player" ? "major" : "minor"),
+      playerId: (r.player_id as string) ?? null,
       playerName: (r.player_name as string) ?? null,
       matchId: String(r.match_id), label: String(r.label), sport: String(r.sport), division: String(r.division),
       startsAt: String(r.starts_at), endsAt: String(r.ends_at),
@@ -284,8 +300,8 @@ export class SupabaseProvider implements DataProvider {
       p_duration_minutes: input.durationMinutes ?? null, p_venue_id: input.venueId ?? null,
       p_venue_text: input.venueText ?? null, p_entry_ids: input.entryIds, p_ack_hash: ackHash ?? null,
     });
-    if (r.status === "warning") return { status: "warning", ackHash: String(r.ack_hash), conflicts: r.conflicts as FixtureResult extends { conflicts: infer C } ? C : never };
-    return { status: "ok", matchId: String(r.match_id) };
+    if (r.status === "warning") return { status: "warning", ackHash: String(r.ack_hash), conflicts: normalizeConflicts(r.conflicts) };
+    return { status: "ok", matchId: String(r.match_id), notes: r.notes ? normalizeConflicts(r.notes) : undefined };
   }
   async updateFixture(matchId: string, input: FixtureEditInput, ackHash?: string): Promise<FixtureResult> {
     const r = await this.rpc<Row>("update_fixture", {
@@ -293,15 +309,15 @@ export class SupabaseProvider implements DataProvider {
       p_venue_id: input.venueId ?? null, p_venue_text: input.venueText ?? null,
       p_label: input.label ?? null, p_ack_hash: ackHash ?? null,
     });
-    if (r.status === "warning") return { status: "warning", ackHash: String(r.ack_hash), conflicts: r.conflicts as never };
-    return { status: "ok", matchId };
+    if (r.status === "warning") return { status: "warning", ackHash: String(r.ack_hash), conflicts: normalizeConflicts(r.conflicts) };
+    return { status: "ok", matchId, notes: r.notes ? normalizeConflicts(r.notes) : undefined };
   }
   async setFixtureTeams(matchId: string, entryIds: string[], ackHash?: string): Promise<FixtureResult> {
     const r = await this.rpc<Row>("set_fixture_teams", {
       p_match_id: matchId, p_entry_ids: entryIds, p_ack_hash: ackHash ?? null,
     });
-    if (r.status === "warning") return { status: "warning", ackHash: String(r.ack_hash), conflicts: r.conflicts as never };
-    return { status: "ok", matchId };
+    if (r.status === "warning") return { status: "warning", ackHash: String(r.ack_hash), conflicts: normalizeConflicts(r.conflicts) };
+    return { status: "ok", matchId, notes: r.notes ? normalizeConflicts(r.notes) : undefined };
   }
   // ---------------- admin facet (direct DML under admin RLS) ----------------
   async upsertPlayer(name: string): Promise<PlayerInfo> {
