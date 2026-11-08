@@ -267,7 +267,12 @@ function FixturesPageInner() {
     try {
       const res = await provider.createFixture(input, ackHash);
       if (res.status === "warning") { setWarning({ hash: res.ackHash, report: res.conflicts }); setWarningAction("create"); }
-      else { setWarning(null); setNotice("Fixture created."); setLabel(""); setMinorNotes(res.notes ?? null); }
+      else {
+        setWarning(null); setNotice("Fixture created."); setLabel(""); setMinorNotes(res.notes ?? null);
+        // Session brackets: clear the picks so the next pairing starts
+        // clean (the used teams leave the pickers on the next refresh).
+        if (isSession) { setEntryA(""); setEntryB(""); }
+      }
     } catch (e) { setNotice(e instanceof Error ? e.message : "Create failed"); }
     setBusy(false);
   };
