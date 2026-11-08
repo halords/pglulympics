@@ -224,12 +224,24 @@ export class SupabaseProvider implements DataProvider {
         entryId: s(r.entry_id)!, teamName: (r.team_name as string) ?? undefined,
         state: "confirmed" as const, source: "playoff",
       }));
-      // entries are not public; synthesize minimal entries from awards for tally mapping
-      entries = awards.map((a) => ({
-        id: a.entryId, divisionId: a.divisionId,
-        teamId: teamList.find((t) => t.name === a.teamName)?.id ?? "",
-        rosterStatus: "unknown" as const,
-      }));
+      // Team-level entries ARE public via the public_entries projection
+      // (migration 12: id/division/team/group only — no roster data).
+      // Before that migration runs, fall back to synthesizing minimal
+      // entries from awards so tally mapping still resolves.
+      const pubEnts = await sb.from("public_entries").select("*");
+      if (!pubEnts.error && (pubEnts.data?.length ?? 0) > 0) {
+        entries = (pubEnts.data as Row[]).map((e) => ({
+          id: s(e.id)!, divisionId: s(e.division_id)!, teamId: s(e.team_id)!,
+          groupId: (e.group_id as string) ?? null,
+          rosterStatus: "unknown" as const,
+        }));
+      } else {
+        entries = awards.map((a) => ({
+          id: a.entryId, divisionId: a.divisionId,
+          teamId: teamList.find((t) => t.name === a.teamName)?.id ?? "",
+          rosterStatus: "unknown" as const,
+        }));
+      }
     }
 
     const revRes = await sb.from("event_updates").select("revision").order("revision", { ascending: false }).limit(1);

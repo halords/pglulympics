@@ -14,9 +14,9 @@ import { EntriesPoster, SchedulePoster, POSTER_H, POSTER_W } from "../../../../c
 function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
   const { sport: slug } = use(params);
   const snap = useSnapshot();
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const [wrapEl, setWrapEl] = useState<HTMLDivElement | null>(null);
   const posterRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.4);
+  const [scale, setScale] = useState(0);
   const [dayKey, setDayKey] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,15 +46,16 @@ function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
     });
   }, [days]);
 
+  // Callback ref: the preview only mounts after the snapshot loads, so a
+  // mount-once effect would measure nothing and strand the scale.
   useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const update = () => setScale(el.clientWidth / POSTER_W);
+    if (!wrapEl) return;
+    const update = () => setScale(wrapEl.clientWidth / POSTER_W);
     update();
     const ro = new ResizeObserver(update);
-    ro.observe(el);
+    ro.observe(wrapEl);
     return () => ro.disconnect();
-  }, []);
+  }, [wrapEl]);
 
   const activeDay = days.find((d) => d.dayKey === dayKey) ?? days[0] ?? null;
 
@@ -139,7 +140,7 @@ function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
       )}
 
       <div
-        ref={wrapRef}
+        ref={setWrapEl}
         className="w-full overflow-hidden rounded-xl border border-navy-100 shadow-sm"
         style={{ height: POSTER_H * scale }}
       >

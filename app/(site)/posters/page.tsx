@@ -52,7 +52,7 @@ export default function PostersPage() {
                       {kind === "schedule" ? "Schedule poster" : "Entries poster"} · {meta}
                     </p>
                   </div>
-                  <span className="ml-auto font-display text-lg font-semibold uppercase tracking-wide text-crimson-600 group-hover:underline">
+                  <span className="ml-auto shrink-0 whitespace-nowrap font-display text-lg font-semibold uppercase tracking-wide text-crimson-600 group-hover:underline">
                     Open →
                   </span>
                 </div>
