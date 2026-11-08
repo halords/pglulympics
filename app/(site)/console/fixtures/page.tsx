@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useProvider, useSnapshot } from "../../../../lib/data/context";
@@ -11,7 +11,7 @@ import type { ConflictReport, FixtureEditInput, FixtureInput, MatchInfo, MatchSt
 import { StatusPill } from "../../../../components/MatchCard";
 import SportSwitcher from "../../../../components/SportSwitcher";
 import { isSessionSport } from "../../../../lib/board";
-import { advancedEntryIds, usedEntryIdsInStage } from "../../../../lib/fixture-setup";
+import { advancedEntryIds, bracketPool, pairUp, STAGE_TITLES, usedEntryIdsInStage } from "../../../../lib/fixture-setup";
 
 /** Manila wall-clock input value -> ISO instant. */
 function manilaToISO(local: string): string {
@@ -179,6 +179,59 @@ function FixturesPageInner() {
    *  never a team already playing this round. */
   const optionsFor = (otherPick: string) =>
     divEntries.filter((e) => e.id !== otherPick && !(isSession && usedInStage.has(e.id)));
+
+  // Mobile Games play in the PHRMDO Lobby — prefill it once per division
+  // (the venue record once migration 14 has run, free text until then).
+  const venuePrefilledFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!isSession || !div || venuePrefilledFor.current === div.id) return;
+    venuePrefilledFor.current = div.id;
+    if (venueId || venueText) return;
+    const lobby = snap.venues.find((v) => v.name === "PHRMDO Lobby");
+    if (lobby) setVenueId(lobby.id);
+    else setVenueText("PHRMDO Lobby");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSession, div?.id]);
+
+  // One-time round setup (session brackets): pair the whole available
+  // pool for the chosen stage and create every match in one click.
+  const roundPool = isSession && div && !isPlacement
+    ? bracketPool(snap.matches, snap.divisions, divEntries, div.id, stage)
+    : [];
+  const roundPlan = pairUp(roundPool);
+
+  const generateRound = async () => {
+    if (!div || roundPlan.pairs.length === 0) return;
+    const existing = snap.matches.filter(
+      (m) => m.divisionId === div.id && m.stage === stage && m.status !== "cancelled",
+    ).length;
+    setBusy(true); setNotice(null); setMinorNotes(null);
+    let created = 0;
+    try {
+      for (let i = 0; i < roundPlan.pairs.length; i++) {
+        const input: FixtureInput = {
+          divisionId: div.id, label: `${STAGE_TITLES[stage]} ${existing + i + 1}`, stage,
+          groupId: groupId || null, startsAt: null, durationMinutes: null,
+          venueId: venueId || null, venueText: venueId ? null : (venueText || null),
+          entryIds: [...roundPlan.pairs[i]],
+        };
+        const res = await provider.createFixture(input);
+        if (res.status === "warning") {
+          setNotice(`Created ${created} of ${roundPlan.pairs.length} matches, then a check needs your confirmation — finish the rest with the form above.`);
+          setBusy(false);
+          return;
+        }
+        created += 1;
+      }
+      setNotice(
+        `Created ${created} ${STAGE_TITLES[stage].toLowerCase()} matches at ${venueId ? snap.venues.find((v) => v.id === venueId)?.name ?? "the venue" : venueText || "the venue"}` +
+        (roundPlan.leftover ? ` · Bye: ${teamName(roundPlan.leftover)} (not paired this round).` : "."),
+      );
+    } catch (e) {
+      setNotice(`Created ${created} of ${roundPlan.pairs.length} matches, then failed: ${e instanceof Error ? e.message : "unknown error"}`);
+    }
+    setBusy(false);
+  };
   const myMatches = snap.matches.filter((m) => myDivisions.some((d) => d.id === m.divisionId))
     .sort((a, b) => (a.startsAt ?? "").localeCompare(b.startsAt ?? ""));
 
@@ -419,6 +472,48 @@ function FixturesPageInner() {
           Check & create fixture
         </button>
         <p className="text-xs text-neutral-500 mt-2">Every save is cross-checked event-wide: a player overlap blocks the save until you acknowledge it; a shared venue is only noted (venues may have multiple courts).</p>
+
+        {isSession && !isPlacement && (
+          <div className="mt-5 rounded-xl border-2 border-navy-900 bg-navy-50 p-4">
+            <h3 className="font-display tracking-tight text-lg font-bold text-navy-950">
+              One-time setup — {STAGE_TITLES[stage]} round
+            </h3>
+            <p className="text-sm text-neutral-600 mt-1">
+              Pairs every available team for this round and creates all the matches at once —
+              no entering them one by one. Pairings follow the order teams were entered
+              (winners first in later rounds, bye teams last).
+            </p>
+            {roundPlan.pairs.length > 0 ? (
+              <>
+                <ul className="mt-3 space-y-1">
+                  {roundPlan.pairs.map((p, i) => (
+                    <li key={i} className="text-sm font-medium text-navy-950">
+                      {i + 1}. {teamName(p[0])} <span className="text-crimson-800 font-bold">vs</span> {teamName(p[1])}
+                    </li>
+                  ))}
+                  {roundPlan.leftover && (
+                    <li className="text-sm text-neutral-600">
+                      Bye: {teamName(roundPlan.leftover)} — no opponent this round.
+                    </li>
+                  )}
+                </ul>
+                <button
+                  disabled={busy}
+                  onClick={() => void generateRound()}
+                  className="mt-3 rounded-xl bg-navy-900 text-white px-6 py-3 font-bold min-h-[52px] disabled:opacity-60"
+                >
+                  Generate all {roundPlan.pairs.length} matches
+                </button>
+              </>
+            ) : (
+              <p className="text-sm font-medium text-crimson-800 mt-3">
+                {stage === "gold" || stage === "bronze"
+                  ? "Nothing to generate yet — the semifinals have to finish first."
+                  : "Nothing to generate — every available team already has a match in this round."}
+              </p>
+            )}
+          </div>
+        )}
       </section>
 
       <section className="rounded-2xl border border-navy-100 bg-white p-4">
