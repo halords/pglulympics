@@ -140,16 +140,25 @@ export function SchedulePoster({
                     {row.matchNo}
                   </span>
                   <span className="w-72 px-5 text-[26px] text-navy-100">{row.divisionName}</span>
-                  <span className={`flex-1 px-5 font-display font-semibold uppercase leading-tight ${size}`}>
-                    {row.teamA}
-                    {row.scoreA !== null && row.scoreA !== undefined && (
-                      <span className="text-navy-100"> · {row.scoreA}</span>
-                    )}
-                    <span className="mx-3 font-bold lowercase text-crimson-400">vs</span>
-                    {row.teamB}
-                    {row.scoreB !== null && row.scoreB !== undefined && (
-                      <span className="text-navy-100"> · {row.scoreB}</span>
-                    )}
+                  {/* Matchup: Team A right-aligned, Team B left-aligned, and
+                      the "vs" pinned to the same center point on every row
+                      so the column reads as one aligned fixture list. */}
+                  <span className="flex flex-1 items-center px-5">
+                    <span className={`min-w-0 flex-1 text-right font-display font-semibold uppercase leading-tight ${size}`}>
+                      {row.teamA}
+                      {row.scoreA !== null && row.scoreA !== undefined && (
+                        <span className="text-navy-100"> · {row.scoreA}</span>
+                      )}
+                    </span>
+                    <span className="w-20 shrink-0 text-center font-display text-[26px] font-bold lowercase text-crimson-400">
+                      vs
+                    </span>
+                    <span className={`min-w-0 flex-1 font-display font-semibold uppercase leading-tight ${size}`}>
+                      {row.teamB}
+                      {row.scoreB !== null && row.scoreB !== undefined && (
+                        <span className="text-navy-100"> · {row.scoreB}</span>
+                      )}
+                    </span>
                   </span>
                 </div>
               );
