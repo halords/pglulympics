@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useProvider, useSnapshot } from "../../../../lib/data/context";
@@ -180,18 +180,18 @@ function FixturesPageInner() {
   const optionsFor = (otherPick: string) =>
     divEntries.filter((e) => e.id !== otherPick && !(isSession && usedInStage.has(e.id)));
 
-  // Mobile Games play in the PHRMDO Lobby — prefill it once per division
-  // (the venue record once migration 14 has run, free text until then).
-  const venuePrefilledFor = useRef<string | null>(null);
-  useEffect(() => {
-    if (!isSession || !div || venuePrefilledFor.current === div.id) return;
-    venuePrefilledFor.current = div.id;
-    if (venueId || venueText) return;
-    const lobby = snap.venues.find((v) => v.name === "PHRMDO Lobby");
-    if (lobby) setVenueId(lobby.id);
-    else setVenueText("PHRMDO Lobby");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSession, div?.id]);
+  // Mobile Games play in the PHRMDO Lobby: when the coordinator hasn't
+  // picked a venue, session fixtures default to it (the venue record once
+  // migration 14 has run, free text until then). An explicit pick wins.
+  // Resolved at submit time — deliberately NOT a prefill effect.
+  const lobbyVenue = snap.venues.find((v) => v.name === "PHRMDO Lobby");
+  const venueForSubmit = (): { venueId: string | null; venueText: string | null } => {
+    if (venueId) return { venueId, venueText: null };
+    if (venueText) return { venueId: null, venueText };
+    if (isSession && lobbyVenue) return { venueId: lobbyVenue.id, venueText: null };
+    if (isSession) return { venueId: null, venueText: "PHRMDO Lobby" };
+    return { venueId: null, venueText: null };
+  };
 
   // One-time round setup (session brackets): pair the whole available
   // pool for the chosen stage and create every match in one click.
@@ -206,13 +206,17 @@ function FixturesPageInner() {
       (m) => m.divisionId === div.id && m.stage === stage && m.status !== "cancelled",
     ).length;
     setBusy(true); setNotice(null); setMinorNotes(null);
+    const resolvedVenue = venueForSubmit();
+    const venueLabel = resolvedVenue.venueId
+      ? snap.venues.find((v) => v.id === resolvedVenue.venueId)?.name ?? "the venue"
+      : resolvedVenue.venueText ?? "the venue";
     let created = 0;
     try {
       for (let i = 0; i < roundPlan.pairs.length; i++) {
         const input: FixtureInput = {
           divisionId: div.id, label: `${STAGE_TITLES[stage]} ${existing + i + 1}`, stage,
           groupId: groupId || null, startsAt: null, durationMinutes: null,
-          venueId: venueId || null, venueText: venueId ? null : (venueText || null),
+          ...venueForSubmit(),
           entryIds: [...roundPlan.pairs[i]],
         };
         const res = await provider.createFixture(input);
@@ -224,7 +228,7 @@ function FixturesPageInner() {
         created += 1;
       }
       setNotice(
-        `Created ${created} ${STAGE_TITLES[stage].toLowerCase()} matches at ${venueId ? snap.venues.find((v) => v.id === venueId)?.name ?? "the venue" : venueText || "the venue"}` +
+        `Created ${created} ${STAGE_TITLES[stage].toLowerCase()} matches at ${venueLabel}` +
         (roundPlan.leftover ? ` · Bye: ${teamName(roundPlan.leftover)} (not paired this round).` : "."),
       );
     } catch (e) {
@@ -257,7 +261,7 @@ function FixturesPageInner() {
     const input: FixtureInput = {
       divisionId: div.id, label: label || "Custom match", stage, groupId: groupId || null,
       startsAt: isSession ? null : manilaToISO(when), durationMinutes: duration ? Number(duration) : null,
-      venueId: venueId || null, venueText: venueText || null, entryIds,
+      ...venueForSubmit(), entryIds,
     };
     setBusy(true); setNotice(null); setMinorNotes(null);
     try {
@@ -386,6 +390,9 @@ function FixturesPageInner() {
               <p className="text-xs text-neutral-500 mt-1">
                 Single elimination: each team plays once per round and winners go up.
                 Teams you don&apos;t pick in a round take the bye.
+              </p>
+              <p className="text-xs text-neutral-500 mt-1">
+                Venue: PHRMDO Lobby — applied automatically when the venue fields below are left empty.
               </p>
             </div>
           ) : (
