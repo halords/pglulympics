@@ -124,6 +124,19 @@ function FixturesPageInner() {
     return snap.divisions.filter((d) => scope.has(d.sportId) && (sportFilter === "all" || d.sportId === sportFilter));
   }, [snap, scopeIds, sportFilter]);
 
+  // Deep link from the console home's session-boards row:
+  // /console/fixtures?division=<divisionId> preselects that division in the
+  // NEW FIXTURE form (Mobile Legends / CODM match setup lives here — the
+  // session boards are display-only, which made setup undiscoverable).
+  const divisionParam = params.get("division");
+  useEffect(() => {
+    if (!divisionParam || !snap) return;
+    const d = snap.divisions.find((x) => x.id === divisionParam);
+    if (!d || !scopeIds.includes(d.sportId)) return;
+    setSportFilter(d.sportId);
+    setDivisionId(d.id);
+  }, [divisionParam, snap, scopeIds]);
+
   // Deep link from the console match cards: /console/fixtures?edit=<matchId>
   // opens the reschedule panel for that fixture.
   const editParam = params.get("edit");
@@ -327,6 +340,12 @@ function FixturesPageInner() {
                   {divEntries.map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
                 </select>
               </div>
+              {divEntries.length === 0 && (
+                <p className="text-sm text-crimson-800 font-medium sm:col-span-2">
+                  No entered teams in this division yet — matches can only be set up between entered teams.
+                  Entries are managed from the roster screens.
+                </p>
+              )}
             </>
           )}
           <div>
