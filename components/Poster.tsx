@@ -102,10 +102,10 @@ export function SchedulePoster({
     <PosterShell sport={sport} eventName={eventName} subline={subline}>
       <div className="flex min-h-0 flex-1 flex-col border border-white/20">
         <div className="flex shrink-0 items-center bg-crimson-600 text-white">
-          <span className={`${headCell} w-56`}>Time</span>
+          <span className={`${headCell} w-56 text-center`}>Time</span>
           <span className={`${headCell} w-24 text-center`}>#</span>
-          <span className={`${headCell} w-72`}>Division</span>
-          <span className={`${headCell} flex-1`}>Match</span>
+          <span className={`${headCell} w-72 text-center`}>Division</span>
+          <span className={`${headCell} flex-1 text-center`}>Match</span>
         </div>
         {groups.map((group) => (
           <div key={group.venue} className="contents">
