@@ -28,20 +28,91 @@ export interface SchedulePosterRow {
   scoreB?: number | null;
 }
 
+/** One venue's matches within a day (or within one poster page). */
+export interface SchedulePosterGroup {
+  venue: string;
+  rows: SchedulePosterRow[];
+}
+
 export interface SchedulePosterDay {
   dayKey: string;
   dateLabel: string;
+  /** The day's single venue, or "" when matches span several venues (those
+   *  get venue banner rows inside the table instead of a header venue). */
   venueLine: string;
+  /** True when the day spans multiple venues: the table groups matches
+   *  under full-width venue banner rows. */
+  showVenueBanners: boolean;
   rows: SchedulePosterRow[];
-  /** Rows chunked into poster pages of POSTER_ROWS_PER_PAGE. A dense day
-   *  (Pickleball: 74 matches on Nov 16) must never be crushed into one
+  /** The day chunked into poster pages. Each page is a list of venue
+   *  groups (a group that spills across pages repeats its banner). A dense
+   *  day (Pickleball: 74 matches on Nov 16) must never be crushed into one
    *  1080px frame — each page is its own downloadable poster. */
-  pages: SchedulePosterRow[][];
+  pages: SchedulePosterGroup[][];
 }
 
 /** Max matches per schedule poster page — keeps rows at a readable height
  *  in the fixed 1920×1080 frame. */
 export const POSTER_ROWS_PER_PAGE = 12;
+
+/** Group a day's rows by venue: groups in first-appearance order, matches
+ *  chronological inside each group. Match numbers stay the day's
+ *  chronological numbers, so a number means the same match everywhere. */
+export function groupRowsByVenue(rows: SchedulePosterRow[]): SchedulePosterGroup[] {
+  const order: string[] = [];
+  const byVenue = new Map<string, SchedulePosterRow[]>();
+  for (const r of rows) {
+    if (!byVenue.has(r.venue)) {
+      byVenue.set(r.venue, []);
+      order.push(r.venue);
+    }
+    byVenue.get(r.venue)!.push(r);
+  }
+  return order.map((venue) => ({ venue, rows: byVenue.get(venue)! }));
+}
+
+/** Chunk venue groups into poster pages. Capacity is POSTER_ROWS_PER_PAGE
+ *  units per page; with banners, a banner costs 1 unit and repeats when
+ *  its group continues onto the next page. A page never ends on a banner. */
+export function buildPosterPages(
+  groups: SchedulePosterGroup[],
+  showBanners: boolean,
+): SchedulePosterGroup[][] {
+  if (!showBanners) {
+    const rows = groups.flatMap((g) => g.rows);
+    const pages: SchedulePosterGroup[][] = [];
+    for (let i = 0; i < rows.length; i += POSTER_ROWS_PER_PAGE) {
+      pages.push([{ venue: groups[0]?.venue ?? "", rows: rows.slice(i, i + POSTER_ROWS_PER_PAGE) }]);
+    }
+    return pages.length > 0 ? pages : [[{ venue: groups[0]?.venue ?? "", rows: [] }]];
+  }
+  const pages: SchedulePosterGroup[][] = [];
+  let page: SchedulePosterGroup[] = [];
+  let units = 0;
+  const flush = () => {
+    if (page.length > 0) {
+      pages.push(page);
+      page = [];
+      units = 0;
+    }
+  };
+  for (const g of groups) {
+    let i = 0;
+    while (i < g.rows.length) {
+      if (units + 2 > POSTER_ROWS_PER_PAGE) flush(); // banner + at least one row must fit
+      const segment: SchedulePosterGroup = { venue: g.venue, rows: [] };
+      page.push(segment);
+      units += 1; // the banner
+      while (i < g.rows.length && units + 1 <= POSTER_ROWS_PER_PAGE) {
+        segment.rows.push(g.rows[i]);
+        i += 1;
+        units += 1;
+      }
+    }
+  }
+  flush();
+  return pages.length > 0 ? pages : [[{ venue: "", rows: [] }]];
+}
 
 export interface EntriesPosterData {
   columns: string[];
@@ -116,17 +187,16 @@ export function schedulePosterDays(snap: Snapshot, sport: SportInfo): SchedulePo
         scoreA: m.status === "final" ? (m.totals?.[0] ?? null) : null,
         scoreB: m.status === "final" ? (m.totals?.[1] ?? null) : null,
       }));
-      const pages: SchedulePosterRow[][] = [];
-      for (let i = 0; i < rows.length; i += POSTER_ROWS_PER_PAGE) {
-        pages.push(rows.slice(i, i + POSTER_ROWS_PER_PAGE));
-      }
+      const groups = groupRowsByVenue(rows);
+      const showVenueBanners = groups.length > 1;
       return {
         dayKey,
         // Noon Manila keeps the calendar date stable regardless of viewer TZ.
         dateLabel: fmtDayLong(`${dayKey}T12:00:00+08:00`),
-        venueLine: dominantVenue(dayMatches),
+        venueLine: showVenueBanners ? "" : (groups[0]?.venue ?? ""),
+        showVenueBanners,
         rows,
-        pages: pages.length > 0 ? pages : [[]],
+        pages: buildPosterPages(groups, showVenueBanners),
       };
     });
 }

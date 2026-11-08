@@ -100,9 +100,49 @@ describe("schedulePosterDays", () => {
     const s = snap({ matches });
     const [day] = schedulePosterDays(s, sport);
     expect(day.rows).toHaveLength(25);
-    expect(day.pages.map((p) => p.length)).toEqual([12, 12, 1]);
-    expect(day.pages[1][0].matchNo).toBe(13);
-    expect(day.pages[2][0].teamA).toBe("Team 25A");
+    const pageCounts = day.pages.map((pg) => pg.reduce((n, g) => n + g.rows.length, 0));
+    expect(pageCounts).toEqual([12, 12, 1]);
+    expect(day.pages[1][0].rows[0].matchNo).toBe(13);
+    expect(day.pages[2][0].rows[0].teamA).toBe("Team 25A");
+    expect(day.showVenueBanners).toBe(false);
+  });
+
+  it("multi-venue days group matches under venue banners; the venue leaves the header", () => {
+    const s = snap({
+      matches: [
+        mk({ startsAt: at("16", "08:00"), slots: vs("A", "B"), venue: "Court 1" }),
+        mk({ startsAt: at("16", "08:15"), slots: vs("C", "D"), venue: "Court 2" }),
+        mk({ startsAt: at("16", "08:30"), slots: vs("E", "F"), venue: "Court 1" }),
+      ],
+    });
+    const [day] = schedulePosterDays(s, sport);
+    expect(day.showVenueBanners).toBe(true);
+    expect(day.venueLine).toBe("");
+    const [page] = day.pages;
+    expect(page.map((g) => g.venue)).toEqual(["Court 1", "Court 2"]);
+    // Chronological match numbers are kept inside each venue group.
+    expect(page[0].rows.map((r) => r.matchNo)).toEqual([1, 3]);
+    expect(page[1].rows.map((r) => r.matchNo)).toEqual([2]);
+  });
+
+  it("banner pages: a banner costs one unit and repeats when its group spills", () => {
+    const mkVenue = (venue: string, count: number, startMin: number) =>
+      Array.from({ length: count }, (_, i) =>
+        mk({
+          startsAt: at("16", `${String(8 + Math.floor((startMin + i * 15) / 60)).padStart(2, "0")}:${String((startMin + i * 15) % 60).padStart(2, "0")}`),
+          slots: vs(`${venue} A${i}`, `${venue} B${i}`),
+          venue,
+        }),
+      );
+    const s = snap({ matches: [...mkVenue("Court 1", 15, 0), ...mkVenue("Court 2", 3, 300)] });
+    const [day] = schedulePosterDays(s, sport);
+    const shape = day.pages.map((pg) => pg.map((g) => [g.venue, g.rows.length]));
+    // Page 1: Court 1 banner + 11 matches (12 units). Page 2: Court 1 banner
+    // repeated + remaining 4, then Court 2 banner + its 3.
+    expect(shape).toEqual([
+      [["Court 1", 11]],
+      [["Court 1", 4], ["Court 2", 3]],
+    ]);
   });
 
   it("final matches carry their totals as scores", () => {

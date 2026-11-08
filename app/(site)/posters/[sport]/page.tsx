@@ -67,10 +67,11 @@ function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
 
   const pageCount = activeDay?.pages.length ?? 1;
   const activePageIdx = Math.min(pageIdx, pageCount - 1);
-  const pageRows = activeDay?.pages[activePageIdx] ?? [];
+  const pageGroups = activeDay?.pages[activePageIdx] ?? [];
+  const pageFlatRows = pageGroups.flatMap((g) => g.rows);
   const pageInfo =
     activeDay && pageCount > 1
-      ? `Page ${activePageIdx + 1} of ${pageCount} · Matches ${pageRows[0]?.matchNo ?? 0}–${pageRows[pageRows.length - 1]?.matchNo ?? 0} of ${activeDay.rows.length}`
+      ? `Page ${activePageIdx + 1} of ${pageCount} · Matches ${pageFlatRows[0]?.matchNo ?? 0}–${pageFlatRows[pageFlatRows.length - 1]?.matchNo ?? 0} of ${activeDay.rows.length}`
       : undefined;
 
   async function download() {
@@ -187,7 +188,7 @@ function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
                 sport={sport}
                 eventName={snap.event.name}
                 day={activeDay}
-                rows={pageRows}
+                groups={pageGroups}
                 pageInfo={pageInfo}
               />
             )}

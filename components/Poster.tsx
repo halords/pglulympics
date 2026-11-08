@@ -5,7 +5,7 @@
 // a check mark for "entered" — never the source sheet's raw "1".
 
 import type { SportInfo } from "../lib/types";
-import type { EntriesPosterData, SchedulePosterDay } from "../lib/posters";
+import type { EntriesPosterData, SchedulePosterDay, SchedulePosterGroup } from "../lib/posters";
 import { sportIdentity, SportIcon } from "../lib/sport-identity";
 
 export const POSTER_W = 1920;
@@ -82,67 +82,81 @@ export function SchedulePoster({
   sport,
   eventName,
   day,
-  rows,
+  groups,
   pageInfo,
 }: {
   sport: SportInfo;
   eventName: string;
   day: SchedulePosterDay;
-  /** The current page's chunk of the day's matches (<= 12). */
-  rows: SchedulePosterDay["rows"];
+  /** The current page's venue groups (banner + matches each). */
+  groups: SchedulePosterGroup[];
   /** e.g. "Page 2 of 7 · Matches 13–24 of 74" on multi-page days. */
   pageInfo?: string;
 }) {
-  const size = teamTextSize(rows.length);
+  const totalMatches = groups.reduce((n, g) => n + g.rows.length, 0);
+  const size = teamTextSize(totalMatches);
   const base = day.venueLine ? `${day.dateLabel} · ${day.venueLine}` : day.dateLabel;
   const subline = pageInfo ? `${base} · ${pageInfo}` : base;
+  let zebra = 0;
   return (
     <PosterShell sport={sport} eventName={eventName} subline={subline}>
       <div className="flex min-h-0 flex-1 flex-col border border-white/20">
         <div className="flex shrink-0 items-center bg-crimson-600 text-white">
-          <span className={`${headCell} w-60`}>Time</span>
-          <span className={`${headCell} w-[380px]`}>Venue</span>
-          <span className={`${headCell} w-32 text-center`}>Match</span>
+          <span className={`${headCell} w-56`}>Time</span>
+          <span className={`${headCell} w-24 text-center`}>#</span>
           <span className={`${headCell} w-72`}>Division</span>
-          <span className={`${headCell} flex-1`}>Team A</span>
-          <span className={`${headCell} flex-1`}>Team B</span>
+          <span className={`${headCell} flex-1`}>Match</span>
         </div>
-        {rows.map((row, i) => (
-          <div
-            key={row.matchId}
-            className={`flex min-h-0 flex-1 items-center border-t border-white/15 ${
-              i % 2 === 1 ? "bg-white/5" : ""
-            }`}
-          >
-            <span className="w-60 px-5 font-display text-[30px] font-semibold tabular-nums">
-              {row.time}
-              {row.status === "live" && (
-                <span className="ml-3 inline-flex items-center gap-1.5 align-middle text-[20px] font-bold uppercase tracking-widest text-crimson-400">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-crimson-400" />
-                  Live
+        {groups.map((group) => (
+          <div key={group.venue} className="contents">
+            {day.showVenueBanners && (
+              <div className="flex shrink-0 items-center gap-3 border-t border-white/15 bg-navy-800 px-5 py-2.5">
+                <span className="inline-block h-3 w-3 bg-crimson-600" />
+                <span className="font-display text-[27px] font-semibold uppercase tracking-[0.08em]">
+                  {group.venue}
                 </span>
-              )}
-            </span>
-            <span className="w-[380px] px-5 text-[26px] text-navy-100">{row.venue}</span>
-            <span className="w-32 px-5 text-center font-display text-[30px] tabular-nums">
-              {row.matchNo}
-            </span>
-            <span className="w-72 px-5 text-[26px] text-navy-100">{row.divisionName}</span>
-            <span className={`flex-1 px-5 font-display font-semibold uppercase leading-tight ${size}`}>
-              {row.teamA}
-              {row.scoreA !== null && row.scoreA !== undefined && (
-                <span className="text-navy-100"> · {row.scoreA}</span>
-              )}
-            </span>
-            <span className={`flex-1 px-5 font-display font-semibold uppercase leading-tight ${size}`}>
-              {row.teamB}
-              {row.scoreB !== null && row.scoreB !== undefined && (
-                <span className="text-navy-100"> · {row.scoreB}</span>
-              )}
-            </span>
+              </div>
+            )}
+            {group.rows.map((row) => {
+              const shaded = zebra % 2 === 1;
+              zebra += 1;
+              return (
+                <div
+                  key={row.matchId}
+                  className={`flex min-h-0 flex-1 items-center border-t border-white/15 ${
+                    shaded ? "bg-white/5" : ""
+                  }`}
+                >
+                  <span className="w-56 px-5 font-display text-[30px] font-semibold tabular-nums">
+                    {row.time}
+                    {row.status === "live" && (
+                      <span className="ml-3 inline-flex items-center gap-1.5 align-middle text-[20px] font-bold uppercase tracking-widest text-crimson-400">
+                        <span className="inline-block h-2.5 w-2.5 rounded-full bg-crimson-400" />
+                        Live
+                      </span>
+                    )}
+                  </span>
+                  <span className="w-24 px-5 text-center font-display text-[30px] tabular-nums">
+                    {row.matchNo}
+                  </span>
+                  <span className="w-72 px-5 text-[26px] text-navy-100">{row.divisionName}</span>
+                  <span className={`flex-1 px-5 font-display font-semibold uppercase leading-tight ${size}`}>
+                    {row.teamA}
+                    {row.scoreA !== null && row.scoreA !== undefined && (
+                      <span className="text-navy-100"> · {row.scoreA}</span>
+                    )}
+                    <span className="mx-3 font-bold lowercase text-crimson-400">vs</span>
+                    {row.teamB}
+                    {row.scoreB !== null && row.scoreB !== undefined && (
+                      <span className="text-navy-100"> · {row.scoreB}</span>
+                    )}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         ))}
-        {rows.length === 0 && (
+        {totalMatches === 0 && (
           <div className="flex flex-1 items-center justify-center text-[30px] text-navy-100">
             No matches scheduled this day.
           </div>
