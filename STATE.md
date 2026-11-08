@@ -400,3 +400,88 @@ User direction (on the fit-fix screenshot): "make it into a table — alternate 
 - NO REGRESSIONS BY CONSTRUCTION: zebra + borders live inside the row boxes (border-box, no fixed heights added); the cqh size-container machinery is byte-identical below the header — rank ≤8.2cqh / name ≤5.6cqh / medals 4.4cqh / points ≤7cqh of a 10cqh row. Rank "—" while scoreless, tabular numerals, ticker/clock/controls untouched.
 
 Verification (EMPIRICAL — headless Chromium, production build, mock snapshot; screenshots display-fit-shots/tally-{1920x1080,1180x820}-table.png, NOT committed): 1920×1080 — 10/10 teams, lowest row bottom 1005/1080 FITS; 1180×820 (user's iPad case) — 765/820 FITS (same margins as the fit pass: 1006/766 measured then, ±1px rounding). Computed-style audit of the live DOM: exactly 5/10 rows carry the white-5% tint (alternating), 50 vertical-border cells (5/row), 9 row bottom-borders (last row against the frame). Both screenshots eyeballed: full grid + header band + zebra render as a broadcast standings table. npm test 119/119; npx tsc --noEmit clean; npm run build exit 0; eslint on the touched file shows only the pre-existing unused-LiveBug warning.
+
+## Sheet sync — workbook → Supabase, MANUAL ONLY (2026-11-08, post-launch)
+
+Folds the organizers' source workbook (*Game Tracker PGLU Olympics.xlsx*, id
+1I9JwRto0iLZZ3sLYN9Qaw9nUpm_JfTya — the seed workbook, NOT the Team 4 roster
+book) into the portal on demand. **Automatic polling was CANCELLED by the user
+on 2026-11-08 before it shipped**: there is no SYNC_SECRET, no
+/api/sync/sheet endpoint, and no polling caller will be wired — the sync runs
+only when a super-admin presses **Sync now** in Admin → SHEET SYNC. It needs
+zero new env vars (reuses the service-role key).
+
+- Engine (`lib/sheet-sync/`): fetch.ts (server-only) → parse.ts (pure) →
+  engine.ts (pure planner `planChanges` + `runSheetSync` apply loop) →
+  store.ts (live store over the service-role client). API:
+  `app/api/admin/sheet-sync/route.ts` (GET = recent log + last run; POST = run;
+  both behind the same super-admin bearer gate as /api/admin/users). Panel:
+  `components/SheetSyncPanel.tsx` on the Admin page (mock mode shows an
+  explainer; live mode shows counts, per-tab chips, and the change log).
+- Transport: **CSV export by gid is primary** (`export?format=csv&gid=`), gviz
+  JSON only as fallback. Measured 2026-11-08: gviz folds this workbook's
+  title/merged rows into column labels and DROPS rows (Volleyball 62 gviz rows
+  vs 87 CSV rows, first standings row lost), so CSV — the Phase-0 method —
+  leads. One fetch per tab per run; a failed tab aborts only itself.
+- Parsers encode the data/sheet-extract.md layouts: tracker tabs (standings =
+  entries + Winner-#-resolution; fixture block right of the standings with
+  per-set SCORES pairs for volleyball, one totals pair for basketball whose
+  sheet-global Match # maps to DB label "Match N"); racket tabs (entry matrix
+  + two parallel court blocks per row; venue = "Heritage 2500 · Court N";
+  playoff text rows → Semifinal/Third-Place/Championship labels; one-team rows
+  = walkovers → entry only); matrix tabs (entries; placement tabs flip a
+  column to PLACES once any cell is an ordinal or ≥2 — otherwise "1" means
+  entered, not champion). Names normalize (case/punctuation-insensitive) with
+  the documented sheet-typo alias PDRRMO HAZARD BREAKERSA → …BREAKERS.
+  Basketball's seeded 12:40 AM→PM fix is protected by a 12-hour-flip
+  equivalence in the time diff (sync never "un-normalizes" it).
+- Rules (conservative, binding): allowed writes are fixture starts_at/venue,
+  recorded finals for versus sports (sheet final → portal final via the
+  existing RPC flow live→save→final, i.e. an UNCONFIRMED final with draft
+  awards — medal confirmation stays human), complete placement results
+  (unconfirmed), and entry adds/reactivations/withdrawals. NEVER overwritten:
+  live matches, portal finals that disagree, confirmed divisions, rosters.
+  Disagreements become conflict_skip log rows. Undecided set scores,
+  winner-column contradictions, partial placements, and results for unresolved
+  fixtures are HELD (logged, not applied). Unmatched sheet fixtures are logged
+  and counted, never inserted. Withdrawal additionally requires the team to
+  have ZERO fixtures in the division — sheet matrices lag fixture lists
+  (Pickleball 39-Girls plays a Nov-18 round its matrix predates). Idempotent:
+  field-level diff; a no-change run applies 0 writes.
+- Writes go through the EXISTING RPCs (update_fixture / save_score /
+  set_match_status), so advancement propagation, draft-award proposals and
+  realtime events behave exactly as if a coordinator entered the result. The
+  sync never self-acknowledges a conflict: an update_fixture "warning" (major
+  player conflict) is recorded as a FAILED change.
+- Migration 11 (`20261107140000_sheet_sync.sql`, idempotent) — joins the user's
+  SQL-Editor list AFTER 8/9/10: (a) `sheet_sync_log` (run_id, kind incl. the
+  added `unmatched` kind beyond the brief's list, fixture/division refs,
+  field, old/new, source_ref; RLS on, admin-select policy, no anon access);
+  (b) `_assert_match_writer` gains a service_role early-return — all write
+  RPCs assert on auth.uid(), which is NULL for service-role calls, so before
+  migration 11 the engine's RPC writes fail per-change with 42501 and are
+  logged FAILED (the run still completes; schedule/entry DML paths unaffected
+  in design but entry DML works pre-11 since it needs no RPC). Graceful
+  degradation without the log table: store.writeLog returns false → the run
+  still applies everything and the response carries the full log in-memory
+  (`logPersisted: false`; the panel shows it and notes the pending migration).
+- Live verification (read-only, 2026-11-08): fetch+parse of the real workbook
+  returned Basketball 34 fixtures/14 entries, Volleyball 40/18, Bowling 27
+  entries, Pickleball 90/43, Badminton 96/49 (3 walkover warnings), Athletics
+  66, Mobile Games 16, Chess 11, Laro ng Lahi 46 entries. Seed-vs-sheet pairing
+  diff is clean except two known sheet quirks that sync handles conservatively:
+  Pickleball 39-Girls lists FOURce–PDRRMO twice (9:30 + 11:00 AM Nov 18; the
+  duplicate becomes an unmatched log row) and a Badminton "3rd Place Loser…"
+  descriptor row (unmatched, never inserted). NO live sync was run against
+  production Supabase (writes tested only against the in-memory fake store).
+- Verification: npm test 145/145 (119 baseline + 14 parser + 12 engine: live
+  protected, confirmed protected, unconfirmed final written, placements
+  complete-vs-partial, entry add/withdraw/protect, failed-tab isolation,
+  idempotent second run = 0, missing-log-table degradation, RPC-warning →
+  failed); npx tsc --noEmit clean; npm run build exit 0 (ƒ /api/admin/sheet-sync
+  registered); production smoke in mock mode — / 200, API GET/POST 503 without
+  the service key (same gate behavior as /api/admin/users), panel strings
+  ("SHEET SYNC" / "Sync now") present in the admin client bundle. Commits:
+  e00c708 (parsers+fetch), 3e12d11 (engine+store), c08309a (withdrawal guard),
+  cc45baa (migration 11 + API + panel), plus this docs commit. NOT pushed —
+  parent pushes one-shot.

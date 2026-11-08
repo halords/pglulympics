@@ -176,3 +176,21 @@ scores and the tally refresh on screen with no reload and no interaction.
   A pinned `live` view falls back to the tally when nothing is live.
 - Sized for distance reading at 1920×1080 and 1366×768 — keep the TV at
   its native resolution and browser zoom at 100%.
+
+## Sheet sync (organizers' workbook → portal)
+
+The portal can fold changes from the source workbook (*Game Tracker PGLU
+Olympics.xlsx*) into Supabase on demand:
+
+1. Apply **migration 11** (`supabase/migrations/20261107140000_sheet_sync.sql`)
+   in the SQL Editor — after migrations 8, 9 and 10, in order. Until it lands,
+   sync runs still work; only the persistent change log is missing (the panel
+   says so and shows the latest run only).
+2. Sign in as the super-admin → **Admin → SHEET SYNC → Sync now**. There is no
+   automatic polling (cancelled by decision, 2026-11-08) and no new env vars.
+
+What a run does: fixture time/venue moves, recorded finals (written as
+**unconfirmed** finals — medal confirmation stays manual in Admin), placement
+results, and entry add/withdraw changes. It never overwrites a live match or a
+confirmed result; disagreements are listed in the panel as skips for human
+review. A no-change run applies nothing.

@@ -5,6 +5,7 @@ import { useProvider, useSnapshot } from "../../../lib/data/context";
 import { useSession } from "../../../lib/data/session";
 import { getSupabase } from "../../../lib/supabase/client";
 import { downloadCsvSkeleton, downloadRosterTemplate } from "../../../lib/roster-file";
+import SheetSyncPanel from "../../../components/SheetSyncPanel";
 import type { AdminRole, AdminUserRow } from "../../../lib/admin-users";
 import type { AwardInfo, SportInfo } from "../../../lib/types";
 
@@ -288,6 +289,8 @@ export default function AdminPage() {
       </section>
 
       <UsersSection sports={snap.sports} isMock={session.isMock} />
+
+      <SheetSyncPanel isMock={session.isMock} />
 
       {/* reviews */}
       <section className="rounded-2xl border border-navy-100 bg-white p-4">
