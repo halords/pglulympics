@@ -180,18 +180,23 @@ function FixturesPageInner() {
   const optionsFor = (otherPick: string) =>
     divEntries.filter((e) => e.id !== otherPick && !(isSession && usedInStage.has(e.id)));
 
-  // Mobile Games play in the PHRMDO Lobby: when the coordinator hasn't
-  // picked a venue, session fixtures default to it (the venue record once
-  // migration 14 has run, free text until then). An explicit pick wins.
-  // Resolved at submit time — deliberately NOT a prefill effect.
+  // Mobile Games venue is FIXED at the PHRMDO Lobby (user, 2026-11-08):
+  // for session divisions the venue pickers are not offered at all and
+  // every save resolves to the Lobby (the venue record once migration 14
+  // has run, free text until then). Resolved at submit time —
+  // deliberately NOT a prefill effect.
   const lobbyVenue = snap.venues.find((v) => v.name === "PHRMDO Lobby");
+  const lobbySubmit = (): { venueId: string | null; venueText: string | null } =>
+    lobbyVenue ? { venueId: lobbyVenue.id, venueText: null } : { venueId: null, venueText: "PHRMDO Lobby" };
   const venueForSubmit = (): { venueId: string | null; venueText: string | null } => {
+    if (isSession) return lobbySubmit();
     if (venueId) return { venueId, venueText: null };
     if (venueText) return { venueId: null, venueText };
-    if (isSession && lobbyVenue) return { venueId: lobbyVenue.id, venueText: null };
-    if (isSession) return { venueId: null, venueText: "PHRMDO Lobby" };
     return { venueId: null, venueText: null };
   };
+  const editingIsSession = editing
+    ? isSessionSport(snap.sports.find((s) => s.id === snap.divisions.find((d) => d.id === editing.divisionId)?.sportId))
+    : false;
 
   // One-time round setup (session brackets): pair the whole available
   // pool for the chosen stage and create every match in one click.
@@ -282,14 +287,12 @@ function FixturesPageInner() {
     setBusy(true); setNotice(null); setMinorNotes(null);
     try {
       if (step === "edit") {
-        const editingDiv = snap.divisions.find((d) => d.id === editing.divisionId);
-        const editingIsSession = isSessionSport(
-          editingDiv ? snap.sports.find((s) => s.id === editingDiv.sportId) : undefined,
-        );
         if (!editWhen && !editingIsSession) { setNotice("Pick a date/time."); setBusy(false); return; }
+        const venue = editingIsSession
+          ? lobbySubmit()
+          : { venueId: editVenueId || null, venueText: editVenueId ? null : (editVenueText || null) };
         const input: FixtureEditInput = {
-          startsAt: editWhen ? manilaToISO(editWhen) : null, venueId: editVenueId || null,
-          venueText: editVenueId ? null : (editVenueText || null),
+          startsAt: editWhen ? manilaToISO(editWhen) : null, ...venue,
           label: editLabel || undefined, durationMinutes: editing.durationMinutes,
         };
         const res = await provider.updateFixture(editing.id, input, ackHash);
@@ -397,7 +400,7 @@ function FixturesPageInner() {
                 Teams you don&apos;t pick in a round take the bye.
               </p>
               <p className="text-xs text-neutral-500 mt-1">
-                Venue: PHRMDO Lobby — applied automatically when the venue fields below are left empty.
+                Venue: PHRMDO Lobby — fixed for Mobile Games, no choice needed.
               </p>
             </div>
           ) : (
@@ -463,17 +466,28 @@ function FixturesPageInner() {
               )}
             </>
           )}
-          <div>
-            <label className={lbl}>Venue</label>
-            <select className={inputCls} value={venueId} onChange={(e) => setVenueId(e.target.value)}>
-              <option value="">— pick or type below —</option>
-              {snap.venues.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className={lbl}>Venue (free text, if not listed)</label>
-            <input className={inputCls} value={venueText} onChange={(e) => setVenueText(e.target.value)} />
-          </div>
+          {isSession ? (
+            <div className="sm:col-span-2">
+              <label className={lbl}>Venue</label>
+              <p className="rounded-xl border border-navy-100 bg-navy-50 px-4 py-3 font-semibold text-navy-950">
+                PHRMDO Lobby <span className="font-normal text-neutral-500">(fixed for Mobile Games)</span>
+              </p>
+            </div>
+          ) : (
+            <>
+              <div>
+                <label className={lbl}>Venue</label>
+                <select className={inputCls} value={venueId} onChange={(e) => setVenueId(e.target.value)}>
+                  <option value="">— pick or type below —</option>
+                  {snap.venues.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={lbl}>Venue (free text, if not listed)</label>
+                <input className={inputCls} value={venueText} onChange={(e) => setVenueText(e.target.value)} />
+              </div>
+            </>
+          )}
         </div>
         {when && (
           <div className="mt-3">
@@ -555,14 +569,24 @@ function FixturesPageInner() {
             <div className="grid gap-3 sm:grid-cols-3">
               <div><label className={lbl}>Label</label><input className={inputCls} value={editLabel} onChange={(e) => setEditLabel(e.target.value)} /></div>
               <div><label className={lbl}>New date & time (Manila)</label><input type="datetime-local" className={inputCls} value={editWhen} onChange={(e) => setEditWhen(e.target.value)} /></div>
-              <div><label className={lbl}>Venue</label>
-                <select className={inputCls} value={editVenueId} onChange={(e) => setEditVenueId(e.target.value)}>
-                  <option value="">— free text / none —</option>
-                  {snap.venues.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
-                </select>
-              </div>
-              {!editVenueId && (
-                <div><label className={lbl}>Venue (free text)</label><input className={inputCls} value={editVenueText} onChange={(e) => setEditVenueText(e.target.value)} /></div>
+              {editingIsSession ? (
+                <div><label className={lbl}>Venue</label>
+                  <p className="rounded-xl border border-navy-100 bg-white px-3 py-2.5 font-semibold text-navy-950">
+                    PHRMDO Lobby <span className="font-normal text-neutral-500">(fixed)</span>
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div><label className={lbl}>Venue</label>
+                    <select className={inputCls} value={editVenueId} onChange={(e) => setEditVenueId(e.target.value)}>
+                      <option value="">— free text / none —</option>
+                      {snap.venues.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+                    </select>
+                  </div>
+                  {!editVenueId && (
+                    <div><label className={lbl}>Venue (free text)</label><input className={inputCls} value={editVenueText} onChange={(e) => setEditVenueText(e.target.value)} /></div>
+                  )}
+                </>
               )}
             </div>
             {teamsEditable ? (
