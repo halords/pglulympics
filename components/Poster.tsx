@@ -82,13 +82,20 @@ export function SchedulePoster({
   sport,
   eventName,
   day,
+  rows,
+  pageInfo,
 }: {
   sport: SportInfo;
   eventName: string;
   day: SchedulePosterDay;
+  /** The current page's chunk of the day's matches (<= 12). */
+  rows: SchedulePosterDay["rows"];
+  /** e.g. "Page 2 of 7 · Matches 13–24 of 74" on multi-page days. */
+  pageInfo?: string;
 }) {
-  const size = teamTextSize(day.rows.length);
-  const subline = day.venueLine ? `${day.dateLabel} · ${day.venueLine}` : day.dateLabel;
+  const size = teamTextSize(rows.length);
+  const base = day.venueLine ? `${day.dateLabel} · ${day.venueLine}` : day.dateLabel;
+  const subline = pageInfo ? `${base} · ${pageInfo}` : base;
   return (
     <PosterShell sport={sport} eventName={eventName} subline={subline}>
       <div className="flex min-h-0 flex-1 flex-col border border-white/20">
@@ -100,7 +107,7 @@ export function SchedulePoster({
           <span className={`${headCell} flex-1`}>Team A</span>
           <span className={`${headCell} flex-1`}>Team B</span>
         </div>
-        {day.rows.map((row, i) => (
+        {rows.map((row, i) => (
           <div
             key={row.matchId}
             className={`flex min-h-0 flex-1 items-center border-t border-white/15 ${
@@ -135,7 +142,7 @@ export function SchedulePoster({
             </span>
           </div>
         ))}
-        {day.rows.length === 0 && (
+        {rows.length === 0 && (
           <div className="flex flex-1 items-center justify-center text-[30px] text-navy-100">
             No matches scheduled this day.
           </div>

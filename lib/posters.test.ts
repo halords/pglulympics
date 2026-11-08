@@ -90,6 +90,21 @@ describe("schedulePosterDays", () => {
     expect(days[0].rows[0].time).toContain("12:50");
   });
 
+  it("dense days paginate at 12 matches per poster page, order + numbering preserved", () => {
+    const matches = Array.from({ length: 25 }, (_, i) =>
+      mk({
+        startsAt: at("16", `${String(8 + Math.floor(i / 4)).padStart(2, "0")}:${i % 4 === 0 ? "00" : i % 4 === 1 ? "15" : i % 4 === 2 ? "30" : "45"}`),
+        slots: vs(`Team ${i + 1}A`, `Team ${i + 1}B`),
+      }),
+    );
+    const s = snap({ matches });
+    const [day] = schedulePosterDays(s, sport);
+    expect(day.rows).toHaveLength(25);
+    expect(day.pages.map((p) => p.length)).toEqual([12, 12, 1]);
+    expect(day.pages[1][0].matchNo).toBe(13);
+    expect(day.pages[2][0].teamA).toBe("Team 25A");
+  });
+
   it("final matches carry their totals as scores", () => {
     const s = snap({
       matches: [mk({ startsAt: at("09", "13:00"), slots: vs("A", "B"), status: "final", totals: [87, 79] })],

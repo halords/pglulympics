@@ -33,7 +33,15 @@ export interface SchedulePosterDay {
   dateLabel: string;
   venueLine: string;
   rows: SchedulePosterRow[];
+  /** Rows chunked into poster pages of POSTER_ROWS_PER_PAGE. A dense day
+   *  (Pickleball: 74 matches on Nov 16) must never be crushed into one
+   *  1080px frame — each page is its own downloadable poster. */
+  pages: SchedulePosterRow[][];
 }
+
+/** Max matches per schedule poster page — keeps rows at a readable height
+ *  in the fixed 1920×1080 frame. */
+export const POSTER_ROWS_PER_PAGE = 12;
 
 export interface EntriesPosterData {
   columns: string[];
@@ -94,12 +102,8 @@ export function schedulePosterDays(snap: Snapshot, sport: SportInfo): SchedulePo
 
   return [...byDay.entries()]
     .sort(([a], [b]) => (a < b ? -1 : 1))
-    .map(([dayKey, dayMatches]) => ({
-      dayKey,
-      // Noon Manila keeps the calendar date stable regardless of viewer TZ.
-      dateLabel: fmtDayLong(`${dayKey}T12:00:00+08:00`),
-      venueLine: dominantVenue(dayMatches),
-      rows: dayMatches.map((m, i) => ({
+    .map(([dayKey, dayMatches]) => {
+      const rows = dayMatches.map((m, i) => ({
         matchId: m.id,
         matchNo: i + 1,
         time: fmtTime(m.startsAt),
@@ -111,8 +115,20 @@ export function schedulePosterDays(snap: Snapshot, sport: SportInfo): SchedulePo
         status: m.status,
         scoreA: m.status === "final" ? (m.totals?.[0] ?? null) : null,
         scoreB: m.status === "final" ? (m.totals?.[1] ?? null) : null,
-      })),
-    }));
+      }));
+      const pages: SchedulePosterRow[][] = [];
+      for (let i = 0; i < rows.length; i += POSTER_ROWS_PER_PAGE) {
+        pages.push(rows.slice(i, i + POSTER_ROWS_PER_PAGE));
+      }
+      return {
+        dayKey,
+        // Noon Manila keeps the calendar date stable regardless of viewer TZ.
+        dateLabel: fmtDayLong(`${dayKey}T12:00:00+08:00`),
+        venueLine: dominantVenue(dayMatches),
+        rows,
+        pages: pages.length > 0 ? pages : [[]],
+      };
+    });
 }
 
 export function entriesPoster(snap: Snapshot, sport: SportInfo): EntriesPosterData {

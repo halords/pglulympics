@@ -18,6 +18,7 @@ function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
   const posterRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0);
   const [dayKey, setDayKey] = useState<string | null>(null);
+  const [pageIdx, setPageIdx] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,6 +60,19 @@ function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
 
   const activeDay = days.find((d) => d.dayKey === dayKey) ?? days[0] ?? null;
 
+  // A new day starts back at page 1.
+  useEffect(() => {
+    setPageIdx(0);
+  }, [activeDay?.dayKey, slug]);
+
+  const pageCount = activeDay?.pages.length ?? 1;
+  const activePageIdx = Math.min(pageIdx, pageCount - 1);
+  const pageRows = activeDay?.pages[activePageIdx] ?? [];
+  const pageInfo =
+    activeDay && pageCount > 1
+      ? `Page ${activePageIdx + 1} of ${pageCount} · Matches ${pageRows[0]?.matchNo ?? 0}–${pageRows[pageRows.length - 1]?.matchNo ?? 0} of ${activeDay.rows.length}`
+      : undefined;
+
   async function download() {
     if (!posterRef.current || !sport) return;
     setBusy(true);
@@ -71,7 +85,7 @@ function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
         cacheBust: true,
       });
       const a = document.createElement("a");
-      a.download = `pglulympics-${sport.slug}-poster${kind === "schedule" && activeDay ? `-${activeDay.dayKey}` : ""}.png`;
+      a.download = `pglulympics-${sport.slug}-poster${kind === "schedule" && activeDay ? `-${activeDay.dayKey}${pageCount > 1 ? `-p${activePageIdx + 1}` : ""}` : ""}.png`;
       a.href = dataUrl;
       a.click();
     } catch {
@@ -139,6 +153,28 @@ function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
         </div>
       )}
 
+      {kind === "schedule" && activeDay && pageCount > 1 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-semibold uppercase tracking-wide text-navy-900/60">
+            {activeDay.rows.length} matches this day — poster pages:
+          </span>
+          {activeDay.pages.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setPageIdx(i)}
+              className={`min-h-[44px] rounded-full px-4 font-medium ${
+                i === activePageIdx
+                  ? "bg-crimson-600 text-white"
+                  : "bg-white border border-navy-100 text-navy-950"
+              }`}
+            >
+              Page {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div
         ref={setWrapEl}
         className="w-full overflow-hidden rounded-xl border border-navy-100 shadow-sm"
@@ -147,7 +183,13 @@ function PosterPageInner({ params }: { params: Promise<{ sport: string }> }) {
         <div style={{ transform: `scale(${scale})`, transformOrigin: "top left", width: POSTER_W, height: POSTER_H }}>
           <div ref={posterRef}>
             {kind === "schedule" && activeDay && (
-              <SchedulePoster sport={sport} eventName={snap.event.name} day={activeDay} />
+              <SchedulePoster
+                sport={sport}
+                eventName={snap.event.name}
+                day={activeDay}
+                rows={pageRows}
+                pageInfo={pageInfo}
+              />
             )}
             {kind === "entries" && entries && (
               <EntriesPoster sport={sport} eventName={snap.event.name} data={entries} />
