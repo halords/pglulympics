@@ -10,6 +10,8 @@ import { dayScheduleRows, type DayScheduleRow } from "../../../../lib/schedule";
 import type { ConflictReport, FixtureEditInput, FixtureInput, MatchInfo, MatchStage } from "../../../../lib/types";
 import { StatusPill } from "../../../../components/MatchCard";
 import SportSwitcher from "../../../../components/SportSwitcher";
+import { isSessionSport } from "../../../../lib/board";
+import { advancedEntryIds, usedEntryIdsInStage } from "../../../../lib/fixture-setup";
 
 /** Manila wall-clock input value -> ISO instant. */
 function manilaToISO(local: string): string {
@@ -164,6 +166,19 @@ function FixturesPageInner() {
     const e = snap.entries.find((x) => x.id === entryId);
     return e ? snap.teams.find((t) => t.id === e.teamId)?.name ?? "" : "";
   };
+  // Session sports (Mobile Games): single-elimination setup — no fixed
+  // times, a team plays once per round, winners go up.
+  const divSport = div ? snap.sports.find((s) => s.id === div.sportId) : undefined;
+  const isSession = isSessionSport(divSport);
+  const usedInStage = isSession && div ? usedEntryIdsInStage(snap.matches, div.id, stage) : new Set<string>();
+  const usedNames = [...usedInStage].map((id) => teamName(id)).filter(Boolean);
+  const advancedNames = isSession && div
+    ? advancedEntryIds(snap.matches, snap.divisions, div.id, stage).map((id) => teamName(id)).filter(Boolean)
+    : [];
+  /** Picker options: never the other slot's team; for session brackets,
+   *  never a team already playing this round. */
+  const optionsFor = (otherPick: string) =>
+    divEntries.filter((e) => e.id !== otherPick && !(isSession && usedInStage.has(e.id)));
   const myMatches = snap.matches.filter((m) => myDivisions.some((d) => d.id === m.divisionId))
     .sort((a, b) => (a.startsAt ?? "").localeCompare(b.startsAt ?? ""));
 
@@ -172,18 +187,23 @@ function FixturesPageInner() {
   const teamsChanged = teamsEditable && editEntries.some((e, i) => e !== (editing!.slots[i].entryId ?? ""));
 
   const submitCreate = async (ackHash?: string) => {
-    if (!div || !when) { setNotice("Pick a division and a date/time."); return; }
+    if (!div) { setNotice("Pick a division."); return; }
+    if (!isSession && !when) { setNotice("Pick a date/time."); return; }
     let entryIds: string[];
     if (isPlacement) {
       if (placementEntries.length < 2) { setNotice("Pick at least two entrants for the placement event."); return; }
       entryIds = placementEntries;
     } else {
       if (!entryA || !entryB || entryA === entryB) { setNotice("Pick two different teams."); return; }
+      if (isSession && (usedInStage.has(entryA) || usedInStage.has(entryB))) {
+        setNotice("That team already has a match in this round — each team plays once per round.");
+        return;
+      }
       entryIds = [entryA, entryB];
     }
     const input: FixtureInput = {
       divisionId: div.id, label: label || "Custom match", stage, groupId: groupId || null,
-      startsAt: manilaToISO(when), durationMinutes: duration ? Number(duration) : null,
+      startsAt: isSession ? null : manilaToISO(when), durationMinutes: duration ? Number(duration) : null,
       venueId: venueId || null, venueText: venueText || null, entryIds,
     };
     setBusy(true); setNotice(null); setMinorNotes(null);
@@ -200,9 +220,13 @@ function FixturesPageInner() {
     setBusy(true); setNotice(null); setMinorNotes(null);
     try {
       if (step === "edit") {
-        if (!editWhen) { setNotice("Pick a date/time."); setBusy(false); return; }
+        const editingDiv = snap.divisions.find((d) => d.id === editing.divisionId);
+        const editingIsSession = isSessionSport(
+          editingDiv ? snap.sports.find((s) => s.id === editingDiv.sportId) : undefined,
+        );
+        if (!editWhen && !editingIsSession) { setNotice("Pick a date/time."); setBusy(false); return; }
         const input: FixtureEditInput = {
-          startsAt: manilaToISO(editWhen), venueId: editVenueId || null,
+          startsAt: editWhen ? manilaToISO(editWhen) : null, venueId: editVenueId || null,
           venueText: editVenueId ? null : (editVenueText || null),
           label: editLabel || undefined, durationMinutes: editing.durationMinutes,
         };
@@ -283,8 +307,9 @@ function FixturesPageInner() {
           </div>
           <div>
             <label className={lbl}>Stage</label>
-            <select className={inputCls} value={stage} onChange={(e) => setStage(e.target.value as MatchStage)}>
+            <select className={inputCls} value={stage} onChange={(e) => { setStage(e.target.value as MatchStage); setEntryA(""); setEntryB(""); }}>
               <option value="round_robin">Round robin / group</option>
+              <option value="quarterfinal">Quarterfinal</option>
               <option value="semifinal">Semifinal</option>
               <option value="bronze">Bronze match</option>
               <option value="gold">Gold match</option>
@@ -299,14 +324,29 @@ function FixturesPageInner() {
               {snap.groups.filter((g) => g.divisionId === div?.id).map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
             </select>
           </div>
-          <div>
-            <label className={lbl}>Date & time (Manila)</label>
-            <input type="datetime-local" className={inputCls} value={when} onChange={(e) => setWhen(e.target.value)} />
-          </div>
-          <div>
-            <label className={lbl}>Duration minutes (blank = sport default)</label>
-            <input type="number" min={1} className={inputCls} value={duration} onChange={(e) => setDuration(e.target.value)} />
-          </div>
+          {isSession ? (
+            <div className="sm:col-span-2 rounded-xl bg-navy-50 border border-navy-100 px-4 py-3">
+              <p className="text-sm font-medium text-navy-950">
+                Session sport — no fixed time. Matches run back-to-back in the venue;
+                this one will list as “To be scheduled” until it is played.
+              </p>
+              <p className="text-xs text-neutral-500 mt-1">
+                Single elimination: each team plays once per round and winners go up.
+                Teams you don&apos;t pick in a round take the bye.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div>
+                <label className={lbl}>Date & time (Manila)</label>
+                <input type="datetime-local" className={inputCls} value={when} onChange={(e) => setWhen(e.target.value)} />
+              </div>
+              <div>
+                <label className={lbl}>Duration minutes (blank = sport default)</label>
+                <input type="number" min={1} className={inputCls} value={duration} onChange={(e) => setDuration(e.target.value)} />
+              </div>
+            </>
+          )}
           {isPlacement ? (
             <div className="sm:col-span-2">
               <label className={lbl}>Entrants (placement event — tick everyone taking part)</label>
@@ -330,20 +370,30 @@ function FixturesPageInner() {
                 <label className={lbl}>Team A</label>
                 <select className={inputCls} value={entryA} onChange={(e) => setEntryA(e.target.value)}>
                   <option value="">Pick a team…</option>
-                  {divEntries.map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
+                  {optionsFor(entryB).map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
                 </select>
               </div>
               <div>
                 <label className={lbl}>Team B</label>
                 <select className={inputCls} value={entryB} onChange={(e) => setEntryB(e.target.value)}>
                   <option value="">Pick a team…</option>
-                  {divEntries.map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
+                  {optionsFor(entryA).map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
                 </select>
               </div>
               {divEntries.length === 0 && (
                 <p className="text-sm text-crimson-800 font-medium sm:col-span-2">
                   No entered teams in this division yet — matches can only be set up between entered teams.
                   Entries are managed from the roster screens.
+                </p>
+              )}
+              {isSession && usedNames.length > 0 && (
+                <p className="text-sm text-navy-900 sm:col-span-2">
+                  Already playing this round: <strong>{usedNames.join(", ")}</strong> — they can&apos;t be picked again in this round.
+                </p>
+              )}
+              {isSession && advancedNames.length > 0 && (
+                <p className="text-sm text-navy-900 sm:col-span-2">
+                  Winners through from the earlier rounds: <strong>{advancedNames.join(", ")}</strong> — pick them here to move them up.
                 </p>
               )}
             </>
@@ -417,7 +467,7 @@ function FixturesPageInner() {
                       <label className={lbl}>{editing.slots.length > 2 ? `Entrant ${i + 1}` : i === 0 ? "Team A" : "Team B"}</label>
                       <select className={inputCls} value={editEntries[i] ?? ""} onChange={(e) => setEditEntries((prev) => prev.map((x, j) => j === i ? e.target.value : x))}>
                         <option value="">Pick a team…</option>
-                        {snap.entries.filter((e) => e.divisionId === editing.divisionId).map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
+                        {snap.entries.filter((e) => e.divisionId === editing.divisionId && (e.id === editEntries[i] || !editEntries.includes(e.id))).map((e) => <option key={e.id} value={e.id}>{teamName(e.id)}</option>)}
                       </select>
                     </div>
                   ))}

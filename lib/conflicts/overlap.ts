@@ -162,7 +162,7 @@ export function conflictAckHash(canonical: string, report: ConflictReportTS): st
 
 export function canonicalFixture(p: {
   divisionId: string; label: string; stage: string; groupId?: string | null;
-  startsAt: string; durationMinutes?: number | null; venueId?: string | null; entryIds: string[];
+  startsAt: string | null; durationMinutes?: number | null; venueId?: string | null; entryIds: string[];
 }): string {
   return [p.divisionId, p.label, p.stage, p.groupId ?? "", p.startsAt,
     p.durationMinutes ?? "", p.venueId ?? "", [...p.entryIds].sort().join(",")].join("|");

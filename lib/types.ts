@@ -1,7 +1,7 @@
 // PGLUlympics domain types (SPEC §1, §3.1) — shared by mock + Supabase providers.
 
 export type MatchStatus = "scheduled" | "live" | "final" | "cancelled";
-export type MatchStage = "round_robin" | "semifinal" | "bronze" | "gold" | "placement";
+export type MatchStage = "round_robin" | "quarterfinal" | "semifinal" | "bronze" | "gold" | "placement" | "exhibition";
 export type ScoringKind = "set_based" | "simple" | "placement_only";
 
 export interface EventInfo {
@@ -134,12 +134,14 @@ export type FixtureResult =
 
 export interface FixtureInput {
   divisionId: string; label: string; stage: MatchStage; groupId?: string | null;
-  startsAt: string; durationMinutes?: number | null;
+  /** Null = unscheduled ("To be scheduled") — session sports (Mobile
+   *  Games) set up matchups without a fixed time. */
+  startsAt: string | null; durationMinutes?: number | null;
   venueId?: string | null; venueText?: string | null;
   entryIds: string[];
 }
 export interface FixtureEditInput {
-  startsAt: string; durationMinutes?: number | null;
+  startsAt: string | null; durationMinutes?: number | null;
   venueId?: string | null; venueText?: string | null; label?: string;
 }
 

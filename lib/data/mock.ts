@@ -395,7 +395,7 @@ export class MockProvider implements DataProvider {
     for (const p of this.state.players) playerName[p.id] = p.name;
     return { byEntry, statusByEntry, playerName };
   }
-  private checkFor(input: { divisionId: string; label: string; stage: MatchStage; groupId?: string | null; startsAt: string; durationMinutes?: number | null; venueId?: string | null; entryIds: string[] }, selfId?: string): { report: ConflictReport; hash: string } {
+  private checkFor(input: { divisionId: string; label: string; stage: MatchStage; groupId?: string | null; startsAt: string | null; durationMinutes?: number | null; venueId?: string | null; entryIds: string[] }, selfId?: string): { report: ConflictReport; hash: string } {
     const sport = this.state.sports.find((s) => s.id === this.division(input.divisionId).sportId);
     const proposed: FixtureLike = {
       id: selfId ?? "proposed", label: input.label, sportName: sport?.name ?? "",
