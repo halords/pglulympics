@@ -31,7 +31,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
       <footer className="bg-navy-950 text-navy-100 mt-8">
         <div className="mx-auto max-w-6xl px-4 py-6 text-sm flex flex-col sm:flex-row justify-between gap-2">
           <p><span className="font-display tracking-tight text-lg font-semibold text-white">PGLUlympics</span> — Provincial Government of La Union Sports Fest</p>
-          <p>Live updates powered by sport coordinators on site. · <Link href="/display" target="_blank" rel="noreferrer" className="font-semibold text-white underline underline-offset-2 hover:text-crimson-400">TV Board ↗</Link></p>
+          <p>Live updates powered by sport coordinators on site. · <Link href="/posters" className="font-semibold text-white underline underline-offset-2 hover:text-crimson-400">Posters</Link> · <Link href="/display" target="_blank" rel="noreferrer" className="font-semibold text-white underline underline-offset-2 hover:text-crimson-400">TV Board ↗</Link></p>
         </div>
       </footer>
     </>

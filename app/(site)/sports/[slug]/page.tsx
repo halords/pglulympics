@@ -82,6 +82,12 @@ function SportPageInner({ params }: { params: Promise<{ slug: string }> }) {
             </div>
           </div>
           <p className="text-navy-100 mt-2">{divisions.length <= 4 ? `${divisions.map((d) => d.name).join(" · ")} — ` : ""}{SPORT_NOTES[sport.slug] ?? ""}</p>
+          <Link
+            href={`/posters/${sport.slug}`}
+            className="mt-4 inline-flex min-h-[44px] items-center rounded-xl bg-crimson-600 px-5 font-display text-lg font-semibold uppercase tracking-wide text-white"
+          >
+            Download poster
+          </Link>
         </div>
       </header>
 
