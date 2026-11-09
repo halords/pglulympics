@@ -516,3 +516,12 @@ zero new env vars (reuses the service-role key).
   (no portal entry for the team/division, incl. AGKAYSA GUARDians' 12 volleyball
   men; 3 gender-unknown: Monis Harmil 200m, Soliweg Milky 200m, Payay Manison
   chess). Working files: ~/workspace/roster-import/ (imports.json, exceptions.json).
+
+## 2026-11-09 — Coordinators stripped from all rosters (user decision)
+- Migration 16 (20261109091000_strip_coordinators.sql): the user ruled
+  "strip coordinators from all rosters" — the 10 team coordinators' event-block
+  entries imported by migration 15 are removed. 13 memberships across 6
+  coordinators (Atijera 6, Avelino 2, Carmelo 2, Mifa 1, Salanga 1, Saranquin 1);
+  Sanchez/Galapon/Opinaldo/Ledda appeared only in coordinator blocks (never
+  imported). Their player records are deleted once membershipless.
+  Local chain test: players 759→753, memberships 1253→1240, idempotent.
