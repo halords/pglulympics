@@ -1,6 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 import Link from "next/link";
 import SiteHeader from "../../components/SiteHeader";
+import ScrollToTopButton from "../../components/ScrollToTopButton";
 
 /** Static shell shown while the interactive header streams in
  *  (SiteHeader uses usePathname, so it must sit inside a Suspense boundary). */
@@ -34,6 +35,9 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
           <p>Live updates powered by sport coordinators on site. · <Link href="/posters" className="font-semibold text-white underline underline-offset-2 hover:text-crimson-400">Posters</Link> · <Link href="/display" target="_blank" rel="noreferrer" className="font-semibold text-white underline underline-offset-2 hover:text-crimson-400">TV Board ↗</Link></p>
         </div>
       </footer>
+      <Suspense fallback={null}>
+        <ScrollToTopButton />
+      </Suspense>
     </>
   );
 }
