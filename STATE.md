@@ -525,3 +525,17 @@ zero new env vars (reuses the service-role key).
   Sanchez/Galapon/Opinaldo/Ledda appeared only in coordinator blocks (never
   imported). Their player records are deleted once membershipless.
   Local chain test: players 759→753, memberships 1253→1240, idempotent.
+
+## 2026-11-09 — Coordinator strip REVERSED for the six who are players (migration 17)
+- The user conditioned the strip: "remove them only if they're not playing" —
+  and asked for the sheet to be checked. Sheet evidence: the six coordinators
+  stripped by migration 16 are registered in event blocks as players — Mifa,
+  Carmelo, Saranquin and Avelino carry WAIVER = YES with Fit-to-Participate /
+  declared-condition medical entries on their event rows (Carmelo even has
+  per-event jersey numbers 27/28 vs his coordinator jersey no. 2); Atijera is
+  a full player row in 6 events (jersey no. 8, age, medical); Salanga has one
+  Sack Race entry (Team 8 never used the waiver column — genuinely ambiguous,
+  restored with the rest; strip just him again if he truly isn't playing).
+  The Instructions tab has NO rule barring coordinators from playing.
+  Migration 17 restores all 13 memberships + 6 player records; counts back to
+  759 players / 1,253 memberships; idempotent; locally verified.
