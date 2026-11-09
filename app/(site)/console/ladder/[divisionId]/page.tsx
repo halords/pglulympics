@@ -33,14 +33,23 @@ function StaffMatchCard({ m }: { m: BracketMatchView }) {
       </div>
       <div className="mt-2 space-y-1">
         {m.slots.map((s, i) => (
-          <p key={i} className="flex items-baseline justify-between gap-2">
-            <span className={`min-w-0 truncate font-semibold ${s.isFeederLabel ? "font-medium italic text-neutral-500" : s.isEliminated ? "text-neutral-400" : "text-navy-950"}`}>
-              {s.name}
-              {s.isBye && <span className="ml-1.5 rounded bg-navy-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-800 not-italic">Bye</span>}
-              {s.isWinner && <span className="ml-1.5 text-xs font-bold uppercase tracking-wide text-crimson-800">won</span>}
-            </span>
-            {s.games !== null && <span className="shrink-0 font-display tracking-tight text-xl font-bold tabular-nums text-navy-950">{s.games}</span>}
-          </p>
+          <div key={i}>
+            {i === 1 && (
+              <p className="flex items-center gap-2 py-0.5" aria-hidden>
+                <span className="h-px flex-1 bg-navy-100" />
+                <span className="font-display tracking-tight text-[10px] font-bold uppercase tracking-[0.25em] text-crimson-800">vs</span>
+                <span className="h-px flex-1 bg-navy-100" />
+              </p>
+            )}
+            <p className="flex items-baseline justify-between gap-2">
+              <span className={`min-w-0 truncate font-semibold ${s.isFeederLabel ? "font-medium italic text-neutral-500" : s.isEliminated ? "text-neutral-400" : "text-navy-950"}`}>
+                {s.name}
+                {s.isBye && <span className="ml-1.5 rounded bg-navy-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-800 not-italic">Bye</span>}
+                {s.isWinner && <span className="ml-1.5 text-xs font-bold uppercase tracking-wide text-crimson-800">won</span>}
+              </span>
+              {s.games !== null && <span className="shrink-0 font-display tracking-tight text-xl font-bold tabular-nums text-navy-950">{s.games}</span>}
+            </p>
+          </div>
         ))}
       </div>
       {m.matchId && (

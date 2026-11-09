@@ -79,8 +79,13 @@ function MatchCardView({ m, board }: { m: BracketMatchView; board: boolean }) {
           <span className="text-[11px] font-bold uppercase tracking-wider text-navy-200">Best of 3</span>
         )}
       </div>
-      <div className="divide-y divide-white/5">
+      <div>
         <SlotRow slot={m.slots[0]} board={board} />
+        <div className="flex items-center gap-2 px-3" aria-hidden>
+          <span className="h-px flex-1 bg-white/10" />
+          <span className={`font-display tracking-tight font-bold uppercase tracking-[0.25em] text-crimson-400 ${board ? "text-[clamp(11px,1.2vw,18px)]" : "text-[10px]"}`}>vs</span>
+          <span className="h-px flex-1 bg-white/10" />
+        </div>
         <SlotRow slot={m.slots[1]} board={board} />
       </div>
     </div>

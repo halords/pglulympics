@@ -592,3 +592,4 @@ zero new env vars (reuses the service-role key).
   Bronze projection now requires a two-match semifinal level (a lone SF
   has a single loser — no bronze pair). 172/172 tests; CODM ladder
   screenshot-QA'd locally, then live-verified.
+- Ladder cells now carry a centered crimson "VS" seam between the two teams (user, 2026-11-09 22:14) — public pyramid (site + board variants) and the ladder console cards, same treatment as the posters' Match column.
