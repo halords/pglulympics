@@ -539,3 +539,48 @@ zero new env vars (reuses the service-role key).
   The Instructions tab has NO rule barring coordinators from playing.
   Migration 17 restores all 13 memberships + 6 player records; counts back to
   759 players / 1,253 memberships; idempotent; locally verified.
+
+## 2026-11-09 — Tab logo (favicon) added
+- app/icon.svg: navy rounded tile, bone bold "P", crimson base band (matches the
+  app's header rule). Plus app/apple-icon.tsx (next/og ImageResponse, same mark,
+  180×180 PNG) for iOS home-screen. Live-verified: /icon.svg 200, head link tags
+  present, /apple-icon 200 PNG. Commit 2373c23f.
+
+## 2026-11-09 (evening) — ML/CODM ladder (pyramid) + best-of-3 series + ladder console
+- User watched the actual Mobile Games: organizers ran a ladder/pyramid,
+  best-of-3 per match, losers eliminated except semifinal losers (bronze
+  match), and a team with no opponent in a round gets a BYE — it advances
+  and waits. The app now mirrors that format exactly.
+- lib/bracket.ts (pure, 6 tests): pyramidBracket view model — levels
+  base→apex from elim stages, real matches win over projections; projected
+  pairings mirror bracketPool/pairUp (winners in win order, bye teams
+  last); decided winners fill upper slots by name, undecided slots show
+  feeder labels ("Winner QF1"); waiting teams shown once at their level
+  (NOT carried into the gold pool — gold = semifinal winners only, same
+  as bracketPool); bronze projected from semifinal losers; champion /
+  runner-up / 3rd resolved from finals. gamesWon() = totals or won
+  segments. One QA catch fixed pre-push: the SF waiting chip had been
+  duplicated at the FINAL level.
+- components/PyramidBracket.tsx (site + board variants): rendered on the
+  Mobile Games sport page per division and under the teams list on
+  /board/division/[id] (arena screen) — players watch the climb live.
+  Champion banner (gold accent, literal medal context). Sport note +
+  "No fixtures yet" line updated (ladder projection replaces it).
+- Best-of-3 series scorer: scorerMode "series" for session sports
+  (lib/scoring.ts applySeriesGame/seriesGamesWon/seriesWinner + tests).
+  Scoreboard: "+ Game won" tap per side, games recorded as 1–0 segments,
+  totals saved = games won so every surface (cards, boards, pyramid)
+  shows the series score; chips read "Game n"; finalize bar requires an
+  actual 2-game series win (a 1–0 lead shows "Series undecided").
+  Per-game board chips now label G (periods Q, sets S unchanged).
+- Ladder console /console/ladder/[divisionId] (user: "there should be a
+  console view to setup the score"): whole bracket base-first, per-round
+  Generate (bracketPool draw, PHRMDO Lobby, no times) gated until the
+  round below is fully final; projected cards preview the pairings;
+  every real card links its scoreboard + details. Linked from console
+  home ("Ladder") and the sport page staff links.
+- Verification: 170/170 tests, tsc clean, build OK. Screenshot QA on a
+  local production build with a fabricated in-progress ML bracket
+  (mock-provider state): sport-page pyramid, arena board ladder, ladder
+  console, series scoreboard all eyeballed — progression, OUT chips,
+  waiting/bye chip, bronze ghost and the finalize gate render as designed.

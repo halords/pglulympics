@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  advancePeriod, applyPeriodPoints, applyRallyPoint, rallyConfig, rallyMatchWinner,
-  scorerMode, segmentTotals, segmentWinner, setTargetFor, type RallyConfig,
+  advancePeriod, applyPeriodPoints, applyRallyPoint, applySeriesGame, rallyConfig, rallyMatchWinner,
+  scorerMode, segmentTotals, segmentWinner, seriesGamesWon, seriesWinner, setTargetFor, type RallyConfig,
 } from "./scoring";
 import type { DivisionInfo, SegmentInfo } from "./types";
 
@@ -24,8 +24,30 @@ describe("scorerMode", () => {
     expect(scorerMode(div({ scoringKind: "set_based" }), "pickleball")).toBe("rally");
     expect(scorerMode(div({ scoringKind: "simple" }), "basketball")).toBe("periods");
     expect(scorerMode(div({ scoringKind: "simple" }), "chess")).toBe("totals");
-    expect(scorerMode(div({ scoringKind: "simple" }), "mobile-games")).toBe("totals");
+    expect(scorerMode(div({ scoringKind: "simple" }), "mobile-games")).toBe("series");
     expect(scorerMode(div({ scoringKind: "placement_only" }), "athletics")).toBe("placement");
+  });
+});
+
+describe("series — best of 3 (Mobile Games)", () => {
+  it("records game wins as 1–0 segments, decides at 2, and refuses a 4th game", () => {
+    let segs = applySeriesGame([], 0);
+    expect(seriesGamesWon(segs, 0)).toBe(1);
+    expect(seriesWinner(segs)).toBeNull();
+    segs = applySeriesGame(segs, 1);
+    segs = applySeriesGame(segs, 0);
+    expect(segs).toHaveLength(3);
+    expect(seriesGamesWon(segs, 0)).toBe(2);
+    expect(seriesWinner(segs)).toBe(0);
+    const after = applySeriesGame(segs, 1);
+    expect(after).toHaveLength(3);
+    expect(seriesGamesWon(after, 1)).toBe(1);
+  });
+  it("a 2–0 sweep ends the series at two segments", () => {
+    let segs = applySeriesGame([], 1);
+    segs = applySeriesGame(segs, 1);
+    expect(seriesWinner(segs)).toBe(1);
+    expect(applySeriesGame(segs, 0)).toHaveLength(2);
   });
 });
 

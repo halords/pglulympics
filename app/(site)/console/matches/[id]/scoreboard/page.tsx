@@ -5,8 +5,8 @@ import { useProvider, useSnapshot } from "../../../../../../lib/data/context";
 import { useSession } from "../../../../../../lib/data/session";
 import { computedWinner, setsWon } from "../../../../../../lib/standings";
 import {
-  advancePeriod, applyPeriodPoints, applyRallyPoint, rallyConfig, rallyMatchWinner,
-  scorerMode, segmentTotals, setTargetFor,
+  advancePeriod, applyPeriodPoints, applyRallyPoint, applySeriesGame, rallyConfig, rallyMatchWinner,
+  scorerMode, segmentTotals, seriesGamesWon, seriesWinner, setTargetFor, SERIES_MAX_GAMES,
 } from "../../../../../../lib/scoring";
 import { sportIdentity, SportIcon } from "../../../../../../lib/sport-identity";
 import { fmtDay, fmtTime } from "../../../../../../lib/format";
@@ -82,6 +82,14 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
         totals: { 1: t[0], 2: t[1] },
       };
     }
+    if (mode === "series") {
+      // Best of 3: the segments ARE the games (1–0 each); the totals are
+      // the games-won count, which is what every public surface shows.
+      return {
+        segments: st.segments.map((s) => ({ segmentNo: s.segmentNo, kind: s.kind, status: s.status, scores: { 1: s.points[0] ?? 0, 2: s.points[1] ?? 0 } })),
+        totals: { 1: seriesGamesWon(st.segments, 0), 2: seriesGamesWon(st.segments, 1) },
+      };
+    }
     return { segments: [], totals: { 1: st.totals?.[0] ?? 0, 2: st.totals?.[1] ?? 0 } };
   }, [mode]);
 
@@ -143,11 +151,26 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
 
   const teamName = (slotNo: number) => server.slots[slotNo - 1]?.teamName ?? server.slots[slotNo - 1]?.placeholder ?? `Slot ${slotNo}`;
   const canScore = server.status === "live";
-  const previewMatch: MatchInfo = { ...server, segments: local.segments, totals: mode === "periods" ? segmentTotals(local.segments) : local.totals };
+  const previewMatch: MatchInfo = {
+    ...server,
+    segments: local.segments,
+    totals: mode === "periods"
+      ? segmentTotals(local.segments)
+      : mode === "series"
+        ? [seriesGamesWon(local.segments, 0), seriesGamesWon(local.segments, 1)]
+        : local.totals,
+  };
   const preview = computedWinner(previewMatch, division);
   const winnerName = preview.winnerEntryId
     ? teamName(server.slots.findIndex((s) => s.entryId === preview.winnerEntryId) + 1)
     : null;
+  // Series mode (best of 3): a 1–0 lead is NOT a win — the finalize bar
+  // only offers a winner once a side actually has 2 games, never a draw.
+  const seriesWinSide = mode === "series" ? seriesWinner(local.segments) : null;
+  const barWinnerName = mode === "series"
+    ? (seriesWinSide != null ? teamName(seriesWinSide + 1) : null)
+    : winnerName;
+  const barIsDraw = mode === "series" ? false : preview.isDraw;
 
   const act = async (fn: () => Promise<unknown>, okMsg: string) => {
     setBusy(true); setNotice(null);
@@ -156,15 +179,15 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
   };
 
   const finalize = async () => {
-    if (!winnerName && !preview.isDraw) return;
-    const label = preview.isDraw ? "Finalize as a DRAW?" : `Finalize and tag ${winnerName} as the winner?`;
+    if (!barWinnerName && !barIsDraw) return;
+    const label = barIsDraw ? "Finalize as a DRAW?" : `Finalize and tag ${barWinnerName} as the winner?`;
     if (!confirm(label)) return;
     await act(async () => {
       await flush();
       if (baseRef.current && localRef.current && !sameState(localRef.current, baseRef.current.state)) {
         throw new Error("Scores are still saving — wait a moment and finalize again.");
       }
-      await provider.setMatchStatus(matchId, "final", preview.isDraw ? { outcome: "draw" } : undefined);
+      await provider.setMatchStatus(matchId, "final", barIsDraw ? { outcome: "draw" } : undefined);
     }, "Result finalized — standings and the TV board are updated.");
   };
 
@@ -183,6 +206,10 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
     t[side] = Math.max(0, t[side] + delta);
     apply({ segments: [], totals: t });
   };
+  const seriesTap = (side: 0 | 1) => {
+    if (!canScore) return;
+    apply({ segments: applySeriesGame(local.segments, side), totals: null });
+  };
 
   /* ---------- derived display values ---------- */
   const currentSeg = local.segments[local.segments.length - 1];
@@ -196,6 +223,7 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
       return open?.points[side] ?? 0;
     }
     if (mode === "periods") return segmentTotals(local.segments)[side];
+    if (mode === "series") return seriesGamesWon(local.segments, side);
     return local.totals?.[side] ?? 0;
   };
   const setsLine = (side: 0 | 1) => setsWon({ segments: local.segments } as MatchInfo, side);
@@ -238,6 +266,7 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
             {fmtDay(server.startsAt)} · {fmtTime(server.startsAt)}{server.venue ? <> · {server.venue}</> : null}
             {mode === "rally" && cfg ? <> · Best of {cfg.bestOf} · first to {cfg.setTarget}{cfg.decidingTarget !== cfg.setTarget ? ` (decider ${cfg.decidingTarget})` : ""} · win by {cfg.winBy}{cfg.cap ? ` · cap ${cfg.cap}` : ""}</> : null}
             {mode === "periods" ? <> · Tap +1 / +2 / +3 per basket</> : null}
+            {mode === "series" ? <> · Best of 3 · first to 2 games — tap GAME WON as each game ends</> : null}
           </p>
         </div>
       </header>
@@ -266,14 +295,14 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
               <span key={s.segmentNo}
                 className={`rounded-full px-3 py-1.5 text-sm font-bold tabular-nums ${s.status === "open" ? "text-white" : "bg-navy-50 border border-navy-100 text-navy-900"}`}
                 style={s.status === "open" ? { backgroundColor: identity.tint } : undefined}>
-                {mode === "rally" ? `Set ${s.segmentNo}` : `Q${s.segmentNo}`} · {s.points[0] ?? 0}–{s.points[1] ?? 0}{s.status === "open" ? " ·" : ""}
+                {mode === "rally" ? `Set ${s.segmentNo}` : mode === "series" ? `Game ${s.segmentNo}` : `Q${s.segmentNo}`} · {s.points[0] ?? 0}–{s.points[1] ?? 0}{s.status === "open" ? " ·" : ""}
               </span>
             ))}
             {local.segments.length === 0 && (
-              <span className="text-sm text-neutral-500">{mode === "rally" ? "Set 1" : mode === "periods" ? "Q1" : "No score yet"} — tap a team&apos;s score to start.</span>
+              <span className="text-sm text-neutral-500">{mode === "rally" ? "Set 1" : mode === "periods" ? "Q1" : mode === "series" ? "Game 1 — tap GAME WON when the first game ends" : "No score yet"} — tap a team&apos;s score to start.</span>
             )}
             <span className="ml-auto text-sm font-semibold text-navy-900">
-              {mode === "rally" && cfg ? <>SET {currentSegNo} · first to {rallyTarget}</> : mode === "periods" ? <>PERIOD {currentSeg?.segmentNo ?? 1}</> : <>TOTAL</>}
+              {mode === "rally" && cfg ? <>SET {currentSegNo} · first to {rallyTarget}</> : mode === "periods" ? <>PERIOD {currentSeg?.segmentNo ?? 1}</> : mode === "series" ? <>{seriesWinner(local.segments) != null ? "SERIES DECIDED" : `GAME ${Math.min(local.segments.length + 1, SERIES_MAX_GAMES)} OF ${SERIES_MAX_GAMES} · FIRST TO 2`}</> : <>TOTAL</>}
             </span>
           </div>
 
@@ -285,7 +314,9 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
                   <p className="font-display tracking-tight text-xl font-bold uppercase leading-tight text-navy-950 break-words">{teamName(side + 1)}</p>
                   <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
                     {mode === "rally" ? <>Sets won: <strong className="text-navy-950">{setsLine(side)}</strong>{decided === side ? " · match won" : ""}</>
-                      : mode === "periods" ? <>Total points</> : <>Score</>}
+                      : mode === "periods" ? <>Total points</>
+                      : mode === "series" ? <>Games won: <strong className="text-navy-950">{seriesGamesWon(local.segments, side)}</strong>{seriesWinner(local.segments) === side ? " · series won" : ""}</>
+                      : <>Score</>}
                   </p>
                 </div>
                 {mode === "rally" ? (
@@ -309,6 +340,12 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
                       ))}
                     </div>
                     <button type="button" disabled={!canScore} onClick={() => periodTap(side, -1)} className={`${tapBtn} w-full border-2 border-navy-100 bg-white py-2.5 text-base text-navy-900 min-h-[48px]`}>−1 correction</button>
+                  </>
+                ) : mode === "series" ? (
+                  <>
+                    <p className="py-1 text-center font-display tracking-tight text-7xl font-bold leading-none tabular-nums text-navy-950 sm:text-8xl">{bigScore(side)}</p>
+                    <button type="button" disabled={!canScore || seriesWinner(local.segments) != null} onClick={() => seriesTap(side)} className={`${tapBtn} w-full bg-crimson-800 py-3.5 text-xl text-white min-h-[60px]`}>+ Game won</button>
+                    <p className="text-center text-xs text-neutral-500">Wrong tap? Use Undo below — games are recorded in order.</p>
                   </>
                 ) : (
                   <>
@@ -359,13 +396,14 @@ function ScoreboardInner({ params }: { params: Promise<{ id: string }> }) {
         <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-navy-100">
           <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between gap-3">
             <span className="min-w-0 truncate text-sm font-medium">
-              {preview.isDraw ? <>Scores are <strong>tied</strong>.</>
-                : winnerName ? <>Winner by score: <strong>{winnerName}</strong></>
+              {barIsDraw ? <>Scores are <strong>tied</strong>.</>
+                : barWinnerName ? <>Winner by score: <strong>{barWinnerName}</strong></>
+                : mode === "series" ? "Series undecided — first to 2 games wins it."
                 : "No winner yet by the current scores."}
             </span>
-            <button disabled={busy || (!winnerName && !preview.isDraw)} onClick={() => void finalize()}
+            <button disabled={busy || (!barWinnerName && !barIsDraw)} onClick={() => void finalize()}
               className="shrink-0 rounded-xl bg-crimson-800 text-white px-5 py-3 font-bold min-h-[52px] disabled:opacity-40">
-              {preview.isDraw ? "Finalize as draw" : "✓ Finalize + tag winner"}
+              {barIsDraw ? "Finalize as draw" : "✓ Finalize + tag winner"}
             </button>
           </div>
         </div>

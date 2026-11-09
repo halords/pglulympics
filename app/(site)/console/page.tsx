@@ -163,6 +163,10 @@ export default function ConsoleHomePage() {
                   className="inline-flex min-h-[40px] items-center rounded-lg bg-crimson-600 px-3.5 py-2 text-sm font-bold text-white">
                   Set up {d.name} matches
                 </Link>
+                <Link href={`/console/ladder/${d.id}`}
+                  className="inline-flex min-h-[40px] items-center rounded-lg border-2 border-navy-900 px-3.5 py-2 text-sm font-bold text-navy-950">
+                  Ladder
+                </Link>
               </span>
             ))}
         </div>

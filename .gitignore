@@ -42,3 +42,7 @@ next-env.d.ts
 
 # generated roster import template (delivered out-of-band, not part of the app bundle)
 /roster-template.xlsx
+
+# QA screenshot artifacts (never committed)
+display-fit-shots/
+report-shots/

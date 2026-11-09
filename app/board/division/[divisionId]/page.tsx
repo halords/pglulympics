@@ -3,6 +3,8 @@ import { Suspense, use } from "react";
 import Link from "next/link";
 import { useSnapshot } from "../../../../lib/data/context";
 import { divisionBoard, type TeamBoardRow } from "../../../../lib/board";
+import { pyramidBracket } from "../../../../lib/bracket";
+import PyramidBracket from "../../../../components/PyramidBracket";
 import { sportIdentity, SportIcon } from "../../../../lib/sport-identity";
 import BoardPresentButton from "../../../../components/BoardPresentButton";
 
@@ -90,7 +92,8 @@ function TeamsBoard({ params }: { params: Promise<{ divisionId: string }> }) {
     );
   }
 
-  const board = divisionBoard(snap, decodeURIComponent(divisionId));
+  const decodedId = decodeURIComponent(divisionId);
+  const board = divisionBoard(snap, decodedId);
   if (!board) {
     return (
       <div className="arena-bg fixed inset-0 flex flex-col items-center justify-center px-[4vw] text-center text-white select-none">
@@ -103,6 +106,7 @@ function TeamsBoard({ params }: { params: Promise<{ divisionId: string }> }) {
 
   const { division, sport, rows, liveCount } = board;
   const identity = sportIdentity(sport);
+  const pyramid = pyramidBracket(snap, decodedId);
 
   return (
     <div className="arena-bg fixed inset-0 flex flex-col overflow-hidden px-[4vw] py-[3vh] text-white select-none">
@@ -133,15 +137,22 @@ function TeamsBoard({ params }: { params: Promise<{ divisionId: string }> }) {
         </p>
       </header>
 
-      {rows.length === 0 ? (
-        <p className="flex flex-1 items-center justify-center text-center font-display tracking-tight text-[clamp(22px,3vw,44px)] font-bold uppercase text-navy-100">
-          No teams entered yet
-        </p>
-      ) : (
-        <div className="mt-[2vh] grid min-h-0 flex-1 grid-cols-1 content-start gap-[1vh] overflow-y-auto pr-1 lg:grid-cols-2">
-          {rows.map((row) => <TeamRow key={row.entryId} row={row} />)}
-        </div>
-      )}
+      <div className="mt-[2vh] min-h-0 flex-1 overflow-y-auto pr-1">
+        {rows.length === 0 ? (
+          <p className="flex min-h-[30vh] items-center justify-center text-center font-display tracking-tight text-[clamp(22px,3vw,44px)] font-bold uppercase text-navy-100">
+            No teams entered yet
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 content-start gap-[1vh] lg:grid-cols-2">
+            {rows.map((row) => <TeamRow key={row.entryId} row={row} />)}
+          </div>
+        )}
+        {pyramid && (
+          <div className="mt-[3vh] border-t border-navy-800 pt-[2.2vh] pb-[1vh]">
+            <PyramidBracket pyramid={pyramid} variant="board" />
+          </div>
+        )}
+      </div>
 
       <footer className="pt-[1.5vh] text-[clamp(11px,1.1vw,16px)] font-semibold uppercase tracking-[0.25em] text-navy-100/70">
         PGLUlympics · PGLU Sports Fest 2026

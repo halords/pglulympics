@@ -133,7 +133,9 @@ export function boardView(match: MatchInfo, division?: DivisionInfo): BoardView 
     teams: [teamName(0), teamName(1)],
     score: kind === "versus" ? boardScore(match, division) : null,
     segments: match.segments.map((s) => ({
-      label: `${division?.scoringKind === "set_based" ? "S" : "Q"}${s.segmentNo}`,
+      // Chip prefix by segment flavour: S = set (set-based sports),
+      // Q = period (basketball), G = game (best-of-3 series, Mobile Games).
+      label: `${s.kind === "period" ? "Q" : division?.scoringKind === "set_based" ? "S" : "G"}${s.segmentNo}`,
       a: s.points[0] ?? 0,
       b: s.points[1] ?? 0,
       open: s.status === "open",

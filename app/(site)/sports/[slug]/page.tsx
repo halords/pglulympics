@@ -9,6 +9,8 @@ import { manilaDayKey, fmtDayLong } from "../../../../lib/format";
 import { nextUpFixtures } from "../../../../lib/schedule";
 import MatchCard, { divisionEntrantNames } from "../../../../components/MatchCard";
 import StandingsTable from "../../../../components/StandingsTable";
+import PyramidBracket from "../../../../components/PyramidBracket";
+import { pyramidBracket } from "../../../../lib/bracket";
 import { sportIdentity, SportIcon } from "../../../../lib/sport-identity";
 
 const SPORT_NOTES: Record<string, string> = {
@@ -19,7 +21,7 @@ const SPORT_NOTES: Record<string, string> = {
   bowling: "One-day team event on November 25 — three mixed categories, results by final placement.",
   athletics: "November 9 — nine track & field events, results by final placement.",
   "laro-ng-lahi": "November 9 — five traditional games, results by final placement.",
-  "mobile-games": "November 9 — Mobile Legends (all 10 teams) and CODM (6 teams). Fixtures are set by the coordinator in the console.",
+  "mobile-games": "November 9 — Mobile Legends (all 10 teams) and CODM (6 teams). Single-elimination ladder, best of 3 per match: winners climb to the final, semifinal losers play the bronze match, and a team without an opponent in a round advances on a bye.",
   chess: "November 9 — Boys (9 teams) and Girls (2 teams). Fixtures are set by the coordinator in the console.",
 };
 
@@ -202,12 +204,26 @@ function SportPageInner({ params }: { params: Promise<{ slug: string }> }) {
                   {div.name} — Teams board ↗
                 </Link>
                 {session.role && (
-                  <Link href={`/console/fixtures?division=${div.id}`} className="inline-flex min-h-[40px] items-center rounded-lg bg-crimson-600 px-3.5 py-2 text-sm font-bold text-white">
-                    Set up {div.name} matches
-                  </Link>
+                  <>
+                    <Link href={`/console/fixtures?division=${div.id}`} className="inline-flex min-h-[40px] items-center rounded-lg bg-crimson-600 px-3.5 py-2 text-sm font-bold text-white">
+                      Set up {div.name} matches
+                    </Link>
+                    <Link href={`/console/ladder/${div.id}`} className="inline-flex min-h-[40px] items-center rounded-lg border-2 border-navy-900 px-3.5 py-2 text-sm font-bold text-navy-950">
+                      Ladder console
+                    </Link>
+                  </>
                 )}
               </p>
             )}
+
+            {isSessionSport(sport) && (() => {
+              const pyramid = pyramidBracket(snap, div.id);
+              return pyramid ? (
+                <div className="mb-5">
+                  <PyramidBracket pyramid={pyramid} />
+                </div>
+              ) : null;
+            })()}
 
             {div.scoringKind === "placement_only" && (
               <div>
@@ -217,7 +233,7 @@ function SportPageInner({ params }: { params: Promise<{ slug: string }> }) {
               </div>
             )}
 
-            {divMatches.length === 0 && div.scoringKind !== "placement_only" && (
+            {divMatches.length === 0 && div.scoringKind !== "placement_only" && !isSessionSport(sport) && (
               <p className="text-sm text-neutral-500">No fixtures yet — the coordinator will post the schedule here once it is set.</p>
             )}
 

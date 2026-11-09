@@ -4,17 +4,54 @@
 // these helpers only shape segments/totals; they never talk to the provider.
 import type { DivisionInfo, SegmentInfo } from "./types";
 import { setsWon } from "./standings";
+import { SESSION_SPORT_SLUGS } from "./board";
 
-export type ScorerMode = "rally" | "periods" | "totals" | "placement";
+export type ScorerMode = "rally" | "periods" | "totals" | "placement" | "series";
 
 /** Which courtside control set a division gets: rally points for set-based
- *  sports (volleyball/badminton/pickleball), periods for basketball, plain
- *  totals for the other simple sports (chess, mobile games), and no
+ *  sports (volleyball/badminton/pickleball), periods for basketball, a
+ *  best-of-3 series tapper for session sports (Mobile Games — each tap is
+ *  one GAME won), plain totals for the other simple sports (chess), and no
  *  scoreboard at all for placement events. */
 export function scorerMode(division: DivisionInfo, sportSlug: string): ScorerMode {
   if (division.scoringKind === "placement_only") return "placement";
   if (division.scoringKind === "set_based") return "rally";
+  if (SESSION_SPORT_SLUGS.includes(sportSlug)) return "series";
   return sportSlug === "basketball" ? "periods" : "totals";
+}
+
+/* ------------------------- best-of-3 series ------------------------- */
+
+/** Mobile Games series: best of 3 games, first to 2. Each game is one
+ *  closed segment scored 1–0; the series score IS the games-won count, so
+ *  setsWon() over the segments gives it directly. */
+export const SERIES_GAMES_TO_WIN = 2;
+export const SERIES_MAX_GAMES = 3;
+
+export function seriesGamesWon(segments: SegmentInfo[], side: 0 | 1): number {
+  return setsWon({ segments } as Parameters<typeof setsWon>[0], side);
+}
+
+export function seriesWinner(segments: SegmentInfo[]): 0 | 1 | null {
+  if (seriesGamesWon(segments, 0) >= SERIES_GAMES_TO_WIN) return 0;
+  if (seriesGamesWon(segments, 1) >= SERIES_GAMES_TO_WIN) return 1;
+  return null;
+}
+
+/** Record one game win for a side. No-op once the series is decided or
+ *  all games are recorded — corrections go through the scoreboard's undo. */
+export function applySeriesGame(segments: SegmentInfo[], side: 0 | 1): SegmentInfo[] {
+  if (seriesWinner(segments) != null || segments.length >= SERIES_MAX_GAMES) {
+    return segments.map((s) => ({ ...s, points: [...s.points] }));
+  }
+  const next = segments.map((s) => ({ ...s, points: [...s.points] }));
+  next.push({
+    segmentNo: segments.length + 1,
+    kind: "set",
+    status: "closed",
+    points: side === 0 ? [1, 0] : [0, 1],
+  });
+  return next;
 }
 
 export interface RallyConfig {
