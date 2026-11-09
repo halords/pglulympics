@@ -141,7 +141,21 @@ export function bracketPool(
   const entryIds = entries.filter((e) => e.divisionId === divisionId).map((e) => e.id);
   const keep = (ids: string[]) => ids.filter((id) => entryIds.includes(id) && !used.has(id));
   if (idx <= 1 || stage === "placement" || stage === "exhibition") return keep(entryIds);
-  if (stage === "gold") return keep(stageWinners(matches, divisions, divisionId, "semifinal"));
+  if (stage === "gold") {
+    const pool = keep(stageWinners(matches, divisions, divisionId, "semifinal"));
+    if (pool.length === 1) {
+      // One semifinal only (e.g. CODM's 6-team draw): the team still
+      // waiting from the semifinal round — it advanced out of the
+      // earlier rounds but never got a semifinal match — takes the
+      // open final slot. The semifinal pool IS that waiting set, in
+      // draw order.
+      for (const id of bracketPool(matches, divisions, entries, divisionId, "semifinal")) {
+        if (pool.length >= 2) break;
+        if (!pool.includes(id)) pool.push(id);
+      }
+    }
+    return pool;
+  }
   if (stage === "bronze") return keep(stageLosers(matches, divisions, divisionId, "semifinal"));
   // semifinal
   const advanced = advancedEntryIds(matches, divisions, divisionId, stage);

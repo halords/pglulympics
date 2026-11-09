@@ -94,6 +94,18 @@ describe("bracketPool + pairUp — one-time round setup", () => {
     expect(leftover).toBe("e9");
   });
 
+  it("gold pool: a lone semifinal winner is joined by the waiting advancer (CODM shape)", () => {
+    const matches = [
+      mk({ stage: "quarterfinal", status: "final", slots: vs("e1", "e2"), winnerEntryId: "e1" }),
+      mk({ stage: "quarterfinal", status: "final", slots: vs("e3", "e4"), winnerEntryId: "e3" }),
+      mk({ stage: "quarterfinal", status: "final", slots: vs("e5", "e6"), winnerEntryId: "e5" }),
+      mk({ stage: "semifinal", status: "final", slots: vs("e1", "e3"), winnerEntryId: "e1" }),
+    ];
+    // e5 won its quarterfinal but never got a semifinal match — it takes
+    // the open final slot against the semifinal winner.
+    expect(bracketPool(matches, DIVS, ENTRIES, "ml", "gold")).toEqual(["e1", "e5"]);
+  });
+
   it("gold pool is semifinal winners only; bronze pool is semifinal losers", () => {
     const matches = [
       mk({ stage: "quarterfinal", status: "final", slots: vs("e1", "e2"), winnerEntryId: "e1" }),

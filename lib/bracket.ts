@@ -171,6 +171,10 @@ export function pyramidBracket(snap: Snapshot, divisionId: string): PyramidBrack
   // Pool feeding the NEXT level: decided winners (entry ids), feeder
   // labels for undecided matches, and bye teams — in bracketPool order.
   let feederPool: PoolEntry[] = [];
+  // A semifinal-level waiting team consumed into the gold pool (below) —
+  // its "waiting" chip is then removed from the semifinal level, since
+  // it has its final slot.
+  let consumedWaiting: { entryId: string | null; name: string } | null = null;
 
   for (const [levelIdx, stage] of climb.entries()) {
     const real = byStage.get(stage) ?? [];
@@ -241,13 +245,26 @@ export function pyramidBracket(snap: Snapshot, divisionId: string): PyramidBrack
         next.push({ entryId: null, name: `Winner ${mv.tag}`, isBye: false, isFeederLabel: true });
       }
     }
-    // The waiting team carries into the next pool only when that pool
-    // admits more than the round's winners — the semifinal does (it is
-    // where bye/leftover teams wait), the gold pool does not: it is the
-    // semifinal winners only, exactly like bracketPool. A team still
-    // waiting after the semifinals are set keeps its "waiting" chip on
-    // the semifinal level; it is not re-displayed at the final.
-    if (climb[levelIdx + 1] !== "gold") {
+    // The waiting team carries into the next pool when that pool admits
+    // more than the round's winners — the semifinal does (it is where
+    // bye/leftover teams wait). The gold pool is the semifinal winners
+    // only (exactly like bracketPool), with ONE exception: when a lone
+    // semifinal winner leaves a final slot open and a team is still
+    // waiting from the semifinal round (it advanced but never got a
+    // semifinal match — CODM's 6-team draw), that team takes the open
+    // slot. With two semifinal winners the final is full and the
+    // waiting team keeps its chip on the semifinal level.
+    if (climb[levelIdx + 1] === "gold") {
+      if (next.length === 1 && waiting.length > 0) {
+        const w = waiting[0];
+        next.push({
+          entryId: w.entryId, name: w.name,
+          isBye: !!w.entryId && !playedEarlier.has(w.entryId),
+          isFeederLabel: !w.entryId,
+        });
+        consumedWaiting = { entryId: w.entryId, name: w.name };
+      }
+    } else {
       for (const w of waiting) {
         next.push({
           entryId: w.entryId, name: w.name,
@@ -267,13 +284,25 @@ export function pyramidBracket(snap: Snapshot, divisionId: string): PyramidBrack
     feederPool = next;
   }
 
+  // A waiting team that took the open final slot no longer waits.
+  if (consumedWaiting) {
+    const sfLevel = levels.find((l) => l.stage === "semifinal");
+    if (sfLevel) {
+      sfLevel.waiting = sfLevel.waiting.filter(
+        (w) => !(w.entryId === consumedWaiting!.entryId && w.name === consumedWaiting!.name),
+      );
+    }
+  }
+
   // Bronze: the semifinal losers' match — real if created, else projected
-  // from the semifinal level once it exists.
+  // from the semifinal level, and only when that level actually has two
+  // matches (a one-semifinal draw has a single SF loser — no bronze pair).
   let bronze: BracketMatchView | null = null;
   const bronzeReal = (byStage.get("bronze") ?? [])[0];
+  const sfLevelForBronze = levels.find((l) => l.stage === "semifinal");
   if (bronzeReal) {
     bronze = matchView(bronzeReal, "BRONZE", division, teamName);
-  } else if (levels.some((l) => l.stage === "semifinal")) {
+  } else if (sfLevelForBronze && sfLevelForBronze.matches.length >= 2) {
     const sfMatches = byStage.get("semifinal") ?? [];
     const loserSlot = (m: MatchInfo | undefined, tag: string): BracketSlot => {
       if (m && m.status === "final") {
@@ -286,7 +315,7 @@ export function pyramidBracket(snap: Snapshot, divisionId: string): PyramidBrack
       }
       return { entryId: null, name: `Loser ${tag}`, isFeederLabel: true, isBye: false, games: null, isWinner: false, isEliminated: false };
     };
-    const sfViews = levels.find((l) => l.stage === "semifinal")!.matches;
+    const sfViews = sfLevelForBronze.matches;
     bronze = {
       matchId: null,
       stage: "bronze",

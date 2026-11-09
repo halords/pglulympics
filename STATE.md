@@ -584,3 +584,11 @@ zero new env vars (reuses the service-role key).
   (mock-provider state): sport-page pyramid, arena board ladder, ladder
   console, series scoreboard all eyeballed — progression, OUT chips,
   waiting/bye chip, bronze ghost and the finalize gate render as designed.
+- Follow-up fix (same evening, caught by the live check): CODM's 6-team
+  draw (3 QF → 1 SF + 1 waiting winner) left the FINAL with no pairing —
+  the waiting winner now takes the open final slot in BOTH the pyramid
+  projection and bracketPool's gold pool (ML's full two-semifinal case
+  unchanged: waiting team keeps its SF chip, gold = SF winners only).
+  Bronze projection now requires a two-match semifinal level (a lone SF
+  has a single loser — no bronze pair). 172/172 tests; CODM ladder
+  screenshot-QA'd locally, then live-verified.

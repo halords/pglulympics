@@ -118,4 +118,17 @@ describe("pyramidBracket — live progression", () => {
   it("returns null for a division with no entries", () => {
     expect(pyramidBracket(snap([], []), "ml")).toBeNull();
   });
+
+  it("CODM shape (6 teams): the waiting QF winner takes the open final slot; no bronze pair", () => {
+    const p = pyramidBracket(snap([], ENTRIES.slice(0, 6)), "ml")!;
+    expect(p.levels[0].matches).toHaveLength(3);
+    expect(p.levels[1].matches).toHaveLength(1);
+    // Winner QF3 waited at the semifinal level, then filled the final —
+    // so its waiting chip is gone and the FINAL card exists.
+    expect(p.levels[1].waiting).toHaveLength(0);
+    expect(p.levels[2].matches).toHaveLength(1);
+    expect(p.levels[2].matches[0].slots.map((s) => s.name)).toEqual(["Winner SF1", "Winner QF3"]);
+    // A single semifinal produces one SF loser — no bronze pairing.
+    expect(p.bronze).toBeNull();
+  });
 });
