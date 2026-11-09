@@ -496,3 +496,23 @@ zero new env vars (reuses the service-role key).
 - Poster alignment pass (2026-11-08, user direction): Match column is now a fixture list — Team A right-aligned, crimson "vs" pinned to a fixed center slot (w-20), Team B left-aligned; table header labels (Time / # / Division / Match) centered over their columns. LIVE-VERIFIED with pixel measurements: vs center at x≈1172 in rows 1/3/6 of the Basketball Nov 9 poster (identical), Team B starts x≈1210, no overflow. NOTE for future QA: two earlier FAIL verdicts were stale-deploy screenshots (the checkers loaded the previous build mid-rollout) — verify the build marker (centered MATCH label) before judging.
 - One-time bracket setup + PHRMDO Lobby (2026-11-08, user direction): ML/CODM are played at the PHRMDO Lobby — MIGRATION 14 adds it as a venue (queue is now 8-14); the fixture form prefills it once per session division (venue record when present, free text until migration 14 runs). The fixture form gains a "One-time setup" panel for session divisions: it previews the full pairing list for the chosen stage and creates ALL matches in one click (auto-labeled "Quarterfinal 1…N", venue carried, no times). Pool rules (lib/fixture-setup.ts bracketPool/pairUp, tested): opening rounds = every entered team not yet placed (pair in entry order, odd team = the bye, named in the preview); semifinals = earlier-round winners + teams that never played (bye holders); gold = semifinal winners only; bronze = semifinal losers; gold/bronze generate nothing until the semifinals are final. With the seeded entries: ML 10 teams -> 5 QF matches (or start at 8 with 2 byes if he trims), CODM 6 -> 3 matches. Tests 162/162.
 - HOTFIX (2026-11-08, user report "matchmaking errors, doesn't load"): the PHRMDO venue-prefill useRef/useEffect landed AFTER the fixtures page's early returns (Loading / Sign in first at the top of FixturesInner). For signed-in users the hook count changed between renders -> React crashed the page; anonymous QA could never see it (the sign-in return is always taken). Fix: the effect is GONE — the PHRMDO Lobby default is now resolved at submit time (venueForSubmit: explicit pick > free text > PHRMDO Lobby record > "PHRMDO Lobby" text) in both single create and the round generator. LESSON: never place hooks after early returns in client pages; grep useEffect/useState line numbers vs return lines when editing console pages.
+
+## 2026-11-09 — Migration queue unblocked + workbook roster import
+- ROOT CAUSE of the stuck queue found by test-running all migrations on a local
+  Postgres: migration 8's legacy shim `my_sport_id()` did
+  `select sport_id from my_sport_ids()` — but my_sport_ids() returns setof uuid,
+  whose output column is not named sport_id → "column sport_id does not exist" →
+  the Supabase GitHub integration halted at 8 and never applied 9–14 (which is why
+  public_entries/public_lineups 404'd live while views from 1–7 worked).
+  Fix: `select * from my_sport_ids() limit 1` (one line). Full chain 1–15 now
+  passes in order on a clean Postgres; 8 and 15 verified idempotent on re-run.
+- Migration 15 (20261109090000_roster_import.sql): rosters from the
+  "2026 PGLULYMPICS Portal" workbook parsed from the sheet's raw CSV export
+  (browser reads of this workbook FABRICATED names — never build data from them;
+  raw export only). 759 players, 1,253 roster_memberships keyed to existing
+  division_entries; coordinators excluded as a block (their event-block entries
+  kept); athletics/chess split into boys/girls by gender evidence from the same
+  workbook's gendered blocks + name dictionary; 31 rows held back as exceptions
+  (no portal entry for the team/division, incl. AGKAYSA GUARDians' 12 volleyball
+  men; 3 gender-unknown: Monis Harmil 200m, Soliweg Milky 200m, Payay Manison
+  chess). Working files: ~/workspace/roster-import/ (imports.json, exceptions.json).

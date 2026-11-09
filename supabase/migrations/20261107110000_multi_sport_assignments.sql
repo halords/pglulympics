@@ -68,7 +68,7 @@ $$;
 -- (list_conflicts below no longer uses it; kept so nothing else can break).
 create or replace function my_sport_id() returns uuid
 language sql stable security definer set search_path = public as $$
-  select sport_id from my_sport_ids() limit 1
+  select * from my_sport_ids() limit 1
 $$;
 
 -- ---------- 4. RLS + grants for the join table ----------
