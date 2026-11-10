@@ -593,3 +593,10 @@ zero new env vars (reuses the service-role key).
   has a single loser — no bronze pair). 172/172 tests; CODM ladder
   screenshot-QA'd locally, then live-verified.
 - Ladder cells now carry a centered crimson "VS" seam between the two teams (user, 2026-11-09 22:14) — public pyramid (site + board variants) and the ladder console cards, same treatment as the posters' Match column.
+
+## Migration 18 — sheet results Nov 9 + volleyball venue move (2026-11-10 evening, user directive)
+- User: "Check if there are updates on the scores. If there is, update them — I mean update the portal." Source = the Game Tracker workbook read live the same evening.
+- Migration `20261110180000_sheet_results_nov9.sql`: all 10 Mon Nov 9 matches finalized in the portal — Basketball totals via match_totals (W1 5–1 TEAM 4, M2 61–76 CODE BLUES, M3 62–78 ECO-AGKAYSA, W4 2–17 CODE BLUES, M5 63–55 TRIFORCE, M6 69–77 ELYUNITED); Volleyball sets via 1–0 set-win segments (sheet records sets won only — same representation as the ML/CODM series scorer; public totals read exactly 1–2 / 0–2 / 0–2 / 2–0). Winners resolved through _computed_winner; propagate/propose side effects run; RR stage → no medal drafts.
+- Venue: volleyball RR on Nov 11/16/18/23 moved DMMMSU Covered Court → new venue "Brgy Lubing Covered Court" (28 matches, per sheet; Nov 25/26 stay DMMMSU).
+- Workbook note: the organizers' current workbook has only 6 tabs — Athletics, Chess, Laro ng Lahi, Mobile Games tabs are GONE from it, so no sheet scores exist for those Nov 9 sports. SUM tally still all zeros in the sheet.
+- Pitfall recorded: data-modifying CTEs share one snapshot — the basketball finalize had to be a separate statement from the totals insert or _computed_winner resolves 0–0. Local chain test: migrations 1–18 PASS, migration 18 re-run no-ops (idempotent).
