@@ -202,6 +202,13 @@ export class SupabaseProvider implements DataProvider {
           const sum = closed.reduce((a, x) => a + (x.points[idx - 1] ?? 0), 0);
           return sum;
         };
+        // Totals-only simple matches (e.g. finals imported from the sheet)
+        // have no period segments. public_match_cards already exposes their
+        // recorded totals as slot points, so use those instead of dropping
+        // the score from every public surface.
+        const storedTotals = c.scoring_kind === "simple" && (c.status === "live" || c.status === "final")
+          ? [Number(c.slot1_points ?? 0), Number(c.slot2_points ?? 0)]
+          : null;
         return {
           id: s(c.match_id)!, divisionId: s(c.division_id)!, groupId: null,
           stage: c.stage as MatchInfo["stage"], status: c.status as MatchStatus, label: s(c.label)!,
@@ -214,7 +221,7 @@ export class SupabaseProvider implements DataProvider {
             placeholder: (c[`slot${n}_team`] as string) ? null : "TBD",
           })),
           segments: segs,
-          totals: segs.length ? [tot(1), tot(2)] : null,
+          totals: segs.length ? [tot(1), tot(2)] : storedTotals,
           winnerEntryId: (c.winner_entry_id as string) ?? null,
           revision: 0,
         } as MatchInfo;

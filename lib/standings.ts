@@ -61,6 +61,14 @@ export function computeStandings(
     if (m.outcome === "draw") { ra.draws++; rb.draws++; }
     else if (m.winnerEntryId === a.entryId) { ra.wins++; rb.losses++; }
     else if (m.winnerEntryId === b.entryId) { rb.wins++; ra.losses++; }
+    // Totals-only finals have no segments to sum (their recorded totals are
+    // the point score). Segment-scored matches already count points below,
+    // so only use totals when there are no closed segments to avoid
+    // double-counting basketball periods.
+    if (!m.segments.some((seg) => seg.status === "closed") && m.totals) {
+      ra.pointsFor += m.totals[0] ?? 0; ra.pointsAgainst += m.totals[1] ?? 0;
+      rb.pointsFor += m.totals[1] ?? 0; rb.pointsAgainst += m.totals[0] ?? 0;
+    }
     for (const seg of m.segments) {
       if (seg.status !== "closed") continue;
       ra.pointsFor += seg.points[0] ?? 0; ra.pointsAgainst += seg.points[1] ?? 0;
